@@ -9,7 +9,9 @@
     <meta name="page-section-id" content="19" />
     <link href="./content/tailwind_output.css" rel="stylesheet">
     <link href="./assets/libs/fontawesome/css/all.min.css" rel="stylesheet">
-    <link href="./assets/fonts.css" rel="stylesheet">
+    <link rel="preload" href="./assets/fonts/AtkinsonHyperlegible-400-latin.woff2?v=somos-ger-1" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="./assets/fonts/AtkinsonHyperlegible-700-latin.woff2?v=somos-ger-1" as="font" type="font/woff2" crossorigin>
+    <link href="./assets/fonts.css?v=somos-ger-1" rel="stylesheet">
 </head>
 
 <body class="min-h-screen flex items-center justify-center">
@@ -59,7 +61,7 @@
     }
     #simple-main .activity-option.selected-option .option-text {
         color: var(--quiz-selected-text);
-        font-weight: 600;
+        font-weight:700;
     }
     #simple-main [data-submit-target] button {
         background-color: var(--quiz-submit);
@@ -96,7 +98,7 @@
                 >
 
                     <label
-                        class="activity-option w-[34rem] max-w-full cursor-pointer rounded-2xl border-2 px-8 py-6 text-center adt-body font-medium transition-all duration-200"
+                        class="activity-option w-[34rem] max-w-full cursor-pointer rounded-2xl border-2 px-8 py-6 text-center adt-body font-normal transition-all duration-200"
                         data-activity-item="qz003_o0"
                         data-explanation="❌ No. Las hamacas y los toboganes están en la plaza, que es el entorno físico." data-explanation-id="qz003_o0_exp"
                         tabindex="0"
@@ -125,7 +127,7 @@
                         <span class="validation-mark hidden"></span>
                     </label>
                     <label
-                        class="activity-option w-[34rem] max-w-full cursor-pointer rounded-2xl border-2 px-8 py-6 text-center adt-body font-medium transition-all duration-200"
+                        class="activity-option w-[34rem] max-w-full cursor-pointer rounded-2xl border-2 px-8 py-6 text-center adt-body font-normal transition-all duration-200"
                         data-activity-item="qz003_o1"
                         data-explanation="❌ No. Los árboles y las flores están en la plaza, no en el entorno digital." data-explanation-id="qz003_o1_exp"
                         tabindex="0"
@@ -154,7 +156,7 @@
                         <span class="validation-mark hidden"></span>
                     </label>
                     <label
-                        class="activity-option w-[34rem] max-w-full cursor-pointer rounded-2xl border-2 px-8 py-6 text-center adt-body font-medium transition-all duration-200"
+                        class="activity-option w-[34rem] max-w-full cursor-pointer rounded-2xl border-2 px-8 py-6 text-center adt-body font-normal transition-all duration-200"
                         data-activity-item="qz003_o2"
                         data-explanation="✅ ¡Correcto! Los mensajes de Sofi aparecen en la nube, que es el entorno digital." data-explanation-id="qz003_o2_exp"
                         tabindex="0"

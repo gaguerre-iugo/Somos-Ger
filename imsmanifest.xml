@@ -59,6 +59,11 @@
       <file href="pg031_sec001.html"/>
       <file href="pg032033_sec001.html"/>
       <file href="pg034_sec001.html"/>
+      <file href="assets/fonts.css"/>
+      <file href="assets/fonts/AtkinsonHyperlegible-400-latin.woff2"/>
+      <file href="assets/fonts/AtkinsonHyperlegible-400-latin-ext.woff2"/>
+      <file href="assets/fonts/AtkinsonHyperlegible-700-latin.woff2"/>
+      <file href="assets/fonts/AtkinsonHyperlegible-700-latin-ext.woff2"/>
     </resource>
   </resources>
 

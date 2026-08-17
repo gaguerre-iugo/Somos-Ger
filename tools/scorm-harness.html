@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es-UY">
+<head>
+  <meta charset="utf-8">
+  <title>Validación SCORM 1.2 — Somos-Ger</title>
+</head>
+<body>
+  <script>
+    (function () {
+      const values = Object.create(null);
+      const calls = [];
+      function record(method, args) {
+        calls.push({ method, args: Array.from(args) });
+        return "true";
+      }
+      window.__SCORM_TEST__ = { calls, values };
+      window.API = {
+        LMSInitialize() { return record("LMSInitialize", arguments); },
+        LMSFinish() { return record("LMSFinish", arguments); },
+        LMSCommit() { return record("LMSCommit", arguments); },
+        LMSSetValue(key, value) {
+          values[key] = String(value);
+          return record("LMSSetValue", arguments);
+        },
+        LMSGetValue(key) {
+          calls.push({ method: "LMSGetValue", args: [key] });
+          return values[key] || "";
+        },
+        LMSGetLastError() { return "0"; },
+        LMSGetErrorString() { return "No error"; },
+        LMSGetDiagnostic() { return "No error"; }
+      };
+    })();
+  </script>
+  <iframe id="book" title="Libro bajo prueba" src="../index.html" width="1280" height="720"></iframe>
+</body>
+</html>

@@ -74,3 +74,15 @@ figcaption, table, th, td, small, strong, em, code, pre, output {
 .font-semibold, .font-bold, .font-extrabold, .font-black {
   font-weight: 700 !important;
 }
+
+/* Interface headings use sentence case; editorial capitals remain literal text. */
+#interface-container .uppercase,
+#nav-container .uppercase {
+  text-transform: none !important;
+}
+
+/* The label is the effective target for settings switches. */
+#interface-container section label[for] {
+  min-height: 44px;
+  justify-content: center;
+}

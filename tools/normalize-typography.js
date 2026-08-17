@@ -34,7 +34,7 @@ for (const file of htmlFiles) {
       [
         '<link rel="preload" href="./assets/fonts/AtkinsonHyperlegible-400-latin.woff2?v=somos-ger-1" as="font" type="font/woff2" crossorigin>',
         '<link rel="preload" href="./assets/fonts/AtkinsonHyperlegible-700-latin.woff2?v=somos-ger-1" as="font" type="font/woff2" crossorigin>',
-        '<link href="./assets/fonts.css?v=somos-ger-1" rel="stylesheet">',
+        '<link href="./assets/fonts.css?v=somos-ger-2" rel="stylesheet">',
       ].join("\n    "),
     );
   }

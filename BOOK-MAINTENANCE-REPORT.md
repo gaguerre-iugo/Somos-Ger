@@ -50,14 +50,26 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 ### 4. Invalidación de caché del adaptador (`8baaa81`)
 
 - La comprobación sobre la copia integrada en `main` detectó que un servidor ya abierto conservaba la primera versión del adaptador.
-- El adaptador se movió antes del bundle del runtime, se versionó como `somos-ger-4` y ahora observa el documento completo.
+- En ese incremento el adaptador se movió antes del bundle del runtime y se versionó como `somos-ger-4`; la observación global usada entonces fue sustituida en el incremento de menú por observadores acotados.
 - El ocultamiento aplica `display: none !important`, además de `hidden` y `aria-hidden`, porque las clases de presentación del runtime podían prevalecer sobre el estilo de agente del atributo `hidden`.
 - Se confirmó en navegador tanto en el worktree como en la copia final de Desktop: el marcador `data-project-adaptations="somos-ger-4"` está activo y “Idioma” no forma parte de los controles visibles.
+
+### 5. Arquitectura canónica del menú (incremento actual)
+
+- Se reemplazó la presentación del dock por una barra permanente de cinco posiciones, en este orden: `Índice`, `Anterior`, contador `actual / total`, `Siguiente` y `Herramientas`.
+- El dock del runtime se conserva como puente de estado y acciones, pero queda fuera de la presentación y del orden de foco. Los selectores se verificaron en este export: grupo directo de `#nav-container`, botones `data-dock-trigger` y rótulos reales de la interfaz en español.
+- `Índice` reutiliza el panel nativo con búsqueda, pestañas y jerarquía. `Herramientas` agrupa Glosario, lectura en voz alta y Configuración de lectura en un diálogo propio con cierre, Escape, trampa de foco y retorno del foco.
+- Se adaptó la excepción responsive de este libro: en móvil el runtime sustituye Glosario, Texto a voz, Idioma y Configuración por `Menú de accesibilidad`. El adaptador abre ese puente y ejecuta la acción compacta correspondiente sin exponer el dock duplicado.
+- La lectura en voz alta se prepara en pausa: al activarla aparece `Reproducir`, no `Pausa`. Se conservaron los controles reales del proyecto —anterior, reproducir/pausar, siguiente, detener, velocidad y volumen— y no se asumió el selector de voces del libro 1930.
+- El panel Herramientas se desplaza cuando el reproductor está activo para evitar solapamientos. En móvil usa iconos con nombre accesible; en escritorio muestra icono y texto. Todos los objetivos interactivos verificados alcanzan al menos 44 × 44 px.
+- La observación de cambios se limita a `#nav-container` y al contenedor de interfaz para el único atajo de idioma; no se instaló un observador global del documento.
+- Los recursos se versionaron como `project-adaptations.js?v=somos-ger-16` y `project-interface.css?v=somos-ger-7` para invalidar cachés previas.
+- El aplicador se corrigió para eliminar separaciones residuales y se comprobó idempotente: dos ejecuciones consecutivas producen el mismo SHA-256 de `index.html`.
 
 ## Decisiones que no se copiaron del libro 1930
 
 - No se aplicó reflow ni maquetación multicolumna: este proyecto es un libro de composición fija y hacerlo rompería posiciones, ilustraciones y actividades.
-- No se sustituyó la barra del runtime por la barra específica de 1930: los selectores y funciones del export actual son distintos.
+- No se copió la barra específica de 1930. Se implementó el mismo contrato editorial de cinco posiciones sobre los selectores, estados, paneles y comportamiento responsive comprobados en este export.
 - No se copiaron anchos, alturas, excepciones editoriales ni rutas del otro libro. El único ajuste de caja se obtuvo midiendo la página 9 de este proyecto.
 - No se elevó de forma global todo el texto editorial a 16 px: una regla indiscriminada produciría solapamientos en el lienzo 595 × 595. Los mínimos de interfaz sí se verificaron por separado.
 
@@ -71,7 +83,12 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - Navegación física comprobada de portada a la página siguiente.
 - Panel de configuración: traducciones correctas, sentence case y rótulos de interruptores de 44 px una vez terminada la animación.
 - Glosario abierto correctamente.
-- Texto a voz activado, con controles “Pausa” y “Desactivar texto a voz”, y detenido al finalizar la prueba.
+- Texto a voz activado y desactivado desde Herramientas, y detenido al finalizar la prueba.
+- Barra canónica comprobada en las 34 entradas: orden correcto, un único ejemplar, contador normalizado, dock base oculto y sin desborde horizontal.
+- Índice, Glosario y Configuración verificados tanto en escritorio como en la variante móvil compacta del runtime.
+- Texto a voz verificado desde estado limpio: aparece preparado en `Reproducir`, Herramientas cambia a `Desactivar lectura en voz alta`, no quedan diálogos residuales y el reproductor no se solapa con el panel.
+- Navegación por teclado: flechas entre controles de la barra, ciclo de Tab dentro de Herramientas y Escape con retorno del foco al disparador.
+- Prueba de estabilidad de 30 segundos después de ciclos repetidos de paneles y voz: una barra, un panel de Herramientas y cero errores nuevos de consola.
 - Actividad `qz001`: selección de “Todas las personas” y devolución correcta en región viva.
 - Inspección visual específica de las páginas 8, 9 y 23 tras el cambio tipográfico.
 - Respuestas HTTP 200 y MIME correctos para HTML, CSS, JavaScript, XML, imágenes y fuentes.
@@ -83,7 +100,7 @@ Salida final de `node tools/validate-scorm.js`:
 
 ```text
 SCORM: 1.2
-Archivos declarados: 652
+Archivos declarados: 653
 Archivos declarados inexistentes: 0
 Recursos de ejecución no declarados: 0
 Preloader bajo HTTP: 0 cargas
@@ -110,6 +127,7 @@ node tools/apply-runtime-loading.js
 node tools/apply-project-adaptations.js
 node tools/sync-offline-preloader.js
 node tools/update-scorm-manifest.js
+node tools/validate-interface.js
 node tools/validate-scorm.js
 node tools/serve-local.js
 ```

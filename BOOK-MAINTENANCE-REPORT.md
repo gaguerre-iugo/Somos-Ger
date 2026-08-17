@@ -47,6 +47,13 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - La adaptación se implementó fuera del bundle compilado, mediante `assets/project-adaptations.js`, para reducir el costo de futuras actualizaciones del runtime.
 - Se incrementó la versión de recursos para evitar que una caché previa mantuviera CSS o traducciones obsoletas.
 
+### 4. Invalidación de caché del adaptador (`8baaa81`)
+
+- La comprobación sobre la copia integrada en `main` detectó que un servidor ya abierto conservaba la primera versión del adaptador.
+- El adaptador se movió antes del bundle del runtime, se versionó como `somos-ger-4` y ahora observa el documento completo.
+- El ocultamiento aplica `display: none !important`, además de `hidden` y `aria-hidden`, porque las clases de presentación del runtime podían prevalecer sobre el estilo de agente del atributo `hidden`.
+- Se confirmó en navegador tanto en el worktree como en la copia final de Desktop: el marcador `data-project-adaptations="somos-ger-4"` está activo y “Idioma” no forma parte de los controles visibles.
+
 ## Decisiones que no se copiaron del libro 1930
 
 - No se aplicó reflow ni maquetación multicolumna: este proyecto es un libro de composición fija y hacerlo rompería posiciones, ilustraciones y actividades.

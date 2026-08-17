@@ -17,8 +17,15 @@
   };
   var updateScheduled = false;
   var toolsReturnFocus = null;
+  var pendingToolsFocusSelector = "";
   var userStartedAudio = false;
   var automaticPausePending = false;
+  var conditionalSettings = {
+    autoplay: null,
+    describeImages: null,
+    highlight: null,
+    pending: {},
+  };
 
   function icon(paths) {
     return '<svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">' + paths + "</svg>";
@@ -136,7 +143,7 @@
   function ttsSwitch() {
     return Array.prototype.find.call(document.querySelectorAll('#interface-container [role="switch"]'), function (control) {
       var label = document.getElementById(control.getAttribute("aria-labelledby"));
-      return label && label.textContent.trim() === "Texto a voz";
+      return label && /^(Texto a voz|Activar lectura en voz alta)$/i.test(label.textContent.trim());
     });
   }
 
@@ -173,9 +180,48 @@
     });
   }
 
-  function toolsPanel() { return document.getElementById("somos-tools-panel"); }
+  function toolsPanel() { return document.querySelector("#interface-container .somos-native-settings-panel"); }
   function toolsButton() { return document.getElementById("somos-tools"); }
   function audioPlayer() { return document.getElementById("somos-tts-player"); }
+
+  function normalizedText(value) {
+    return String(value || "").replace(/\s+/g, " ").trim();
+  }
+
+  function settingsSection(panel, pattern) {
+    return Array.prototype.find.call(panel.querySelectorAll("section"), function (section) {
+      var heading = section.querySelector("h3");
+      return heading && pattern.test(normalizedText(heading.textContent));
+    });
+  }
+
+  function focusToolsTarget(attempt) {
+    var panel = toolsPanel();
+    if (!panel && attempt < 30) {
+      window.requestAnimationFrame(function () { focusToolsTarget(attempt + 1); });
+      return;
+    }
+    if (!panel) return;
+    var target = pendingToolsFocusSelector && panel.querySelector(pendingToolsFocusSelector);
+    if (!target && pendingToolsFocusSelector && attempt < 30) {
+      window.requestAnimationFrame(function () { focusToolsTarget(attempt + 1); });
+      return;
+    }
+    pendingToolsFocusSelector = "";
+    target = target || panel.querySelector(".somos-panel-close") || panel.querySelector("button, [role='switch']");
+    if (target) target.focus({ preventScroll: true });
+  }
+
+  function openIndexWhenPanelsClose(attempt) {
+    if (document.querySelector(".somos-native-settings-panel, .somos-native-glossary-panel") && attempt < 45) {
+      window.requestAnimationFrame(function () { openIndexWhenPanelsClose(attempt + 1); });
+      return;
+    }
+    var button = exactBridge(labels.index);
+    closePressedPanels(button);
+    if (button && button.getAttribute("aria-pressed") !== "true") button.click();
+    scheduleUpdate();
+  }
 
   function nativeMenuKind(panel) {
     if (!panel || panel.classList.contains("somos-native-audio-bridge")) return null;
@@ -204,8 +250,280 @@
     });
   }
 
+  function returnFromGlossaryToTools() {
+    var glossary = exactBridge(labels.glossary);
+    if (glossary && glossary.getAttribute("aria-pressed") === "true") glossary.click();
+    else {
+      var compactGlossary = compactToolButton("Glosario");
+      if (compactGlossary && compactGlossary.getAttribute("aria-pressed") === "true") compactGlossary.click();
+      else document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    }
+    window.setTimeout(function () { openTools(toolsButton()); }, 180);
+  }
+
+  function createAudioSettings(readingCard) {
+    var audioHeading = document.getElementById("somos-audio-settings-heading");
+    if (!audioHeading) {
+      audioHeading = document.createElement("h4");
+      audioHeading.id = "somos-audio-settings-heading";
+      audioHeading.className = "somos-settings-subheading";
+      audioHeading.textContent = "Audio y voz";
+      readingCard.appendChild(audioHeading);
+    }
+
+    var voiceRow = document.getElementById("somos-audio-voice-setting");
+    if (!voiceRow) {
+      voiceRow = document.createElement("div");
+      voiceRow.id = "somos-audio-voice-setting";
+      voiceRow.className = "somos-audio-voice somos-native-setting-row";
+      voiceRow.innerHTML = "<strong>Voz del narrador</strong><span>Predeterminada · única voz disponible</span>";
+      readingCard.appendChild(voiceRow);
+    }
+
+    var speedRow = document.getElementById("somos-audio-speed-setting");
+    if (!speedRow) {
+      var speedMarkup = speedOptions.map(function (option) {
+        return '<button type="button" role="radio" aria-checked="false" aria-label="' + option.label + ", " + option.multiplier + '" data-somos-speed="' + option.id + '"><span>' + option.label + "</span><small>" + option.multiplier + "</small></button>";
+      }).join("");
+      speedRow = document.createElement("div");
+      speedRow.id = "somos-audio-speed-setting";
+      speedRow.className = "somos-native-setting-row";
+      speedRow.innerHTML = '<fieldset class="somos-speed-fieldset"><legend id="somos-speed-title">Velocidad</legend><div class="somos-speed-options" role="radiogroup" aria-labelledby="somos-speed-title">' + speedMarkup + "</div></fieldset>";
+      readingCard.appendChild(speedRow);
+      speedRow.querySelectorAll("[data-somos-speed]").forEach(function (button) {
+        button.addEventListener("click", function () {
+          var option = speedOptions.find(function (candidate) { return candidate.id === button.getAttribute("data-somos-speed"); });
+          if (option) selectSpeed(option);
+        });
+      });
+    }
+
+    var volumeRow = document.getElementById("somos-audio-volume-setting");
+    if (!volumeRow) {
+      volumeRow = document.createElement("div");
+      volumeRow.id = "somos-audio-volume-setting";
+      volumeRow.className = "somos-native-setting-row";
+      volumeRow.innerHTML = '<label class="somos-volume-control" for="somos-volume"><span>Volumen</span><output id="somos-volume-output" for="somos-volume">100%</output></label><input id="somos-volume" class="somos-volume-range" type="range" min="0" max="100" step="5" value="100" aria-label="Volumen">';
+      readingCard.appendChild(volumeRow);
+      volumeRow.querySelector("#somos-volume").addEventListener("input", function (event) {
+        selectVolume(parseInt(event.target.value, 10));
+      });
+    }
+  }
+
+  function nativeConditionalRow(readingCard, className) {
+    return Array.prototype.find.call(readingCard.children, function (row) {
+      return row.classList.contains(className) && !row.classList.contains("somos-proxy-setting");
+    });
+  }
+
+  function syncConditionalSettings(readingCard) {
+    var autoplayRow = nativeConditionalRow(readingCard, "somos-setting-autoplay");
+    var imagesRow = nativeConditionalRow(readingCard, "somos-setting-describe-images");
+    var highlightRow = nativeConditionalRow(readingCard, "somos-setting-highlight");
+    var autoplaySwitch = autoplayRow && autoplayRow.querySelector('[role="switch"]');
+    var imagesSwitch = imagesRow && imagesRow.querySelector('[role="switch"]');
+    var checkedHighlight = highlightRow && highlightRow.querySelector('[role="radio"][aria-checked="true"]');
+    if (autoplaySwitch && !conditionalSettings.pending.autoplay) {
+      conditionalSettings.autoplay = autoplaySwitch.getAttribute("aria-checked") === "true";
+    }
+    if (imagesSwitch && !conditionalSettings.pending.describeImages) {
+      conditionalSettings.describeImages = imagesSwitch.getAttribute("aria-checked") === "true";
+    }
+    if (checkedHighlight && !conditionalSettings.pending.highlight) {
+      conditionalSettings.highlight = normalizedText(checkedHighlight.textContent);
+    }
+  }
+
+  function applyPendingConditionalSettings(readingCard) {
+    var definitions = [
+      { key: "autoplay", className: "somos-setting-autoplay", role: "switch" },
+      { key: "describeImages", className: "somos-setting-describe-images", role: "switch" },
+    ];
+    definitions.forEach(function (definition) {
+      if (!conditionalSettings.pending[definition.key]) return;
+      var row = nativeConditionalRow(readingCard, definition.className);
+      var control = row && row.querySelector('[role="' + definition.role + '"]');
+      if (!control) return;
+      if ((control.getAttribute("aria-checked") === "true") !== conditionalSettings[definition.key]) control.click();
+      delete conditionalSettings.pending[definition.key];
+    });
+    if (conditionalSettings.pending.highlight) {
+      var highlightRow = nativeConditionalRow(readingCard, "somos-setting-highlight");
+      var target = highlightRow && Array.prototype.find.call(highlightRow.querySelectorAll('[role="radio"]'), function (radio) {
+        return normalizedText(radio.textContent) === conditionalSettings.highlight;
+      });
+      if (target && target.getAttribute("aria-checked") !== "true") target.click();
+      if (target) delete conditionalSettings.pending.highlight;
+    }
+  }
+
+  function proxySwitchRow(id, label, key, className) {
+    var checked = conditionalSettings[key] === true;
+    var row = document.createElement("div");
+    row.id = id;
+    row.className = "somos-native-setting-row somos-proxy-setting " + className;
+    row.innerHTML = '<span id="' + id + '-label">' + label + '</span><button type="button" class="somos-proxy-switch" role="switch" aria-checked="' + (checked ? "true" : "false") + '" aria-labelledby="' + id + '-label"><span aria-hidden="true"></span></button>';
+    row.querySelector("button").addEventListener("click", function (event) {
+      conditionalSettings[key] = event.currentTarget.getAttribute("aria-checked") !== "true";
+      conditionalSettings.pending[key] = true;
+      setAttributeIfChanged(event.currentTarget, "aria-checked", conditionalSettings[key] ? "true" : "false");
+    });
+    return row;
+  }
+
+  function ensureConditionalSettings(readingCard) {
+    var autoplayRow = nativeConditionalRow(readingCard, "somos-setting-autoplay");
+    var imagesRow = nativeConditionalRow(readingCard, "somos-setting-describe-images");
+    var highlightRow = nativeConditionalRow(readingCard, "somos-setting-highlight");
+    var proxyAutoplay = document.getElementById("somos-proxy-autoplay");
+    var proxyImages = document.getElementById("somos-proxy-describe-images");
+    var proxyHighlight = document.getElementById("somos-proxy-highlight");
+    if (autoplayRow && proxyAutoplay) proxyAutoplay.remove();
+    if (imagesRow && proxyImages) proxyImages.remove();
+    if (highlightRow && proxyHighlight) proxyHighlight.remove();
+    if (!autoplayRow && !proxyAutoplay) {
+      readingCard.appendChild(proxySwitchRow("somos-proxy-autoplay", "Reproducción automática", "autoplay", "somos-setting-autoplay"));
+    }
+    if (!imagesRow && !proxyImages) {
+      readingCard.appendChild(proxySwitchRow("somos-proxy-describe-images", "Descripción de imágenes", "describeImages", "somos-setting-describe-images"));
+    }
+    if (!highlightRow && !proxyHighlight) {
+      proxyHighlight = document.createElement("div");
+      proxyHighlight.id = "somos-proxy-highlight";
+      proxyHighlight.className = "somos-native-setting-row somos-proxy-setting somos-setting-highlight";
+      proxyHighlight.innerHTML = '<span id="somos-proxy-highlight-label">Resaltado</span><div class="somos-proxy-radio-group" role="radiogroup" aria-labelledby="somos-proxy-highlight-label"><button type="button" role="radio" aria-checked="' + (conditionalSettings.highlight !== "Oración" ? "true" : "false") + '">Palabra</button><button type="button" role="radio" aria-checked="' + (conditionalSettings.highlight === "Oración" ? "true" : "false") + '">Oración</button></div>';
+      proxyHighlight.querySelectorAll('[role="radio"]').forEach(function (radio) {
+        radio.addEventListener("click", function () {
+          conditionalSettings.highlight = normalizedText(radio.textContent);
+          conditionalSettings.pending.highlight = true;
+          proxyHighlight.querySelectorAll('[role="radio"]').forEach(function (candidate) {
+            setAttributeIfChanged(candidate, "aria-checked", candidate === radio ? "true" : "false");
+          });
+        });
+      });
+      readingCard.appendChild(proxyHighlight);
+    }
+  }
+
+  function organizeNativeSettings(panel) {
+    var readingSection = settingsSection(panel, /^(Lectura|Apoyos para la lectura)$/i);
+    if (readingSection) {
+      readingSection.classList.add("somos-settings-section-reading");
+      var readingHeading = readingSection.querySelector("h3");
+      if (readingHeading) readingHeading.textContent = "Apoyos para la lectura";
+      var readingCard = readingSection.querySelector(":scope > div");
+      if (readingCard) {
+        readingCard.classList.add("somos-settings-card");
+        Array.prototype.slice.call(readingCard.children).forEach(function (row) {
+          if (row.id === "somos-audio-settings-heading") return;
+          row.classList.add("somos-native-setting-row");
+          var rowText = normalizedText(row.textContent);
+          if (/^(Texto a voz|Activar lectura en voz alta)/i.test(rowText)) row.classList.add("somos-setting-read-aloud");
+          else if (/^Reproducción automática/i.test(rowText)) row.classList.add("somos-setting-autoplay");
+          else if (/^(Describir imágenes|Descripción de imágenes)/i.test(rowText)) row.classList.add("somos-setting-describe-images");
+          else if (/^Resaltado/i.test(rowText)) row.classList.add("somos-setting-highlight");
+        });
+        var readAloud = Array.prototype.find.call(readingCard.children, function (row) {
+          return /^(Texto a voz|Activar lectura en voz alta)/i.test(normalizedText(row.textContent));
+        });
+        if (readAloud) {
+          var label = readAloud.querySelector("label span");
+          if (label) {
+            label.id = "somos-read-aloud-label";
+            label.textContent = "Activar lectura en voz alta";
+          }
+          var labelContainer = readAloud.querySelector("label");
+          if (labelContainer && !labelContainer.querySelector(".somos-setting-description")) {
+            var description = document.createElement("span");
+            description.id = "somos-read-aloud-description";
+            description.className = "somos-setting-description";
+            description.textContent = "Habilita el modo. Use Reproducir para comenzar.";
+            labelContainer.appendChild(description);
+          }
+          var readAloudSwitch = readAloud.querySelector('[role="switch"]');
+          if (readAloudSwitch) {
+            readAloudSwitch.setAttribute("aria-labelledby", "somos-read-aloud-label");
+            readAloudSwitch.setAttribute("aria-describedby", "somos-read-aloud-description");
+            if (readAloudSwitch.dataset.somosReopenTools !== "true") {
+              readAloudSwitch.dataset.somosReopenTools = "true";
+              readAloudSwitch.addEventListener("click", function () {
+                window.setTimeout(function () {
+                  var bridge = exactBridge(labels.settings);
+                  if (!bridge || bridge.getAttribute("aria-pressed") !== "true") {
+                    openTools(toolsButton(), ".somos-setting-read-aloud [role='switch']");
+                  }
+                }, 180);
+              });
+            }
+          }
+        }
+        Array.prototype.slice.call(readingCard.querySelectorAll("label span")).forEach(function (label) {
+          if (normalizedText(label.textContent) === "Describir imágenes") label.textContent = "Descripción de imágenes";
+        });
+        applyPendingConditionalSettings(readingCard);
+        syncConditionalSettings(readingCard);
+        ensureConditionalSettings(readingCard);
+        createAudioSettings(readingCard);
+      }
+    }
+
+    var preferencesSection = settingsSection(panel, /^(Comportamiento|Preferencias)$/i);
+    if (preferencesSection) {
+      preferencesSection.classList.add("somos-settings-section-preferences");
+      var preferencesHeading = preferencesSection.querySelector("h3");
+      if (preferencesHeading) preferencesHeading.textContent = "Preferencias";
+      var preferencesCard = preferencesSection.querySelector(":scope > div");
+      if (preferencesCard) preferencesCard.classList.add("somos-settings-card");
+    }
+
+    var shortcutsSection = settingsSection(panel, /^Atajos de teclado$/i);
+    if (shortcutsSection) {
+      shortcutsSection.classList.add("somos-settings-section-shortcuts");
+      var shortcutsCard = shortcutsSection.querySelector(":scope > div");
+      Array.prototype.slice.call(shortcutsSection.querySelectorAll("span")).forEach(function (label) {
+        if (normalizedText(label.textContent) === "Abrir ajustes") label.textContent = "Abrir Herramientas";
+      });
+      if (shortcutsCard && !shortcutsCard.querySelector("#somos-glossary-shortcut")) {
+        var closeRow = Array.prototype.find.call(shortcutsCard.children, function (row) {
+          return /^Cerrar panel/i.test(normalizedText(row.textContent));
+        });
+        var template = closeRow || shortcutsCard.firstElementChild;
+        if (template) {
+          var glossaryRow = template.cloneNode(true);
+          glossaryRow.id = "somos-glossary-shortcut";
+          glossaryRow.hidden = false;
+          glossaryRow.removeAttribute("aria-hidden");
+          var shortcutLabel = glossaryRow.querySelector("span");
+          var shortcutKey = glossaryRow.querySelector('kbd[data-slot="kbd"]');
+          if (shortcutLabel) shortcutLabel.textContent = "Abrir glosario";
+          if (shortcutKey) shortcutKey.textContent = "G";
+          shortcutsCard.insertBefore(glossaryRow, closeRow || null);
+        }
+      }
+    }
+
+    var toolsSection = panel.querySelector("#somos-reference-tools");
+    if (!toolsSection) {
+      var content = readingSection && readingSection.parentElement;
+      if (content) {
+        toolsSection = document.createElement("section");
+        toolsSection.id = "somos-reference-tools";
+        toolsSection.className = "somos-settings-section-tools";
+        toolsSection.innerHTML = '<header><h3>Herramientas</h3></header><div class="somos-settings-card"><button id="somos-open-glossary" class="somos-tool-option" type="button" aria-keyshortcuts="G">' + icons.glossary + "<span>Glosario</span></button></div>";
+        content.appendChild(toolsSection);
+        toolsSection.querySelector("#somos-open-glossary").addEventListener("click", openGlossary);
+      }
+    }
+    panel.id = "somos-tools-runtime-panel";
+    var trigger = toolsButton();
+    var audioTrigger = document.getElementById("somos-audio-settings");
+    if (trigger) trigger.setAttribute("aria-controls", panel.id);
+    if (audioTrigger) audioTrigger.setAttribute("aria-controls", panel.id);
+  }
+
   function enhanceNativeMenus() {
-    document.querySelectorAll('#interface-container [role="dialog"][data-slot="popover-content"]').forEach(function (panel) {
+    document.querySelectorAll('#interface-container [role="dialog"][data-slot="popover-content"], #interface-container [role="dialog"][data-slot="sheet-content"]').forEach(function (panel) {
       var kind = nativeMenuKind(panel);
       if (!kind) return;
       panel.classList.add("somos-native-menu-panel", "somos-native-" + kind + "-panel");
@@ -213,52 +531,90 @@
       var titles = {
         index: "Índice",
         glossary: "Glosario",
-        settings: "Configuración de lectura",
+        settings: "Herramientas",
       };
-      var inner = panel.firstElementChild;
-      if (!inner || inner.querySelector(":scope > .somos-panel-control-header")) return;
-      var nativeTitle = inner.querySelector("h2, h3, h4");
-      if (nativeTitle) nativeTitle.classList.add("somos-native-title-hidden");
+      var inner = Array.prototype.find.call(panel.children, function (child) {
+        return child.querySelector("section") || child.querySelector('[role="presentation"]');
+      }) || panel.firstElementChild;
+      if (!inner) return;
+      inner.classList.add("somos-native-menu-shell");
+      var existingHeader = panel.querySelector(".somos-panel-control-header");
+      if (existingHeader && existingHeader.parentElement !== inner) {
+        inner.insertBefore(existingHeader, inner.firstChild);
+      }
+      var nativeTitle = Array.prototype.find.call(inner.querySelectorAll("h2, h3, h4"), function (heading) {
+        if (heading.classList.contains("somos-panel-control-title")) return false;
+        var text = normalizedText(heading.textContent);
+        return kind === "settings" ? /^Configuración$/i.test(text) : text === titles[kind];
+      });
+      if (nativeTitle) {
+        nativeTitle.classList.add("somos-native-title-hidden");
+        nativeTitle.setAttribute("aria-hidden", "true");
+      }
+      if (existingHeader) {
+        if (kind === "settings") organizeNativeSettings(panel);
+        return;
+      }
       var header = document.createElement("div");
       var titleId = "somos-native-" + kind + "-title";
-      header.className = "somos-panel-control-header";
-      header.innerHTML = '<h2 id="' + titleId + '" class="somos-panel-control-title">' + titles[kind] + '</h2><button type="button" class="somos-panel-close" aria-label="Cerrar ' + titles[kind] + '">' + icons.close + "</button>";
+      header.className = "somos-panel-control-header" + (kind === "glossary" ? " somos-panel-control-header-glossary" : "");
+      header.innerHTML = (kind === "glossary" ? '<button type="button" class="somos-panel-back" aria-label="Volver a Herramientas"><span aria-hidden="true">←</span><span>Herramientas</span></button>' : "") + '<h2 id="' + titleId + '" class="somos-panel-control-title">' + titles[kind] + '</h2><button type="button" class="somos-panel-close" aria-keyshortcuts="Escape" aria-label="Cerrar ' + titles[kind] + '">' + icons.close + "</button>";
       inner.insertBefore(header, inner.firstChild);
       panel.setAttribute("aria-labelledby", titleId);
-      header.querySelector("button").addEventListener("click", function () { closeNativeMenu(panel, kind); });
+      header.querySelector(".somos-panel-close").addEventListener("click", function () { closeNativeMenu(panel, kind); });
+      var back = header.querySelector(".somos-panel-back");
+      if (back) back.addEventListener("click", returnFromGlossaryToTools);
+      if (kind === "settings") organizeNativeSettings(panel);
     });
   }
 
   function closeTools(restoreFocus) {
     var panel = toolsPanel();
     var trigger = toolsButton();
-    if (!panel || panel.hidden) return;
     var returnFocus = toolsReturnFocus || trigger;
-    panel.hidden = true;
+    var bridge = exactBridge(labels.settings);
+    if (!panel && (!bridge || bridge.getAttribute("aria-pressed") !== "true")) return;
+    if (bridge && bridge.getAttribute("aria-pressed") === "true") bridge.click();
+    else if (panel) document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
     setAttributeIfChanged(trigger, "aria-expanded", "false");
     toolsReturnFocus = null;
     scheduleUpdate();
     if (restoreFocus && returnFocus && returnFocus.isConnected) returnFocus.focus({ preventScroll: true });
   }
 
-  function openTools(origin) {
-    var panel = toolsPanel();
+  function openTools(origin, focusSelector) {
     var trigger = toolsButton();
-    if (!panel || !trigger) return;
+    var bridge = exactBridge(labels.settings);
+    if (!trigger) return;
     toolsReturnFocus = origin || trigger;
-    closePressedPanels(null);
-    panel.hidden = false;
+    pendingToolsFocusSelector = focusSelector || "";
     setAttributeIfChanged(trigger, "aria-expanded", "true");
+    if (bridge) {
+      closePressedPanels(bridge);
+      if (bridge.getAttribute("aria-pressed") !== "true") bridge.click();
+    } else {
+      closePressedPanels(null);
+      var accessibility = exactBridge(labels.accessibility);
+      if (!accessibility) return;
+      if (accessibility.getAttribute("aria-pressed") !== "true") accessibility.click();
+      resolveCompactTool("Configuración", accessibility, function () {
+        window.requestAnimationFrame(function () { focusToolsTarget(0); });
+      }, 0);
+    }
     scheduleUpdate();
-    var first = panel.querySelector("button:not([disabled])");
-    if (first) first.focus();
+    window.requestAnimationFrame(function () { focusToolsTarget(0); });
   }
 
   function toggleTools() {
-    var panel = toolsPanel();
-    if (!panel) return;
-    if (panel.hidden) openTools(toolsButton());
-    else closeTools(true);
+    var bridge = exactBridge(labels.settings);
+    if ((bridge && bridge.getAttribute("aria-pressed") === "true") || toolsPanel()) closeTools(true);
+    else openTools(toolsButton());
+  }
+
+  function openGlossary() {
+    var bridge = exactBridge(labels.glossary);
+    if (bridge && bridge.getAttribute("aria-pressed") === "true") return;
+    openRuntimeFeature(labels.glossary, "Glosario");
   }
 
   function toolbarButton(id, label, iconMarkup) {
@@ -406,9 +762,7 @@
   }
 
   function openAudioSettings() {
-    openTools(document.getElementById("somos-audio-settings"));
-    var firstSpeed = document.querySelector('[data-somos-speed="slow"]');
-    if (firstSpeed) firstSpeed.focus({ preventScroll: true });
+    openTools(document.getElementById("somos-audio-settings"), '[data-somos-speed="slow"]');
   }
 
   function pausePreparedTtsSession(attempt, settingsApplied) {
@@ -466,22 +820,7 @@
       toolbarButton("somos-previous", "Anterior", icons.previous) +
       '<output id="somos-page-status" class="somos-page-status" aria-live="polite">– / –</output>' +
       toolbarButton("somos-next", "Siguiente", icons.next) +
-      '<button type="button" id="somos-tools" class="somos-toolbar-button" aria-label="Herramientas" title="Herramientas" aria-haspopup="dialog" aria-expanded="false" aria-controls="somos-tools-panel">' + icons.tools + "<span>Herramientas</span></button>";
-
-    var panel = document.createElement("section");
-    panel.id = "somos-tools-panel";
-    panel.className = "somos-tools-panel";
-    panel.setAttribute("role", "dialog");
-    panel.setAttribute("aria-modal", "false");
-    panel.setAttribute("aria-labelledby", "somos-tools-title");
-    panel.hidden = true;
-    var speedMarkup = speedOptions.map(function (option) {
-      return '<button type="button" role="radio" aria-checked="false" aria-label="' + option.label + ", " + option.multiplier + '" data-somos-speed="' + option.id + '"><span>' + option.label + "</span><small>" + option.multiplier + "</small></button>";
-    }).join("");
-    panel.innerHTML = '<header><h2 id="somos-tools-title">Herramientas</h2><button type="button" id="somos-tools-close" class="somos-icon-button" aria-label="Cerrar Herramientas">' + icons.close + "</button></header>" +
-      '<div class="somos-tools-section"><h3>Consulta</h3><button type="button" id="somos-open-glossary" class="somos-tool-option">' + icons.glossary + "<span>Glosario</span></button></div>" +
-      '<div class="somos-tools-section" id="somos-audio-settings-section"><h3>Audio y voz</h3><button type="button" id="somos-toggle-tts" class="somos-tool-option">' + icons.audio + '<span>Activar lectura en voz alta</span></button><p class="somos-audio-description">Habilita el modo. Use Reproducir para comenzar.</p><div class="somos-audio-voice"><strong>Voz del narrador</strong><span>Predeterminada · única voz disponible</span></div><fieldset class="somos-speed-fieldset"><legend id="somos-speed-title">Velocidad</legend><div class="somos-speed-options" role="radiogroup" aria-labelledby="somos-speed-title">' + speedMarkup + '</div></fieldset><label class="somos-volume-control" for="somos-volume"><span>Volumen</span><output id="somos-volume-output" for="somos-volume">100%</output></label><input id="somos-volume" class="somos-volume-range" type="range" min="0" max="100" step="5" value="100" aria-label="Volumen"></div>' +
-      '<div class="somos-tools-section"><h3>Preferencias</h3><button type="button" id="somos-open-settings" class="somos-tool-option">' + icons.preferences + "<span>Configuración de lectura</span></button></div>";
+      '<button type="button" id="somos-tools" class="somos-toolbar-button" aria-label="Herramientas" title="Herramientas" aria-haspopup="dialog" aria-expanded="false" aria-keyshortcuts="A">' + icons.tools + "<span>Herramientas</span></button>";
 
     var player = document.createElement("section");
     player.id = "somos-tts-player";
@@ -492,24 +831,21 @@
     player.innerHTML = audioPlayerButton("somos-audio-previous", labels.audioPrevious, icons.audioPrevious) +
       audioPlayerButton("somos-audio-toggle", labels.play, icons.play, 'aria-pressed="false"') +
       audioPlayerButton("somos-audio-next", labels.audioNext, icons.audioNext) +
-      audioPlayerButton("somos-audio-settings", "Voz y velocidad", icons.audioSettings, 'aria-haspopup="dialog" aria-expanded="false" aria-controls="somos-tools-panel"') +
+      audioPlayerButton("somos-audio-settings", "Voz y velocidad", icons.audioSettings, 'aria-haspopup="dialog" aria-expanded="false"') +
       audioPlayerButton("somos-audio-stop", labels.stop, icons.stop) +
       '<p id="somos-audio-status" class="somos-visually-hidden" aria-live="polite"></p>';
 
-    root.appendChild(panel);
     root.appendChild(player);
     root.appendChild(toolbar);
 
     var indexControl = document.getElementById("somos-index");
     indexControl.setAttribute("aria-haspopup", "dialog");
     indexControl.setAttribute("aria-expanded", "false");
+    indexControl.setAttribute("aria-keyshortcuts", "X");
 
     document.getElementById("somos-index").addEventListener("click", function () {
       closeTools(false);
-      var button = exactBridge(labels.index);
-      closePressedPanels(button);
-      if (button) button.click();
-      scheduleUpdate();
+      openIndexWhenPanelsClose(0);
     });
     document.getElementById("somos-previous").addEventListener("click", function () {
       var button = exactBridge(labels.previous);
@@ -520,23 +856,6 @@
       if (button) button.click();
     });
     toolsButton().addEventListener("click", toggleTools);
-    document.getElementById("somos-tools-close").addEventListener("click", function () { closeTools(true); });
-    document.getElementById("somos-open-glossary").addEventListener("click", function () {
-      openRuntimeFeature(labels.glossary, "Glosario");
-    });
-    document.getElementById("somos-toggle-tts").addEventListener("click", toggleTtsMode);
-    document.getElementById("somos-open-settings").addEventListener("click", function () {
-      openRuntimeFeature(labels.settings, "Configuración");
-    });
-    panel.querySelectorAll("[data-somos-speed]").forEach(function (button) {
-      button.addEventListener("click", function () {
-        var option = speedOptions.find(function (candidate) { return candidate.id === button.getAttribute("data-somos-speed"); });
-        if (option) selectSpeed(option);
-      });
-    });
-    document.getElementById("somos-volume").addEventListener("input", function (event) {
-      selectVolume(parseInt(event.target.value, 10));
-    });
 
     player.addEventListener("click", function (event) {
       var button = event.target.closest("button");
@@ -574,25 +893,6 @@
       controls[(index + step + controls.length) % controls.length].focus();
     });
 
-    panel.addEventListener("keydown", function (event) {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        closeTools(true);
-        return;
-      }
-      if (event.key !== "Tab") return;
-      var controls = Array.prototype.filter.call(panel.querySelectorAll("button, input"), function (control) { return !control.disabled; });
-      if (!controls.length) return;
-      var first = controls[0];
-      var last = controls[controls.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    });
   }
 
   function updateInterface() {
@@ -624,13 +924,9 @@
     }
 
     var tts = ttsSwitch();
-    var ttsText = document.querySelector("#somos-toggle-tts span");
     var ttsActive = Boolean(ttsPlayer() || (tts && tts.getAttribute("aria-checked") === "true"));
     concealNativeTtsPlayer();
     setAttributeIfChanged(document.documentElement, "data-somos-tts-active", ttsActive ? "true" : "false");
-    if (ttsText) {
-      ttsText.textContent = ttsActive ? "Desactivar lectura en voz alta" : "Activar lectura en voz alta";
-    }
 
     var customPlayer = audioPlayer();
     var stoppingAudio = document.documentElement.getAttribute("data-somos-audio-stopping") === "true";
@@ -676,8 +972,12 @@
 
     var customAudioSettings = document.getElementById("somos-audio-settings");
     if (customAudioSettings) {
-      setAttributeIfChanged(customAudioSettings, "aria-expanded", toolsPanel() && !toolsPanel().hidden ? "true" : "false");
+      var settingsBridge = exactBridge(labels.settings);
+      setAttributeIfChanged(customAudioSettings, "aria-expanded", settingsBridge && settingsBridge.getAttribute("aria-pressed") === "true" ? "true" : "false");
     }
+    var customTools = toolsButton();
+    var settingsControl = exactBridge(labels.settings);
+    if (customTools) setAttributeIfChanged(customTools, "aria-expanded", settingsControl && settingsControl.getAttribute("aria-pressed") === "true" ? "true" : "false");
 
     var nativeSpeed = nativeAudioButton(function (label) { return label.indexOf("Velocidad de reproducción:") === 0; });
     var currentSpeed = document.documentElement.getAttribute("data-somos-audio-speed") || "normal";
@@ -720,7 +1020,7 @@
     });
   }
 
-  document.documentElement.setAttribute("data-project-adaptations", "somos-ger-26");
+  document.documentElement.setAttribute("data-project-adaptations", "somos-ger-34");
   var root = navContainer();
   if (root) {
     new MutationObserver(scheduleUpdate).observe(root, {
@@ -748,13 +1048,18 @@
       event.preventDefault();
       event.stopImmediatePropagation();
     }
-    if (event.key === "Escape") closeTools(true);
+    var typingContext = event.target && event.target.closest && event.target.closest(
+      "input, textarea, select, [contenteditable='true'], [data-activity-item], form"
+    );
+    if (
+      !event.defaultPrevented && !event.repeat && !event.altKey && !event.ctrlKey && !event.metaKey &&
+      !typingContext && String(event.key || "").toLocaleLowerCase("es") === "g"
+    ) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      openGlossary();
+    }
   }, true);
-  document.addEventListener("pointerdown", function (event) {
-    var panel = toolsPanel();
-    var toolbar = document.getElementById("somos-primary-toolbar");
-    if (panel && !panel.hidden && !panel.contains(event.target) && (!toolbar || !toolbar.contains(event.target))) closeTools(false);
-  });
   document.addEventListener("click", function (event) {
     if (event.target.closest && event.target.closest("#somos-audio-stop")) stopTtsSession();
   }, true);

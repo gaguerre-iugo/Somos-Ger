@@ -58,7 +58,7 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 
 - Se reemplazó la presentación del dock por una barra permanente de cinco posiciones, en este orden: `Índice`, `Anterior`, contador `actual / total`, `Siguiente` y `Herramientas`.
 - El dock del runtime se conserva como puente de estado y acciones, pero queda fuera de la presentación y del orden de foco. Los selectores se verificaron en este export: grupo directo de `#nav-container`, botones `data-dock-trigger` y rótulos reales de la interfaz en español.
-- `Índice` reutiliza el panel nativo con búsqueda, pestañas y jerarquía. `Herramientas` agrupa Glosario, lectura en voz alta y Configuración de lectura en un diálogo propio con cierre, Escape, trampa de foco y retorno del foco.
+- `Índice` reutiliza el panel nativo con búsqueda, pestañas y jerarquía. `Herramientas` reutiliza el panel de configuración real del runtime, con cierre, Escape y retorno del foco; de ese modo los controles conservan su estado y sus eventos originales.
 - Se adaptó la excepción responsive de este libro: en móvil el runtime sustituye Glosario, Texto a voz, Idioma y Configuración por `Menú de accesibilidad`. El adaptador abre ese puente y ejecuta la acción compacta correspondiente sin exponer el dock duplicado.
 - La lectura en voz alta usa un reproductor persistente separado con exactamente cinco controles y este orden: `Audio anterior`, `Reproducir/Pausar`, `Audio siguiente`, `Voz y velocidad` y `Detener`. El reproductor nativo de seis controles se conserva oculto únicamente como puente con el runtime.
 - La activación prepara la sesión en pausa y enfoca `Reproducir`; solo un gesto explícito inicia el audio. Anterior y siguiente conservan el estado de pausa, `Voz y velocidad` abre Herramientas sin terminar la sesión y `Detener` elimina el reproductor y devuelve el foco al libro. Una navegación o recarga con la sesión activa restaura el reproductor en pausa.
@@ -66,16 +66,27 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - Se reservan 96 px estables para el reproductor. En las actividades, el desplazamiento se limita al contenido para que ni la barra ni el reproductor tapen preguntas o devoluciones. En móvil los rótulos visuales se ocultan, pero los cinco botones conservan nombre accesible completo y un objetivo mínimo de 44 px.
 - Herramientas y reproductor quedan adyacentes en escritorio; en móvil el panel reduce su altura para evitar solapamientos. El reproductor usa iconos con nombre accesible en móvil e icono y texto en escritorio. Todos los objetivos interactivos verificados alcanzan al menos 44 × 44 px.
 - La observación de cambios se limita a `#nav-container` y al contenedor de interfaz para el único atajo de idioma; no se instaló un observador global del documento.
-- Los recursos se versionaron como `project-adaptations.js?v=somos-ger-26` y `project-interface.css?v=somos-ger-12` para invalidar cachés previas.
+- Los recursos se versionaron finalmente como `project-adaptations.js?v=somos-ger-34` y `project-interface.css?v=somos-ger-16` para invalidar cachés previas.
 - El aplicador se corrigió para eliminar separaciones residuales y se comprobó idempotente: dos ejecuciones consecutivas producen el mismo SHA-256 de `index.html`.
 
 ### 6. Unificación visual de todos los menús (incremento actual)
 
 - Se compararon en navegador los estilos calculados de 1930 y Somos. La interfaz adopta los tokens Ceibal verificados del libro de referencia: superficie carbón `#242424`, superficie profunda `#1b1b1b`, activo institucional `#008078`, borde activo `#66c6c0` y texto claro accesible.
-- Barra principal, reproductor, Herramientas, Índice, Glosario y Configuración comparten ahora radios, bordes, sombras, foco, estados activos y estados deshabilitados. Los paneles laterales miden 18 rem y se anclan al borde correspondiente; el reproductor conserva el ancho máximo de 44 rem y no se superpone con ellos.
+- Barra principal, reproductor, Herramientas, Índice y Glosario comparten ahora radios, bordes, sombras, foco, estados activos y estados deshabilitados. Los paneles laterales miden 18 rem y se anclan al borde correspondiente; el reproductor conserva el ancho máximo de 44 rem y no se superpone con ellos.
 - Los paneles del runtime se clasifican al aparecer y reciben un encabezado consistente con título y cierre de 44 px. Se conserva el runtime como fuente de estado; no se reemplazaron sus controles internos ni se copiaron selectores específicos de contenido de 1930.
 - En móvil se mantiene la presentación documentada: Índice y Herramientas conservan rótulo cuando hay espacio, el reproductor usa cinco controles de 44 px y Herramientas reduce su altura para no cubrir el reproductor.
 - Se mantuvieron las excepciones comprobadas de Somos: una única voz informativa y el volumen dentro de Herramientas. Ambos se tematizaron sin inventar datos o funciones del otro libro.
+
+### 7. Arquitectura funcional de Herramientas (incremento actual)
+
+- Se eliminó el segundo panel incompleto que mostraba `Consulta`, Glosario al comienzo y un acceso indirecto a `Configuración de lectura`. Herramientas es ahora el panel real del runtime reorganizado según el playbook.
+- El orden visible es: `Apoyos para la lectura`, `Audio y voz`, `Preferencias`, `Atajos de teclado` y `Herramientas`. Glosario queda al final, no dentro de Consulta.
+- Se conservaron únicamente funciones verificadas en `assets/config.json` y en el runtime de este libro: lectura en voz alta, reproducción automática, descripción de imágenes, resaltado, voz disponible, velocidad, volumen, ocultamiento automático de menús y Glosario.
+- Reproducción automática, descripción de imágenes y resaltado permanecen visibles aunque la voz esté desactivada. Los controles sustitutos conservan la selección pendiente y la transfieren a los controles nativos cuando se activa la lectura; no reemplazan el estado real cuando el runtime ya lo expone.
+- Los atajos visibles y operativos son `X` para Índice, `A` para Herramientas, `G` para Glosario y `Esc` para cerrar. `G` se ignora en campos, formularios, contenido editable e interacciones marcadas como actividad, y no cierra el Glosario si se pulsa nuevamente.
+- Glosario sustituye temporalmente a Herramientas. Su cabecera ofrece `Volver a Herramientas` y `Cerrar`; el regreso se verificó tanto en el popover de escritorio como en el sheet móvil del runtime.
+- Se adaptaron explícitamente las dos estructuras que genera el runtime: `data-slot="popover-content"` en escritorio y `data-slot="sheet-content"` en móvil. La cabecera nativa duplicada queda oculta visual y semánticamente en ambas.
+- No se añadieron tamaño de letra ni reducción de movimiento: el proyecto es de diseño fijo y su configuración declara esas preferencias bloqueadas. Tampoco se fabricó Lectura fácil (`easyRead: false`) ni una segunda voz.
 
 ## Decisiones que no se copiaron del libro 1930
 
@@ -97,6 +108,10 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - Texto a voz activado y desactivado desde Herramientas, y detenido al finalizar la prueba.
 - Barra canónica comprobada en las 34 entradas: orden correcto, un único ejemplar, contador normalizado, dock base oculto y sin desborde horizontal.
 - Índice, Glosario y Configuración verificados tanto en escritorio como en la variante móvil compacta del runtime.
+- Herramientas verificado con las cinco secciones documentadas, Glosario al final y los atajos visibles `X`, `A`, `G`, `Esc`.
+- Atajo `G` y botón Glosario verificados; `Volver a Herramientas` elimina el Glosario antes de reconstruir Herramientas. El atajo `X` desde Herramientas deja un único Índice abierto.
+- Preferencias condicionadas verificadas con lectura en voz alta activa e inactiva; permanecen visibles y transfieren su selección al control nativo al reactivar la voz.
+- Recorrido HTTP automatizado de los 34 HTML con `data-project-adaptations="somos-ger-34"`, barra disponible y cero desborde horizontal. Tres páginas de carga más lenta se revalidaron a 1,8 s y pasaron.
 - Texto a voz verificado desde estado limpio: aparece preparado en `Reproducir`, enfoca ese control y Herramientas cambia a `Desactivar lectura en voz alta`.
 - Reproductor verificado con cinco controles en el orden documentado: reproducir/pausar, anterior/siguiente conservando la pausa, apertura de Voz y velocidad con retorno del foco, y Detener eliminando la sesión.
 - Recarga y navegación con una sesión activa verificadas: el reproductor se restaura pausado y no reproduce automáticamente en el nuevo documento.
@@ -135,6 +150,7 @@ El flujo SCORM se validó con un simulador local de la API SCORM 1.2. La políti
 - El paquete contiene 428 MP3 y sigue siendo pesado. No se recomprimieron audios para evitar pérdida de calidad o desincronización de texto a voz.
 - El simulador cubre el contrato SCORM, pero no sustituye una importación final en el LMS de destino. Antes de producción se recomienda importar el ZIP en ese LMS y verificar persistencia, reanudación y reporte de puntuación.
 - Los archivos `base.bundle.local.js` y `base.bundle.min.js` se conservaron sin cambios. Una actualización futura del runtime debe volver a ejecutar las herramientas y la batería del navegador.
+- Los sustitutos de preferencias dependientes de voz mantienen cambios pendientes durante el documento actual. El runtime sigue siendo la fuente definitiva al activar la voz; una actualización de su montaje condicional debe revalidar esta transferencia.
 
 ## Comandos de mantenimiento
 

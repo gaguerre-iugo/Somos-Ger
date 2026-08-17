@@ -8,17 +8,21 @@ const pages = fs
   .sort();
 
 const marker =
-  '    <script src="./assets/project-adaptations.js?v=somos-ger-1"></script>';
+  '    <script src="./assets/project-adaptations.js?v=somos-ger-4"></script>';
+const existingMarker =
+  /^[\t ]*<script src="\.\/assets\/project-adaptations\.js(?:\?[^\"]*)?"><\/script>[\t ]*$/m;
 
 for (const name of pages) {
   const file = path.join(root, name);
   let html = fs.readFileSync(file, "utf8");
-  if (html.includes(marker)) continue;
+  if (existingMarker.test(html)) {
+    html = html.replace(existingMarker, "");
+  }
   const anchor = '    <script src="./assets/base.bundle.local.js"></script>';
   if (!html.includes(anchor)) {
     throw new Error(`No se encontró el runtime en ${name}`);
   }
-  html = html.replace(anchor, `${anchor}\r\n${marker}`);
+  html = html.replace(anchor, `${marker}\r\n${anchor}`);
   fs.writeFileSync(file, html);
 }
 

@@ -1,11 +1,11 @@
 (function () {
   "use strict";
 
-  async function loadJson(url) {
-    var response = await fetch(url);
-    if (!response.ok) throw new Error("No se pudo cargar " + url);
-    return response.json();
-  }
+  /* Verified against assets/config.json and the es-UY interface dictionary. */
+  var singleLanguage = {
+    languageLabel: "Idioma",
+    shortcutLabel: "Abrir idioma",
+  };
 
   function hideSingleLanguageControls(labels) {
     var languageLabel = labels.languageLabel;
@@ -18,6 +18,7 @@
       ) {
         button.hidden = true;
         button.setAttribute("aria-hidden", "true");
+        button.style.setProperty("display", "none", "important");
       }
     });
 
@@ -27,40 +28,25 @@
         if (row) {
           row.hidden = true;
           row.setAttribute("aria-hidden", "true");
+          row.style.setProperty("display", "none", "important");
         }
       }
     });
   }
 
-  async function adaptSingleLanguageInterface() {
-    var config = await loadJson("./assets/config.json");
-    var languages = config.languages && config.languages.available;
-    if (!Array.isArray(languages) || languages.length !== 1) return;
-
-    var locale = languages[0];
-    var translations = await loadJson(
-      "./assets/interface_translations/" +
-        encodeURIComponent(locale) +
-        "/interface_translations.json"
-    );
-    var labels = {
-      languageLabel: translations["language-label"] || "Idioma",
-      shortcutLabel: translations["shortcut-language-label"] || "Abrir idioma",
-    };
-    var container = document.getElementById("interface-container");
-    if (!container) return;
-
+  function adaptSingleLanguageInterface() {
     var apply = function () {
-      hideSingleLanguageControls(labels);
+      hideSingleLanguageControls(singleLanguage);
     };
-    new MutationObserver(apply).observe(container, {
+    document.documentElement.setAttribute("data-project-adaptations", "somos-ger-4");
+    new MutationObserver(apply).observe(document.documentElement, {
       childList: true,
       subtree: true,
     });
     apply();
+    window.setTimeout(apply, 500);
+    window.setTimeout(apply, 1500);
   }
 
-  adaptSingleLanguageInterface().catch(function (error) {
-    console.warn("No se pudieron aplicar las adaptaciones del proyecto.", error);
-  });
+  adaptSingleLanguageInterface();
 })();

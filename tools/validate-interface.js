@@ -3,8 +3,8 @@ const path = require("path");
 
 const root = path.resolve(__dirname, "..");
 const pages = fs.readdirSync(root).filter((name) => name.endsWith(".html")).sort();
-const scriptMarker = './assets/project-adaptations.js?v=somos-ger-25';
-const styleMarker = './assets/project-interface.css?v=somos-ger-11';
+const scriptMarker = './assets/project-adaptations.js?v=somos-ger-26';
+const styleMarker = './assets/project-interface.css?v=somos-ger-12';
 const expectedIds = [
   "somos-index",
   "somos-previous",
@@ -25,8 +25,17 @@ const pageFailures = pages.flatMap((name) => {
 });
 
 const adapter = fs.readFileSync(path.join(root, "assets", "project-adaptations.js"), "utf8");
+const interfaceCss = fs.readFileSync(path.join(root, "assets", "project-interface.css"), "utf8");
 const missingIds = expectedIds.filter((id) => !adapter.includes(`"${id}"`));
 const globalObserver = /observe\(document\.(?:documentElement|body)/.test(adapter);
+const expectedThemeTokens = [
+  "--somos-panel-bg: #242424",
+  "--somos-institutional-300: #66c6c0",
+  "--somos-institutional-500: #008078",
+  ".somos-native-menu-panel",
+  ".somos-tts-player",
+];
+const missingThemeTokens = expectedThemeTokens.filter((token) => !interfaceCss.includes(token));
 
 const result = {
   pages: pages.length,
@@ -34,11 +43,12 @@ const result = {
   toolbarOrder: ["Índice", "Anterior", "actual / total", "Siguiente", "Herramientas"],
   audioOrder: ["Audio anterior", "Reproducir/Pausar", "Audio siguiente", "Voz y velocidad", "Detener"],
   missingIds,
+  missingThemeTokens,
   globalObserver,
 };
 
 console.log(JSON.stringify(result, null, 2));
 
-if (pages.length !== 34 || pageFailures.length || missingIds.length || globalObserver) {
+if (pages.length !== 34 || pageFailures.length || missingIds.length || missingThemeTokens.length || globalObserver) {
   process.exitCode = 1;
 }

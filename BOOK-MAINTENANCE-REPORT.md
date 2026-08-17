@@ -64,10 +64,18 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - La activación prepara la sesión en pausa y enfoca `Reproducir`; solo un gesto explícito inicia el audio. Anterior y siguiente conservan el estado de pausa, `Voz y velocidad` abre Herramientas sin terminar la sesión y `Detener` elimina el reproductor y devuelve el foco al libro. Una navegación o recarga con la sesión activa restaura el reproductor en pausa.
 - Este proyecto declara una sola narración en `content/i18n/es-UY/audios.json`; por eso Herramientas informa `Predeterminada · única voz disponible` y no fabrica el selector de dos voces del libro 1930. Las cuatro velocidades documentadas sí se exponen con sus nombres y multiplicadores exactos. El volumen propio del export se mantiene dentro de Herramientas como excepción comprobada.
 - Se reservan 96 px estables para el reproductor. En las actividades, el desplazamiento se limita al contenido para que ni la barra ni el reproductor tapen preguntas o devoluciones. En móvil los rótulos visuales se ocultan, pero los cinco botones conservan nombre accesible completo y un objetivo mínimo de 44 px.
-- El panel Herramientas se desplaza cuando el reproductor está activo para evitar solapamientos. En móvil usa iconos con nombre accesible; en escritorio muestra icono y texto. Todos los objetivos interactivos verificados alcanzan al menos 44 × 44 px.
+- Herramientas y reproductor quedan adyacentes en escritorio; en móvil el panel reduce su altura para evitar solapamientos. El reproductor usa iconos con nombre accesible en móvil e icono y texto en escritorio. Todos los objetivos interactivos verificados alcanzan al menos 44 × 44 px.
 - La observación de cambios se limita a `#nav-container` y al contenedor de interfaz para el único atajo de idioma; no se instaló un observador global del documento.
-- Los recursos se versionaron como `project-adaptations.js?v=somos-ger-25` y `project-interface.css?v=somos-ger-11` para invalidar cachés previas.
+- Los recursos se versionaron como `project-adaptations.js?v=somos-ger-26` y `project-interface.css?v=somos-ger-12` para invalidar cachés previas.
 - El aplicador se corrigió para eliminar separaciones residuales y se comprobó idempotente: dos ejecuciones consecutivas producen el mismo SHA-256 de `index.html`.
+
+### 6. Unificación visual de todos los menús (incremento actual)
+
+- Se compararon en navegador los estilos calculados de 1930 y Somos. La interfaz adopta los tokens Ceibal verificados del libro de referencia: superficie carbón `#242424`, superficie profunda `#1b1b1b`, activo institucional `#008078`, borde activo `#66c6c0` y texto claro accesible.
+- Barra principal, reproductor, Herramientas, Índice, Glosario y Configuración comparten ahora radios, bordes, sombras, foco, estados activos y estados deshabilitados. Los paneles laterales miden 18 rem y se anclan al borde correspondiente; el reproductor conserva el ancho máximo de 44 rem y no se superpone con ellos.
+- Los paneles del runtime se clasifican al aparecer y reciben un encabezado consistente con título y cierre de 44 px. Se conserva el runtime como fuente de estado; no se reemplazaron sus controles internos ni se copiaron selectores específicos de contenido de 1930.
+- En móvil se mantiene la presentación documentada: Índice y Herramientas conservan rótulo cuando hay espacio, el reproductor usa cinco controles de 44 px y Herramientas reduce su altura para no cubrir el reproductor.
+- Se mantuvieron las excepciones comprobadas de Somos: una única voz informativa y el volumen dentro de Herramientas. Ambos se tematizaron sin inventar datos o funciones del otro libro.
 
 ## Decisiones que no se copiaron del libro 1930
 
@@ -92,7 +100,9 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - Texto a voz verificado desde estado limpio: aparece preparado en `Reproducir`, enfoca ese control y Herramientas cambia a `Desactivar lectura en voz alta`.
 - Reproductor verificado con cinco controles en el orden documentado: reproducir/pausar, anterior/siguiente conservando la pausa, apertura de Voz y velocidad con retorno del foco, y Detener eliminando la sesión.
 - Recarga y navegación con una sesión activa verificadas: el reproductor se restaura pausado y no reproduce automáticamente en el nuevo documento.
-- Variante móvil a 390 × 844 px: cinco botones de 68,8 × 48 px, sin desborde ni solapamiento con contenido, Herramientas o barra permanente.
+- Comparación visual y de estilos calculados contra 1930: panel Herramientas de 288 × 640 px, barra de 992 × 64 px y reproductor de 704 px, con las mismas superficies oscuras y estados turquesa.
+- Índice, Glosario y Configuración verificados con el mismo tema, anclaje lateral, encabezado de cierre y retorno de foco; solo la entrada actual del Índice usa la superficie activa.
+- Revalidación móvil a 390 × 844 px tras el tema unificado: sin desborde horizontal, sin solapamiento entre panel, reproductor y barra, y objetivos de audio de 72 × 44 px.
 - Actividad `qz001` con reproductor activo: contenido desplazable dentro de su región, devolución visible y cero desplazamiento de la ventana.
 - Navegación por teclado: flechas entre controles de la barra, ciclo de Tab dentro de Herramientas y Escape con retorno del foco al disparador.
 - Prueba de estabilidad de 30 segundos después de ciclos repetidos de paneles y voz: el reproductor permanece eliminado después de Detener y no reaparecen capas residuales.

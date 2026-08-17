@@ -177,6 +177,58 @@
   function toolsButton() { return document.getElementById("somos-tools"); }
   function audioPlayer() { return document.getElementById("somos-tts-player"); }
 
+  function nativeMenuKind(panel) {
+    if (!panel || panel.classList.contains("somos-native-audio-bridge")) return null;
+    var text = panel.textContent.replace(/\s+/g, " ").trim();
+    if (panel.querySelector('[role="tablist"]') && text.indexOf("Lista de páginas") !== -1) return "index";
+    if (panel.querySelector('input[placeholder="Buscar"], input[type="search"]') && text.indexOf("Glosario") !== -1) return "glossary";
+    if (panel.querySelector('[role="switch"]') || text.indexOf("Configuración") !== -1) return "settings";
+    return null;
+  }
+
+  function closeNativeMenu(panel, kind) {
+    var bridgeLabel = kind === "index" ? labels.index : kind === "glossary" ? labels.glossary : labels.settings;
+    var bridge = exactBridge(bridgeLabel);
+    if (bridge) bridge.click();
+    else {
+      var pressed = Array.prototype.find.call(document.querySelectorAll('button[aria-pressed="true"]'), function (button) {
+        return !button.id.startsWith("somos-") && button.closest("#somos-primary-toolbar") === null;
+      });
+      if (pressed) pressed.click();
+      else document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    }
+    scheduleUpdate();
+    window.requestAnimationFrame(function () {
+      var target = document.getElementById(kind === "index" ? "somos-index" : "somos-tools");
+      if (target) target.focus({ preventScroll: true });
+    });
+  }
+
+  function enhanceNativeMenus() {
+    document.querySelectorAll('#interface-container [role="dialog"][data-slot="popover-content"]').forEach(function (panel) {
+      var kind = nativeMenuKind(panel);
+      if (!kind) return;
+      panel.classList.add("somos-native-menu-panel", "somos-native-" + kind + "-panel");
+      if (panel.parentElement) panel.parentElement.classList.add("somos-native-menu-anchor");
+      var titles = {
+        index: "Índice",
+        glossary: "Glosario",
+        settings: "Configuración de lectura",
+      };
+      var inner = panel.firstElementChild;
+      if (!inner || inner.querySelector(":scope > .somos-panel-control-header")) return;
+      var nativeTitle = inner.querySelector("h2, h3, h4");
+      if (nativeTitle) nativeTitle.classList.add("somos-native-title-hidden");
+      var header = document.createElement("div");
+      var titleId = "somos-native-" + kind + "-title";
+      header.className = "somos-panel-control-header";
+      header.innerHTML = '<h2 id="' + titleId + '" class="somos-panel-control-title">' + titles[kind] + '</h2><button type="button" class="somos-panel-close" aria-label="Cerrar ' + titles[kind] + '">' + icons.close + "</button>";
+      inner.insertBefore(header, inner.firstChild);
+      panel.setAttribute("aria-labelledby", titleId);
+      header.querySelector("button").addEventListener("click", function () { closeNativeMenu(panel, kind); });
+    });
+  }
+
   function closeTools(restoreFocus) {
     var panel = toolsPanel();
     var trigger = toolsButton();
@@ -547,6 +599,7 @@
     updateScheduled = false;
     buildInterface();
     concealBaseDock();
+    enhanceNativeMenus();
 
     var previous = exactBridge(labels.previous);
     var next = exactBridge(labels.next);
@@ -667,7 +720,7 @@
     });
   }
 
-  document.documentElement.setAttribute("data-project-adaptations", "somos-ger-25");
+  document.documentElement.setAttribute("data-project-adaptations", "somos-ger-26");
   var root = navContainer();
   if (root) {
     new MutationObserver(scheduleUpdate).observe(root, {

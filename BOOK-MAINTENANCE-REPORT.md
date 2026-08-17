@@ -60,10 +60,13 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - El dock del runtime se conserva como puente de estado y acciones, pero queda fuera de la presentación y del orden de foco. Los selectores se verificaron en este export: grupo directo de `#nav-container`, botones `data-dock-trigger` y rótulos reales de la interfaz en español.
 - `Índice` reutiliza el panel nativo con búsqueda, pestañas y jerarquía. `Herramientas` agrupa Glosario, lectura en voz alta y Configuración de lectura en un diálogo propio con cierre, Escape, trampa de foco y retorno del foco.
 - Se adaptó la excepción responsive de este libro: en móvil el runtime sustituye Glosario, Texto a voz, Idioma y Configuración por `Menú de accesibilidad`. El adaptador abre ese puente y ejecuta la acción compacta correspondiente sin exponer el dock duplicado.
-- La lectura en voz alta se prepara en pausa: al activarla aparece `Reproducir`, no `Pausa`. Se conservaron los controles reales del proyecto —anterior, reproducir/pausar, siguiente, detener, velocidad y volumen— y no se asumió el selector de voces del libro 1930.
+- La lectura en voz alta usa un reproductor persistente separado con exactamente cinco controles y este orden: `Audio anterior`, `Reproducir/Pausar`, `Audio siguiente`, `Voz y velocidad` y `Detener`. El reproductor nativo de seis controles se conserva oculto únicamente como puente con el runtime.
+- La activación prepara la sesión en pausa y enfoca `Reproducir`; solo un gesto explícito inicia el audio. Anterior y siguiente conservan el estado de pausa, `Voz y velocidad` abre Herramientas sin terminar la sesión y `Detener` elimina el reproductor y devuelve el foco al libro. Una navegación o recarga con la sesión activa restaura el reproductor en pausa.
+- Este proyecto declara una sola narración en `content/i18n/es-UY/audios.json`; por eso Herramientas informa `Predeterminada · única voz disponible` y no fabrica el selector de dos voces del libro 1930. Las cuatro velocidades documentadas sí se exponen con sus nombres y multiplicadores exactos. El volumen propio del export se mantiene dentro de Herramientas como excepción comprobada.
+- Se reservan 96 px estables para el reproductor. En las actividades, el desplazamiento se limita al contenido para que ni la barra ni el reproductor tapen preguntas o devoluciones. En móvil los rótulos visuales se ocultan, pero los cinco botones conservan nombre accesible completo y un objetivo mínimo de 44 px.
 - El panel Herramientas se desplaza cuando el reproductor está activo para evitar solapamientos. En móvil usa iconos con nombre accesible; en escritorio muestra icono y texto. Todos los objetivos interactivos verificados alcanzan al menos 44 × 44 px.
 - La observación de cambios se limita a `#nav-container` y al contenedor de interfaz para el único atajo de idioma; no se instaló un observador global del documento.
-- Los recursos se versionaron como `project-adaptations.js?v=somos-ger-16` y `project-interface.css?v=somos-ger-7` para invalidar cachés previas.
+- Los recursos se versionaron como `project-adaptations.js?v=somos-ger-25` y `project-interface.css?v=somos-ger-11` para invalidar cachés previas.
 - El aplicador se corrigió para eliminar separaciones residuales y se comprobó idempotente: dos ejecuciones consecutivas producen el mismo SHA-256 de `index.html`.
 
 ## Decisiones que no se copiaron del libro 1930
@@ -86,9 +89,13 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - Texto a voz activado y desactivado desde Herramientas, y detenido al finalizar la prueba.
 - Barra canónica comprobada en las 34 entradas: orden correcto, un único ejemplar, contador normalizado, dock base oculto y sin desborde horizontal.
 - Índice, Glosario y Configuración verificados tanto en escritorio como en la variante móvil compacta del runtime.
-- Texto a voz verificado desde estado limpio: aparece preparado en `Reproducir`, Herramientas cambia a `Desactivar lectura en voz alta`, no quedan diálogos residuales y el reproductor no se solapa con el panel.
+- Texto a voz verificado desde estado limpio: aparece preparado en `Reproducir`, enfoca ese control y Herramientas cambia a `Desactivar lectura en voz alta`.
+- Reproductor verificado con cinco controles en el orden documentado: reproducir/pausar, anterior/siguiente conservando la pausa, apertura de Voz y velocidad con retorno del foco, y Detener eliminando la sesión.
+- Recarga y navegación con una sesión activa verificadas: el reproductor se restaura pausado y no reproduce automáticamente en el nuevo documento.
+- Variante móvil a 390 × 844 px: cinco botones de 68,8 × 48 px, sin desborde ni solapamiento con contenido, Herramientas o barra permanente.
+- Actividad `qz001` con reproductor activo: contenido desplazable dentro de su región, devolución visible y cero desplazamiento de la ventana.
 - Navegación por teclado: flechas entre controles de la barra, ciclo de Tab dentro de Herramientas y Escape con retorno del foco al disparador.
-- Prueba de estabilidad de 30 segundos después de ciclos repetidos de paneles y voz: una barra, un panel de Herramientas y cero errores nuevos de consola.
+- Prueba de estabilidad de 30 segundos después de ciclos repetidos de paneles y voz: el reproductor permanece eliminado después de Detener y no reaparecen capas residuales.
 - Actividad `qz001`: selección de “Todas las personas” y devolución correcta en región viva.
 - Inspección visual específica de las páginas 8, 9 y 23 tras el cambio tipográfico.
 - Respuestas HTTP 200 y MIME correctos para HTML, CSS, JavaScript, XML, imágenes y fuentes.

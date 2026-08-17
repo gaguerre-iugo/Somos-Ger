@@ -103,6 +103,8 @@
     "read-aloud-volume-label": "Volumen",
     "play-audio-label": "Reproducir",
     "pause-audio-label": "Pausa",
+    "previous-audio": "Audio anterior",
+    "next-audio": "Audio siguiente",
     "stop-audio-label": "Detener",
     "mute-label": "Silenciar",
     "unmute-label": "Activar sonido",

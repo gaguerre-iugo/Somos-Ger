@@ -4,6 +4,7 @@
   --somos-toolbar-fg: #ffffff;
   --somos-toolbar-muted: #d7d7d7;
   --somos-toolbar-focus: #ffcc66;
+  --somos-audio-reserve: 96px;
 }
 
 #nav-container > [role="group"][aria-label="dock-label"],
@@ -11,6 +12,44 @@
   visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
+}
+
+#interface-container [role="dialog"]:has(> [role="group"][aria-label="Controles de lectura en voz alta"]),
+#interface-container .somos-native-audio-bridge {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+#interface-container [role="presentation"]:has(.somos-native-audio-bridge) {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+#interface-container [role="menu"][aria-label^="Velocidad de reproducción:"],
+#interface-container [role="dialog"]:has(input[type="range"][min="0"][max="1"]) {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+body:has(#simple-main) {
+  box-sizing: border-box;
+  min-height: 100vh !important;
+  padding-bottom: calc(var(--somos-toolbar-height) + var(--somos-audio-reserve));
+  overflow: hidden;
+}
+
+body:has(#simple-main) #content {
+  height: calc(100vh - var(--somos-toolbar-height) - var(--somos-audio-reserve));
+  min-height: 0 !important;
+  max-height: calc(100vh - var(--somos-toolbar-height) - var(--somos-audio-reserve));
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .somos-primary-toolbar {
@@ -33,8 +72,10 @@
 }
 
 .somos-toolbar-button,
+.somos-audio-button,
 .somos-icon-button,
-.somos-tool-option {
+.somos-tool-option,
+.somos-speed-options button {
   font: inherit;
   color: inherit;
   border: 1px solid transparent;
@@ -67,13 +108,17 @@
 }
 
 .somos-toolbar-button:focus-visible,
+.somos-audio-button:focus-visible,
 .somos-icon-button:focus-visible,
-.somos-tool-option:focus-visible {
+.somos-tool-option:focus-visible,
+.somos-speed-options button:focus-visible,
+.somos-volume-range:focus-visible {
   outline: 3px solid var(--somos-toolbar-focus);
   outline-offset: 2px;
 }
 
 .somos-toolbar-button svg,
+.somos-audio-button svg,
 .somos-icon-button svg,
 .somos-tool-option svg {
   width: 24px;
@@ -117,7 +162,8 @@
 .somos-tools-panel[hidden] { display: none !important; }
 
 html[data-somos-tts-active="true"] .somos-tools-panel {
-  bottom: calc(var(--somos-toolbar-height) + 96px + env(safe-area-inset-bottom));
+  bottom: calc(var(--somos-toolbar-height) + var(--somos-audio-reserve) + 12px + env(safe-area-inset-bottom));
+  max-height: calc(100vh - var(--somos-toolbar-height) - var(--somos-audio-reserve) - 36px);
 }
 
 .somos-tools-panel header {
@@ -175,6 +221,150 @@ html[data-somos-tts-active="true"] .somos-tools-panel {
   border-color: #b6b6b6;
 }
 
+.somos-audio-description {
+  margin: 6px 2px 12px;
+  color: #555555;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.somos-audio-voice {
+  min-height: 48px;
+  padding: 9px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  color: #202020;
+  background: #f5f5f5;
+  border: 1px solid #d9d9d9;
+  border-radius: 10px;
+}
+
+.somos-audio-voice span {
+  color: #555555;
+  font-size: 14px;
+}
+
+.somos-speed-fieldset {
+  min-width: 0;
+  margin: 14px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.somos-speed-fieldset legend,
+.somos-volume-control {
+  width: 100%;
+  margin: 0 0 7px;
+  display: flex;
+  justify-content: space-between;
+  color: #4f4f4f;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.somos-speed-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.somos-speed-options button {
+  min-height: 48px;
+  padding: 7px 9px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  color: #202020;
+  background: #f5f5f5;
+  border-color: #d9d9d9;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.somos-speed-options button[aria-checked="true"] {
+  color: #ffffff;
+  background: #343434;
+  border-color: #343434;
+}
+
+.somos-speed-options small {
+  color: inherit;
+  font-size: 13px;
+}
+
+.somos-volume-control { margin-top: 14px; }
+
+.somos-volume-range {
+  width: 100%;
+  min-height: 44px;
+  margin: -7px 0 0;
+  accent-color: #343434;
+  cursor: pointer;
+}
+
+.somos-tts-player {
+  position: fixed;
+  z-index: 76;
+  right: 50%;
+  bottom: calc(var(--somos-toolbar-height) + 10px + env(safe-area-inset-bottom));
+  width: min(760px, calc(100vw - 24px));
+  min-height: 64px;
+  padding: 8px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(60px, 1fr));
+  align-items: stretch;
+  gap: 6px;
+  color: #202020;
+  background: #ffffff;
+  border: 1px solid #bdbdbd;
+  border-radius: 15px;
+  box-shadow: 0 12px 34px rgb(0 0 0 / 24%);
+  transform: translateX(50%);
+}
+
+.somos-tts-player[hidden] { display: none !important; }
+
+.somos-audio-button {
+  min-width: 44px;
+  min-height: 48px;
+  padding: 6px 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: #202020;
+  background: #f5f5f5;
+  border-color: transparent;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.somos-audio-button:hover,
+.somos-audio-button[aria-expanded="true"],
+.somos-audio-button[aria-pressed="true"] {
+  background: #e6e6e6;
+  border-color: #b6b6b6;
+}
+
+.somos-audio-button:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.somos-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 @media (max-width: 640px) {
   .somos-primary-toolbar {
     grid-template-columns: repeat(5, minmax(48px, 1fr));
@@ -208,6 +398,29 @@ html[data-somos-tts-active="true"] .somos-tools-panel {
   }
 
   html[data-somos-tts-active="true"] .somos-tools-panel {
-    bottom: calc(var(--somos-toolbar-height) + 104px + env(safe-area-inset-bottom));
+    bottom: calc(var(--somos-toolbar-height) + var(--somos-audio-reserve) + 12px + env(safe-area-inset-bottom));
+  }
+
+  .somos-tts-player {
+    right: 8px;
+    left: 8px;
+    width: auto;
+    grid-template-columns: repeat(5, minmax(48px, 1fr));
+    gap: 3px;
+    transform: none;
+  }
+
+  .somos-audio-button {
+    padding-right: 4px;
+    padding-left: 4px;
+  }
+
+  .somos-audio-button span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
 }

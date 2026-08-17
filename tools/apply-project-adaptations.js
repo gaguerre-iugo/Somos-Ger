@@ -8,11 +8,11 @@ const pages = fs
   .sort();
 
 const marker =
-  '    <script src="./assets/project-adaptations.js?v=somos-ger-16"></script>';
+  '    <script src="./assets/project-adaptations.js?v=somos-ger-25"></script>';
 const existingMarker =
   /^[\t ]*<script src="\.\/assets\/project-adaptations\.js(?:\?[^\"]*)?"><\/script>[\t ]*(?:\r?\n)?/m;
 const styleMarker =
-  '    <link href="./assets/project-interface.css?v=somos-ger-7" rel="stylesheet">';
+  '    <link href="./assets/project-interface.css?v=somos-ger-11" rel="stylesheet">';
 const existingStyleMarker =
   /^[\t ]*<link href="\.\/assets\/project-interface\.css(?:\?[^\"]*)?" rel="stylesheet">[\t ]*(?:\r?\n)?/m;
 
@@ -40,6 +40,23 @@ for (const name of pages) {
   const runtimeIndex = html.indexOf(anchor);
   const beforeRuntime = html.slice(0, runtimeIndex).replace(/[\t ]*(?:\r?\n[\t ]*)+$/, "");
   html = `${beforeRuntime}\r\n${marker}\r\n${html.slice(runtimeIndex)}`;
+  const dockFunction = /        function dock\(\) \{\r?\n(?:          .*\r?\n)+?        \}/;
+  if (!dockFunction.test(html) && !html.includes('id="simple-main"')) {
+    throw new Error(`No se encontró el cálculo de reserva inferior en ${name}`);
+  }
+  if (dockFunction.test(html)) {
+    html = html.replace(
+      dockFunction,
+      [
+        "        function dock() {",
+        '          var v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--dock-height"));',
+        '          var audio = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--somos-audio-reserve"));',
+        "          var base = v > 0 ? v : FALLBACK;",
+        "          return base + (audio > 0 ? audio : 96);",
+        "        }",
+      ].join("\r\n"),
+    );
+  }
   fs.writeFileSync(file, html);
 }
 

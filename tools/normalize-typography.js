@@ -30,6 +30,14 @@ for (const file of htmlFiles) {
   );
   if (path.dirname(file) === root) {
     updated = updated.replace(
+      /^[\t ]*<link rel="preload" href="\.\/assets\/fonts\/AtkinsonHyperlegible-(?:400|700)-latin\.woff2(?:\?[^\"]*)?" as="font" type="font\/woff2" crossorigin>[\t ]*\r?\n/gm,
+      "",
+    );
+    updated = updated.replace(
+      /(\r?\n)(?:[\t ]*\r?\n)+(?=[\t ]*<link href="\.\/assets\/fonts\.css)/,
+      "$1",
+    );
+    updated = updated.replace(
       /<link href="\.\/assets\/fonts\.css(?:\?[^\"]*)?" rel="stylesheet">/,
       [
         '<link rel="preload" href="./assets/fonts/AtkinsonHyperlegible-400-latin.woff2?v=somos-ger-1" as="font" type="font/woff2" crossorigin>',

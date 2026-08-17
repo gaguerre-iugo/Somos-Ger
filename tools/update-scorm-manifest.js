@@ -4,7 +4,11 @@ const path = require("path");
 const root = path.resolve(__dirname, "..");
 const manifestPath = path.join(root, "imsmanifest.xml");
 const excludedRoots = new Set([".git", "tools"]);
-const excludedFiles = new Set(["AGENTS.md", "imsmanifest.xml"]);
+const excludedFiles = new Set([
+  "AGENTS.md",
+  "BOOK-MAINTENANCE-REPORT.md",
+  "imsmanifest.xml",
+]);
 
 function collect(directory, prefix = "") {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {

@@ -13,7 +13,7 @@ function collectRuntimeFiles(directory, prefix = "") {
     const relative = prefix ? `${prefix}/${entry.name}` : entry.name;
     const target = path.join(directory, entry.name);
     if (entry.isDirectory()) return collectRuntimeFiles(target, relative);
-    if (["AGENTS.md", "imsmanifest.xml"].includes(relative)) return [];
+    if (["AGENTS.md", "BOOK-MAINTENANCE-REPORT.md", "imsmanifest.xml"].includes(relative)) return [];
     return [relative.replaceAll("\\", "/")];
   });
 }

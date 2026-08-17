@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es-UY">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=595, height=1191" />
+    <title>Somos ciudadanos digitales</title>
+    <meta name="title-id" content="pg032033_sec001" />
+    <meta name="page-section-id" content="33" />
+    <link href="./content/tailwind_output.css" rel="stylesheet">
+    <link href="./assets/libs/fontawesome/css/all.min.css" rel="stylesheet">
+    <link href="./assets/fonts.css" rel="stylesheet">
+    <style>
+      html { width: 100%; height: 100%; }
+      #content { visibility: hidden; }
+    </style>
+    <noscript><style>#content { visibility: visible !important; }</style></noscript>
+</head>
+
+<body style="margin:0;overflow:hidden;width:100%;height:100%">
+    <main>
+      <div id="content">
+        <section data-section-type="fixed-layout-page" aria-label="Ahora es tu turno: derechos y deberes en el entorno digital">
+  <div id="content" data-fl-reference-width="1191" style="position:relative;width:595px;height:1191px;margin:0 auto;overflow:hidden;background:#fff;">
+    <img data-id="pg032033_page" src="images/pg032033_page.png" alt="Ilustraci?n sobre derechos y deberes en el entorno digital" style="position:absolute;left:0;top:0;width:1191px;height:595px;max-width:none;transform-origin:0 0;transform:translateX(595px) rotate(90deg);">
+    <div aria-hidden="true" style="position:absolute;left:165.6px;top:329.4px;width:261.6px;height:268.3px;overflow:hidden;"><img src="images/pg032033_im001.jpg" alt="" style="position:absolute;left:0;top:0;width:268.3px;height:261.6px;max-width:none;clip-path:inset(1px);transform-origin:0 0;transform:translateX(261.6px) rotate(90deg);"></div>
+    <div aria-hidden="true" style="position:absolute;left:165.6px;top:593px;width:261.7px;height:292px;overflow:hidden;"><img src="images/pg032033_im002.jpg" alt="" style="position:absolute;left:0;top:0;width:292px;height:261.7px;max-width:none;clip-path:inset(1px);transform-origin:0 0;transform:translateX(261.7px) rotate(90deg);"></div>
+    <div aria-hidden="true" style="position:absolute;z-index:2;left:0;top:50px;width:595px;height:52px;background:#fff;"></div>
+    <div aria-hidden="true" style="position:absolute;z-index:3;left:35px;top:17px;width:525px;height:42px;background:#d37070;clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 12px,100% calc(100% - 12px),calc(100% - 12px) 100%,12px 100%,0 calc(100% - 12px),0 12px);"></div>
+    <div aria-hidden="true" style="position:absolute;z-index:2;left:55px;top:96px;width:485px;height:125px;background:#fff;"></div>
+    <p data-id="pg032033_n0002" style="position:absolute;z-index:4;left:35px;top:20px;width:525px;margin:0;color:#000;font-family:Quicksand,sans-serif;font-size:36px;line-height:38px;font-weight:400;text-align:center;">AHORA ES TU TURNO</p>
+    <p data-id="pg032033_n0003" style="position:absolute;z-index:3;left:70px;top:105px;width:455px;margin:0;color:#111;font-family:Quicksand,sans-serif;font-size:30px;line-height:34px;font-weight:400;text-align:center;">DERECHOS Y DEBERES</p>
+    <p data-id="pg032033_n0004" style="position:absolute;z-index:3;left:70px;top:141px;width:455px;margin:0;color:#111;font-family:Quicksand,sans-serif;font-size:29px;line-height:34px;font-weight:400;text-align:center;">en el entorno digital</p>
+  </div>
+</section>
+      </div>
+    </main>
+    <script>
+      (function () {
+        var c = document.getElementById("content");
+        if (!c) return;
+        var W = parseFloat(c.style.width) || c.offsetWidth || 1;
+        var H = parseFloat(c.style.height) || c.offsetHeight || 1;
+        var ref = parseFloat(c.getAttribute("data-fl-reference-width"));
+        var refW = ref > 0 ? ref : W;
+        var FALLBACK = 96;
+        function dock() {
+          var v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--dock-height"));
+          return v > 0 ? v : FALLBACK;
+        }
+        function fit() {
+          var DOCK = dock();
+          var byW = window.innerWidth / refW;
+          var byH = (window.innerHeight - DOCK) / H;
+          var s = Math.min(2, byW, byH > 0 ? byH : byW);
+          c.style.position = "absolute";
+          c.style.left = "50%";
+          c.style.top = "calc((100% - " + DOCK + "px) / 2)";
+          c.style.margin = "0";
+          c.style.transformOrigin = "center center";
+          c.style.transform = "translate(-50%, -50%) scale(" + s + ")";
+          c.style.visibility = "visible";
+        }
+        fit();
+        window.addEventListener("resize", fit);
+        window.addEventListener("load", fit);
+        window.addEventListener("adt:dock-resize", fit);
+      })();
+    </script>
+
+    <div class="relative z-50" id="interface-container"></div>
+    <div class="relative z-50" id="nav-container"></div>
+    <script src="./assets/offline-preloader.js"></script>
+    <script src="./assets/scorm.js"></script>
+    <script src="./assets/base.bundle.local.js"></script>
+</body>
+
+</html>

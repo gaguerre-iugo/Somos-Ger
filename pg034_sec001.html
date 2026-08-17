@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es-UY">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=595, height=595" />
+    <title>Somos ciudadanos digitales</title>
+    <meta name="title-id" content="pg034_sec001" />
+    <meta name="page-section-id" content="34" />
+    <link href="./content/tailwind_output.css" rel="stylesheet">
+    <link href="./assets/libs/fontawesome/css/all.min.css" rel="stylesheet">
+    <link href="./assets/fonts.css" rel="stylesheet">
+    <style>
+      html { width: 100%; height: 100%; }
+      #content { visibility: hidden; }
+    </style>
+    <noscript><style>#content { visibility: visible !important; }</style></noscript>
+</head>
+
+<body style="margin:0;overflow:hidden;width:100%;height:100%">
+    <main>
+      <div id="content" data-fl-reference-width="1191" style="position:relative;width:595px;height:595px;margin:0 auto;overflow:hidden">
+  <img src="images/pg034_im001.jpg" alt="" data-id="pg034_im001" style="position:absolute;top:0px;left:0px;width:596px;height:595px">
+  <img src="images/pg034_im002.png" alt="" data-id="pg034_im002" style="position:absolute;top:162px;left:44px;width:508px;height:48px">
+</div>
+    </main>
+    <script>
+      (function () {
+        var c = document.getElementById("content");
+        if (!c) return;
+        var W = parseFloat(c.style.width) || c.offsetWidth || 1;
+        var H = parseFloat(c.style.height) || c.offsetHeight || 1;
+        var ref = parseFloat(c.getAttribute("data-fl-reference-width"));
+        var refW = ref > 0 ? ref : W;
+        var FALLBACK = 96;
+        function dock() {
+          var v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--dock-height"));
+          return v > 0 ? v : FALLBACK;
+        }
+        function fit() {
+          var DOCK = dock();
+          var byW = window.innerWidth / refW;
+          var byH = (window.innerHeight - DOCK) / H;
+          var s = Math.min(2, byW, byH > 0 ? byH : byW);
+          c.style.position = "absolute";
+          c.style.left = "50%";
+          c.style.top = "calc((100% - " + DOCK + "px) / 2)";
+          c.style.margin = "0";
+          c.style.transformOrigin = "center center";
+          c.style.transform = "translate(-50%, -50%) scale(" + s + ")";
+          c.style.visibility = "visible";
+        }
+        fit();
+        window.addEventListener("resize", fit);
+        window.addEventListener("load", fit);
+        window.addEventListener("adt:dock-resize", fit);
+      })();
+    </script>
+
+    <div class="relative z-50" id="interface-container"></div>
+    <div class="relative z-50" id="nav-container"></div>
+    <script src="./assets/offline-preloader.js"></script>
+    <script src="./assets/scorm.js"></script>
+    <script src="./assets/base.bundle.local.js"></script>
+</body>
+
+</html>

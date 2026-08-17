@@ -1,0 +1,755 @@
+{
+  "acuarelas": {
+    "word": "acuarelas",
+    "definition": "Son pinturas que se mezclan con agua y se usan para pintar sobre papel.",
+    "variations": [
+      "acuarela",
+      "acuarelas"
+    ],
+    "emoji": "🎨🖌️",
+    "id": "gl001"
+  },
+  "agricultura": {
+    "word": "agricultura",
+    "definition": "Trabajo de cultivar la tierra para producir alimentos y otros productos.",
+    "variations": [
+      "agricultura"
+    ],
+    "emoji": "🌱🚜",
+    "id": "gl002"
+  },
+  "alfabetización digital": {
+    "word": "alfabetización digital",
+    "definition": "Es el aprendizaje necesario para saber usar Internet y la tecnología de forma segura y útil.",
+    "variations": [],
+    "emoji": "📘💻",
+    "id": "gl003"
+  },
+  "algoritmo": {
+    "word": "algoritmo",
+    "definition": "Es un conjunto de pasos o instrucciones que usa una computadora para mostrar, ordenar o decidir información.",
+    "variations": [
+      "algoritmos"
+    ],
+    "emoji": "🤖📊",
+    "id": "gl004"
+  },
+  "antepasado": {
+    "word": "antepasado",
+    "definition": "Persona de la familia o de la humanidad que vivió mucho tiempo antes que nosotros.",
+    "variations": [
+      "antepasado",
+      "antepasados",
+      "antepasada",
+      "antepasadas"
+    ],
+    "emoji": "👵👴🕰️",
+    "id": "gl005"
+  },
+  "aplicación": {
+    "word": "aplicación",
+    "definition": "Programa que se usa en celulares, tablets o computadoras para realizar tareas.",
+    "variations": [
+      "aplicación",
+      "aplicaciones",
+      "app",
+      "apps"
+    ],
+    "emoji": "📱🧩",
+    "id": "gl006"
+  },
+  "búsqueda del tesoro": {
+    "word": "búsqueda del tesoro",
+    "definition": "Es un juego en el que hay que buscar pistas o cosas escondidas hasta encontrar un premio o tesoro.",
+    "variations": [
+      "búsqueda del tesoro",
+      "búsquedas del tesoro"
+    ],
+    "emoji": "🗺️🏴‍☠️💎",
+    "id": "gl007"
+  },
+  "cardumen": {
+    "word": "cardumen",
+    "definition": "Grupo grande de peces que nadan juntos.",
+    "variations": [
+      "cardumen",
+      "cardúmenes"
+    ],
+    "emoji": "🐟🌊",
+    "id": "gl008"
+  },
+  "celular": {
+    "word": "celular",
+    "definition": "Es un teléfono portátil que sirve para llamar, mandar mensajes, sacar fotos y usar Internet.",
+    "variations": [
+      "celular",
+      "celulares"
+    ],
+    "emoji": "📱",
+    "id": "gl009"
+  },
+  "ciberbullying": {
+    "word": "ciberbullying",
+    "definition": "Es cuando una persona molesta, humilla o agrede a otra usando Internet o dispositivos digitales.",
+    "variations": [],
+    "emoji": "🚫💬😟",
+    "id": "gl010"
+  },
+  "ciudadanía digital": {
+    "word": "ciudadanía digital",
+    "definition": "Es la forma de participar, convivir y actuar con responsabilidad y respeto en Internet y en los espacios digitales.",
+    "variations": [
+      "ciudadanía digital"
+    ],
+    "emoji": "🌐🤝🛡️",
+    "id": "gl011"
+  },
+  "ciudadano": {
+    "word": "ciudadano",
+    "definition": "Persona que forma parte de una comunidad o de un país y tiene derechos y deberes.",
+    "variations": [
+      "ciudadano",
+      "ciudadanos",
+      "ciudadana",
+      "ciudadanas"
+    ],
+    "emoji": "🧑🏛️",
+    "id": "gl012"
+  },
+  "colonia": {
+    "word": "colonia",
+    "definition": "Grupo de animales o personas que viven reunidos en un mismo lugar.",
+    "variations": [
+      "colonia",
+      "colonias"
+    ],
+    "emoji": "🐜🏘️",
+    "id": "gl013"
+  },
+  "compartir": {
+    "word": "compartir",
+    "definition": "Es mostrar o enviar información, fotos, ideas o archivos a otras personas.",
+    "variations": [
+      "comparto",
+      "comparto",
+      "compartís",
+      "comparten",
+      "compartido"
+    ],
+    "emoji": "📤🤝",
+    "id": "gl014"
+  },
+  "computación": {
+    "word": "computación",
+    "definition": "Uso de computadoras para procesar información y realizar tareas.",
+    "variations": [
+      "computación"
+    ],
+    "emoji": "💻⌨️",
+    "id": "gl015"
+  },
+  "comunidad": {
+    "word": "comunidad",
+    "definition": "Grupo de personas que comparten un lugar, intereses o formas de vida.",
+    "variations": [
+      "comunidad",
+      "comunidades"
+    ],
+    "emoji": "🏘️❤️",
+    "id": "gl016"
+  },
+  "conexión a Internet": {
+    "word": "conexión a Internet",
+    "definition": "Es la posibilidad de entrar y usar Internet desde un dispositivo.",
+    "variations": [
+      "conexiones a Internet"
+    ],
+    "emoji": "📶🌐",
+    "id": "gl017"
+  },
+  "conviven": {
+    "word": "conviven",
+    "definition": "Quiere decir que existen o funcionan juntas al mismo tiempo y en relación entre sí.",
+    "variations": [
+      "convivir",
+      "convive",
+      "conviven",
+      "convivimos"
+    ],
+    "emoji": "🤝🌍",
+    "id": "gl018"
+  },
+  "convivencia": {
+    "word": "convivencia",
+    "definition": "Forma de vivir con otras personas con respeto y siguiendo acuerdos o reglas.",
+    "variations": [
+      "convivencia",
+      "convivencias"
+    ],
+    "emoji": "🤝🏠",
+    "id": "gl019"
+  },
+  "dato": {
+    "word": "dato",
+    "definition": "Es una información sobre una persona o una cosa, por ejemplo un nombre, una edad o una foto.",
+    "variations": [
+      "datos"
+    ],
+    "emoji": "📄🔍",
+    "id": "gl020"
+  },
+  "deber": {
+    "word": "deber",
+    "definition": "Responsabilidad u obligación que una persona tiene que cumplir.",
+    "variations": [
+      "deber",
+      "deberes"
+    ],
+    "emoji": "✅📌",
+    "id": "gl021"
+  },
+  "derecho": {
+    "word": "derecho",
+    "definition": "Libertad o protección que tienen las personas por el solo hecho de ser personas.",
+    "variations": [
+      "derecho",
+      "derechos"
+    ],
+    "emoji": "⚖️🙌",
+    "id": "gl022"
+  },
+  "derechos": {
+    "word": "derechos",
+    "definition": "Son las cosas que las personas pueden y deben recibir o hacer porque les corresponden.",
+    "variations": [
+      "derecho",
+      "derechos"
+    ],
+    "emoji": "⚖️🧑‍🤝‍🧑",
+    "id": "gl023"
+  },
+  "desconectarse": {
+    "word": "desconectarse",
+    "definition": "Es dejar de usar Internet o alejarse por un tiempo de las pantallas y los dispositivos.",
+    "variations": [
+      "desconectarme",
+      "desconectarte",
+      "desconectarnos",
+      "desconectan"
+    ],
+    "emoji": "📴🌿",
+    "id": "gl024"
+  },
+  "dispositivo digital": {
+    "word": "dispositivo digital",
+    "definition": "Es un aparato tecnológico, como una computadora, una tablet o un celular, que sirve para usar Internet y otras herramientas.",
+    "variations": [
+      "dispositivos digitales"
+    ],
+    "emoji": "📱💻",
+    "id": "gl025"
+  },
+  "entorno digital": {
+    "word": "entorno digital",
+    "definition": "Es el espacio de Internet y de las tecnologías donde las personas se comunican, buscan información, juegan y crean cosas.",
+    "variations": [
+      "entornos digitales"
+    ],
+    "emoji": "💻🌐",
+    "id": "gl026"
+  },
+  "entorno físico": {
+    "word": "entorno físico",
+    "definition": "Es el mundo real que nos rodea, donde están las personas, los objetos y los lugares que podemos ver y tocar.",
+    "variations": [
+      "entorno físico",
+      "entornos físicos"
+    ],
+    "emoji": "🌳🏞️",
+    "id": "gl027"
+  },
+  "esclavo": {
+    "word": "esclavo",
+    "definition": "Persona obligada a trabajar y obedecer a otra, sin libertad ni derechos.",
+    "variations": [
+      "esclavo",
+      "esclavos",
+      "esclava",
+      "esclavas"
+    ],
+    "emoji": "⛓️😟",
+    "id": "gl028"
+  },
+  "espacio público": {
+    "word": "espacio público",
+    "definition": "Es un lugar que comparten muchas personas. En el texto, Internet se compara con un espacio público porque allí interactúan otras personas.",
+    "variations": [
+      "espacios públicos"
+    ],
+    "emoji": "🏞️🌍",
+    "id": "gl029"
+  },
+  "evolución": {
+    "word": "evolución",
+    "definition": "Cambio y desarrollo que sucede con el tiempo.",
+    "variations": [
+      "evolución",
+      "evoluciones"
+    ],
+    "emoji": "📈⏳",
+    "id": "gl030"
+  },
+  "GPS": {
+    "word": "GPS",
+    "definition": "Es una tecnología que ayuda a saber dónde estamos y cómo llegar a un lugar.",
+    "variations": [
+      "GPS"
+    ],
+    "emoji": "🗺️📍",
+    "id": "gl031"
+  },
+  "gregario": {
+    "word": "gregario",
+    "definition": "Que le gusta vivir, estar o actuar en grupo con otros.",
+    "variations": [
+      "gregario",
+      "gregarios",
+      "gregaria",
+      "gregarias"
+    ],
+    "emoji": "👥🤝",
+    "id": "gl032"
+  },
+  "imprenta": {
+    "word": "imprenta",
+    "definition": "Técnica o máquina que permite imprimir textos e imágenes en papel.",
+    "variations": [
+      "imprenta",
+      "imprentas"
+    ],
+    "emoji": "📚🖨️",
+    "id": "gl033"
+  },
+  "información": {
+    "word": "información",
+    "definition": "Datos, ideas o conocimientos que se comparten o se reciben.",
+    "variations": [
+      "información",
+      "informaciones"
+    ],
+    "emoji": "ℹ️📄",
+    "id": "gl034"
+  },
+  "información falsa": {
+    "word": "información falsa",
+    "definition": "Es la información que no es cierta o que puede engañar a las personas.",
+    "variations": [],
+    "emoji": "❌📰",
+    "id": "gl035"
+  },
+  "información verdadera": {
+    "word": "información verdadera",
+    "definition": "Es la información que es cierta y se puede comprobar.",
+    "variations": [],
+    "emoji": "✅📘",
+    "id": "gl036"
+  },
+  "informática": {
+    "word": "informática",
+    "definition": "Área que estudia y usa las computadoras, los programas y la información digital.",
+    "variations": [
+      "informática"
+    ],
+    "emoji": "🖥️💾",
+    "id": "gl037"
+  },
+  "inteligencia artificial": {
+    "word": "inteligencia artificial",
+    "definition": "Es una tecnología que permite a las máquinas hacer tareas que parecen humanas, como responder preguntas o recomendar contenido.",
+    "variations": [],
+    "emoji": "🤖🧠",
+    "id": "gl038"
+  },
+  "interactuar": {
+    "word": "interactuar",
+    "definition": "Actuar, comunicarse o responder con otras personas o con contenidos digitales.",
+    "variations": [
+      "interactuar",
+      "interactúa",
+      "interactúan",
+      "interacción",
+      "interacciones"
+    ],
+    "emoji": "💬👆",
+    "id": "gl039"
+  },
+  "interconectado": {
+    "word": "interconectado",
+    "definition": "Que está conectado con otros sistemas, dispositivos o personas.",
+    "variations": [
+      "interconectado",
+      "interconectados",
+      "interconectada",
+      "interconectadas"
+    ],
+    "emoji": "🔗🌐",
+    "id": "gl040"
+  },
+  "Internet": {
+    "word": "Internet",
+    "definition": "Es una red mundial que conecta computadoras, celulares y otros dispositivos para compartir información y comunicarse.",
+    "variations": [],
+    "emoji": "🌐💻",
+    "id": "gl041"
+  },
+  "intimidad": {
+    "word": "intimidad",
+    "definition": "Es la parte personal de tu vida que no tiene por qué ser conocida por todas las personas.",
+    "variations": [],
+    "emoji": "🤫🏠",
+    "id": "gl042"
+  },
+  "kiosko": {
+    "word": "kiosko",
+    "definition": "Es un pequeño comercio donde se venden golosinas, bebidas, revistas y otras cosas.",
+    "variations": [
+      "kiosko",
+      "kioskos"
+    ],
+    "emoji": "🏪🍬",
+    "id": "gl043"
+  },
+  "ley": {
+    "word": "ley",
+    "definition": "Regla oficial que organiza la vida en sociedad y que todas las personas deben respetar.",
+    "variations": [
+      "ley",
+      "leyes"
+    ],
+    "emoji": "⚖️📜",
+    "id": "gl044"
+  },
+  "manada": {
+    "word": "manada",
+    "definition": "Grupo de animales que viven o se mueven juntos.",
+    "variations": [
+      "manada",
+      "manadas"
+    ],
+    "emoji": "🐺🐘",
+    "id": "gl045"
+  },
+  "medio virtual": {
+    "word": "medio virtual",
+    "definition": "Espacio digital que no es físico, como una página web, un juego en línea o una videollamada.",
+    "variations": [
+      "medio virtual",
+      "medios virtuales"
+    ],
+    "emoji": "💻🌐",
+    "id": "gl046"
+  },
+  "mensaje": {
+    "word": "mensaje",
+    "definition": "Es una comunicación escrita, de audio o de imagen que una persona envía a otra.",
+    "variations": [
+      "mensaje",
+      "mensajes"
+    ],
+    "emoji": "💬✉️",
+    "id": "gl047"
+  },
+  "morisqueta": {
+    "word": "morisqueta",
+    "definition": "Es un gesto o una cara graciosa que una persona hace, muchas veces para una foto.",
+    "variations": [
+      "morisqueta",
+      "morisquetas"
+    ],
+    "emoji": "😜📸",
+    "id": "gl048"
+  },
+  "navegar online": {
+    "word": "navegar online",
+    "definition": "Es usar Internet para buscar información, visitar páginas o usar aplicaciones.",
+    "variations": [
+      "navegar online",
+      "navegar en línea"
+    ],
+    "emoji": "🌐🖱️",
+    "id": "gl049"
+  },
+  "nómade": {
+    "word": "nómade",
+    "definition": "Persona o grupo que no vive siempre en un solo lugar y se muda de un sitio a otro.",
+    "variations": [
+      "nómade",
+      "nómades"
+    ],
+    "emoji": "🚶🏕️",
+    "id": "gl050"
+  },
+  "nube": {
+    "word": "nube",
+    "definition": "Es un sistema de Internet donde se guarda información, archivos o fotos para poder verlos después.",
+    "variations": [],
+    "emoji": "☁️💾",
+    "id": "gl051"
+  },
+  "obligaciones": {
+    "word": "obligaciones",
+    "definition": "Son responsabilidades o acciones que las personas deben cumplir.",
+    "variations": [
+      "obligación",
+      "obligaciones"
+    ],
+    "emoji": "📋✅",
+    "id": "gl052"
+  },
+  "ómnibus": {
+    "word": "ómnibus",
+    "definition": "Es un vehículo grande que transporta muchas personas por la ciudad o entre lugares.",
+    "variations": [
+      "ómnibus",
+      "ómnibuses"
+    ],
+    "emoji": "🚌",
+    "id": "gl053"
+  },
+  "online": {
+    "word": "online",
+    "definition": "Quiere decir que algo está conectado a Internet o sucede por Internet.",
+    "variations": [
+      "online",
+      "en línea"
+    ],
+    "emoji": "🟢🌐",
+    "id": "gl054"
+  },
+  "pantalla": {
+    "word": "pantalla",
+    "definition": "Es la parte del celular, la tablet, la computadora o la televisión donde vemos imágenes y textos.",
+    "variations": [
+      "pantallas"
+    ],
+    "emoji": "📺📱",
+    "id": "gl055"
+  },
+  "plataforma": {
+    "word": "plataforma",
+    "definition": "Espacio o servicio digital que permite hacer actividades, compartir contenido o comunicarse.",
+    "variations": [
+      "plataforma",
+      "plataformas"
+    ],
+    "emoji": "📲💬",
+    "id": "gl056"
+  },
+  "plaza": {
+    "word": "plaza",
+    "definition": "Es un espacio público al aire libre donde las personas pasean, juegan o descansan.",
+    "variations": [
+      "plaza",
+      "plazas"
+    ],
+    "emoji": "🌳🛝",
+    "id": "gl057"
+  },
+  "podcast": {
+    "word": "podcast",
+    "definition": "Es un programa de audio digital que se puede escuchar en Internet cuando uno quiere.",
+    "variations": [
+      "podcast",
+      "podcasts"
+    ],
+    "emoji": "🎙️🎧",
+    "id": "gl058"
+  },
+  "privacidad": {
+    "word": "privacidad",
+    "definition": "Es el derecho a que tu información personal y tu vida íntima sean respetadas y no se compartan sin permiso.",
+    "variations": [],
+    "emoji": "🔒🙈",
+    "id": "gl059"
+  },
+  "propiedad privada": {
+    "word": "propiedad privada",
+    "definition": "Bien, terreno o cosa que tiene un dueño particular.",
+    "variations": [
+      "propiedad privada",
+      "propiedades privadas"
+    ],
+    "emoji": "🏡🔑",
+    "id": "gl060"
+  },
+  "publicidad": {
+    "word": "publicidad",
+    "definition": "Son anuncios que buscan mostrar o vender productos, servicios o ideas.",
+    "variations": [
+      "publicidad",
+      "publicidades"
+    ],
+    "emoji": "📢🪧",
+    "id": "gl061"
+  },
+  "red": {
+    "word": "red",
+    "definition": "Conjunto de elementos conectados entre sí para compartir algo, como información o comunicación.",
+    "variations": [
+      "red",
+      "redes"
+    ],
+    "emoji": "🕸️🔗",
+    "id": "gl062"
+  },
+  "redes": {
+    "word": "redes",
+    "definition": "Son espacios de Internet donde las personas comparten mensajes, fotos, videos y opiniones.",
+    "variations": [
+      "red"
+    ],
+    "emoji": "📱💬",
+    "id": "gl063"
+  },
+  "redes sociales": {
+    "word": "redes sociales",
+    "definition": "Son plataformas de Internet donde las personas comparten mensajes, fotos, videos e ideas.",
+    "variations": [
+      "red social",
+      "redes sociales"
+    ],
+    "emoji": "💬📲🌐",
+    "id": "gl064"
+  },
+  "retroalimentan": {
+    "word": "retroalimentan",
+    "definition": "Quiere decir que una cosa influye en otra y, al mismo tiempo, recibe influencia de ella.",
+    "variations": [
+      "retroalimentar",
+      "retroalimenta",
+      "retroalimentan",
+      "retroalimentación"
+    ],
+    "emoji": "🔄🤝",
+    "id": "gl065"
+  },
+  "riesgo": {
+    "word": "riesgo",
+    "definition": "Es una situación que puede causar un problema o un daño.",
+    "variations": [
+      "riesgos"
+    ],
+    "emoji": "⚠️🚩",
+    "id": "gl066"
+  },
+  "ringtone": {
+    "word": "ringtone",
+    "definition": "Es el sonido que hace un celular cuando recibe una llamada o un mensaje.",
+    "variations": [
+      "ringtone",
+      "ringtones"
+    ],
+    "emoji": "🔔🎵",
+    "id": "gl067"
+  },
+  "Roblox": {
+    "word": "Roblox",
+    "definition": "Es una plataforma digital donde las personas pueden jugar y también crear juegos.",
+    "variations": [
+      "Roblox"
+    ],
+    "emoji": "🎮🕹️",
+    "id": "gl068"
+  },
+  "sedentario": {
+    "word": "sedentario",
+    "definition": "Persona o grupo que vive de forma estable en un lugar.",
+    "variations": [
+      "sedentario",
+      "sedentarios",
+      "sedentaria",
+      "sedentarias"
+    ],
+    "emoji": "🏠📍",
+    "id": "gl069"
+  },
+  "seguridad": {
+    "word": "seguridad",
+    "definition": "Es el cuidado para usar Internet sin ponerse en peligro.",
+    "variations": [],
+    "emoji": "🛡️🔒",
+    "id": "gl070"
+  },
+  "sociedad": {
+    "word": "sociedad",
+    "definition": "Conjunto de personas que viven juntas y comparten reglas, costumbres y formas de organización.",
+    "variations": [
+      "sociedad",
+      "sociedades"
+    ],
+    "emoji": "🏘️👫",
+    "id": "gl071"
+  },
+  "súbdito": {
+    "word": "súbdito",
+    "definition": "Persona que pertenece a un reino o gobierno y obedece a un rey o autoridad, sin participar como ciudadana plena.",
+    "variations": [
+      "súbdito",
+      "súbditos",
+      "súbdita",
+      "súbditas"
+    ],
+    "emoji": "👑📜",
+    "id": "gl072"
+  },
+  "tecnología": {
+    "word": "tecnología",
+    "definition": "Conjunto de conocimientos, herramientas e inventos creados para resolver problemas o facilitar la vida.",
+    "variations": [
+      "tecnología",
+      "tecnologías"
+    ],
+    "emoji": "💡🛠️📱",
+    "id": "gl073"
+  },
+  "tecnología digital": {
+    "word": "tecnología digital",
+    "definition": "Es el conjunto de herramientas y sistemas electrónicos que permiten crear, guardar y compartir información.",
+    "variations": [
+      "tecnología digital",
+      "tecnologías digitales"
+    ],
+    "emoji": "💻📱⚙️",
+    "id": "gl074"
+  },
+  "tutorial": {
+    "word": "tutorial",
+    "definition": "Es una explicación paso a paso para aprender a hacer algo.",
+    "variations": [
+      "tutorial",
+      "tutoriales"
+    ],
+    "emoji": "📚▶️",
+    "id": "gl075"
+  },
+  "web": {
+    "word": "web",
+    "definition": "Espacio de Internet donde se publican y comparten páginas, ideas y conocimientos.",
+    "variations": [
+      "web",
+      "la web"
+    ],
+    "emoji": "🌐🕸️",
+    "id": "gl076"
+  },
+  "youtuber": {
+    "word": "youtuber",
+    "definition": "Es una persona que crea y comparte videos en Internet, especialmente en YouTube.",
+    "variations": [
+      "youtuber",
+      "youtubers"
+    ],
+    "emoji": "🎥📺",
+    "id": "gl077"
+  }
+}

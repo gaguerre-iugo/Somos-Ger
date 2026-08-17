@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es-UY">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=595, height=595" />
+    <title>Somos ciudadanos digitales</title>
+    <meta name="title-id" content="pg016_sec001" />
+    <meta name="page-section-id" content="17" />
+    <link href="./content/tailwind_output.css" rel="stylesheet">
+    <link href="./assets/libs/fontawesome/css/all.min.css" rel="stylesheet">
+    <link href="./assets/fonts.css" rel="stylesheet">
+    <style>
+      html { width: 100%; height: 100%; }
+      #content { visibility: hidden; }
+    </style>
+    <noscript><style>#content { visibility: visible !important; }</style></noscript>
+</head>
+
+<body style="margin:0;overflow:hidden;width:100%;height:100%">
+    <main>
+      <div id="content" data-fl-reference-width="1191" style="position:relative;width:595px;height:595px;margin:0 auto;overflow:hidden">
+  <img src="images/pg016_im001.jpg" alt="" data-id="pg016_im001" style="position:absolute;top:466px;left:448px;width:109px;height:100px">
+  <img src="images/pg016_im003.png" alt="" data-id="pg016_im003" style="position:absolute;top:114px;left:147px;width:330px;height:435px">
+  <img src="images/pg016_im002.jpg" alt="" data-id="pg016_im002" style="position:absolute;top:315px;left:50px;width:117px;height:253px">
+
+  <h1 data-id="pg016_n0002" style="position:absolute;z-index:3;top:42px;left:35px;width:410px;margin:0;font-family:Quicksand,Arial,sans-serif;font-size:21px;line-height:27px;font-weight:400;"><strong>EN LA NUBE</strong> (entorno digital)</h1>
+  <p data-id="pg016_n0005" style="position:absolute;z-index:3;top:139px;left:197px;width:245px;margin:0;font-family:&apos;Architects Daughter&apos;,cursive;font-size:15px;line-height:19px;">Cosas que hay en el entorno digital:</p>
+  <ul style="position:absolute;z-index:3;top:190px;left:190px;width:225px;margin:0;padding-left:22px;font-family:&apos;Architects Daughter&apos;,cursive;font-size:12px;line-height:16px;">
+      <li data-id="pg016_n0008" style="margin:0;padding-left:3px;display:list-item;list-style-type:disc;">amigos y amigas</li>
+      <li data-id="pg016_n0010" style="margin:0;padding-left:3px;display:list-item;list-style-type:disc;">Pedro jugando a Roblox</li>
+      <li data-id="pg016_n0012" style="margin:0;padding-left:3px;display:list-item;list-style-type:disc;">muchos videos graciosos</li>
+      <li data-id="pg016_n0014" style="margin:0;padding-left:3px;display:list-item;list-style-type:disc;">noticias (de la prensa y de los vecinos: el perro perdido de Maruja por suerte apareci&#xf3;)</li>
+      <li data-id="pg016_n0016" style="margin:0;padding-left:3px;display:list-item;list-style-type:disc;">redes sociales</li>
+      <li data-id="pg016_n0018" style="margin:0;padding-left:3px;display:list-item;list-style-type:disc;">gente desconocida</li>
+      <li data-id="pg016_n0020" style="margin:0;padding-left:3px;display:list-item;list-style-type:disc;">publicidad (&#xa1;omitir anuncio!)</li>
+      <li data-id="pg016_n0022" style="margin:0;padding-left:3px;display:list-item;list-style-type:disc;">mensajes de Sofi</li>
+      <li data-id="pg016_n0024" style="margin:0;padding-left:3px;display:list-item;list-style-type:disc;">series y pel&#xed;culas</li>
+      <li data-id="pg016_n0026" style="margin:0;padding-left:3px;display:list-item;list-style-type:disc;">informaci&#xf3;n para los deberes</li>
+      <li data-id="pg016_n0028" style="margin:0;padding-left:3px;display:list-item;list-style-type:disc;">m&#xfa;sica y videos de baile</li>
+      <li data-id="pg016_n0030" style="margin:0;padding-left:3px;display:list-item;list-style-type:disc;">youtubers favoritos</li>
+      <li data-id="pg016_n0032" style="margin:0;padding-left:3px;display:list-item;list-style-type:disc;">tiendas de todo el mundo</li>
+      <li data-id="pg016_n0034" style="margin:0;padding-left:3px;display:list-item;list-style-type:disc;">fotos de ballenas (y de muchas otras cosas)</li>
+      <li data-id="pg016_n0036" style="margin:0;padding-left:3px;display:list-item;list-style-type:disc;">recetas de galletas</li>
+  </ul>
+<script src="./assets/auto-fit.js"></script>
+</div>
+    </main>
+    <script>
+      (function () {
+        var c = document.getElementById("content");
+        if (!c) return;
+        var W = parseFloat(c.style.width) || c.offsetWidth || 1;
+        var H = parseFloat(c.style.height) || c.offsetHeight || 1;
+        var ref = parseFloat(c.getAttribute("data-fl-reference-width"));
+        var refW = ref > 0 ? ref : W;
+        var FALLBACK = 96;
+        function dock() {
+          var v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--dock-height"));
+          return v > 0 ? v : FALLBACK;
+        }
+        function fit() {
+          var DOCK = dock();
+          var byW = window.innerWidth / refW;
+          var byH = (window.innerHeight - DOCK) / H;
+          var s = Math.min(2, byW, byH > 0 ? byH : byW);
+          c.style.position = "absolute";
+          c.style.left = "50%";
+          c.style.top = "calc((100% - " + DOCK + "px) / 2)";
+          c.style.margin = "0";
+          c.style.transformOrigin = "center center";
+          c.style.transform = "translate(-50%, -50%) scale(" + s + ")";
+          c.style.visibility = "visible";
+        }
+        fit();
+        window.addEventListener("resize", fit);
+        window.addEventListener("load", fit);
+        window.addEventListener("adt:dock-resize", fit);
+      })();
+    </script>
+
+    <div class="relative z-50" id="interface-container"></div>
+    <div class="relative z-50" id="nav-container"></div>
+    <script src="./assets/offline-preloader.js"></script>
+    <script src="./assets/scorm.js"></script>
+    <script src="./assets/base.bundle.local.js"></script>
+</body>
+
+</html>

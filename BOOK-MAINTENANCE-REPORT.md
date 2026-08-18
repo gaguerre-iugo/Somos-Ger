@@ -66,7 +66,7 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - Se reservan 96 px estables para el reproductor. En las actividades, el desplazamiento se limita al contenido para que ni la barra ni el reproductor tapen preguntas o devoluciones. En móvil los rótulos visuales se ocultan, pero los cinco botones conservan nombre accesible completo y un objetivo mínimo de 44 px.
 - Herramientas y reproductor quedan adyacentes en escritorio; en móvil el panel reduce su altura para evitar solapamientos. El reproductor usa iconos con nombre accesible en móvil e icono y texto en escritorio. Todos los objetivos interactivos verificados alcanzan al menos 44 × 44 px.
 - La observación de cambios se limita a `#nav-container` y al contenedor de interfaz para el único atajo de idioma; no se instaló un observador global del documento.
-- Los recursos se versionaron finalmente como `project-adaptations.js?v=somos-ger-54` y `project-interface.css?v=somos-ger-22` para invalidar cachés previas.
+- Los recursos se versionaron finalmente como `project-adaptations.js?v=somos-ger-54` y `project-interface.css?v=somos-ger-23` para invalidar cachés previas.
 - El aplicador se corrigió para eliminar separaciones residuales y se comprobó idempotente: dos ejecuciones consecutivas producen el mismo SHA-256 de `index.html`.
 
 ### 6. Unificación visual de todos los menús (incremento actual)
@@ -78,6 +78,7 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - Se mantuvo la excepción comprobada de Somos: una única voz informativa. No se añadió el selector de dos voces de 1930 ni se conservaron controles ajenos a su contrato de Herramientas.
 - El interruptor conserva un objetivo táctil de 44 × 44 px, pero su foco visible se dibuja sobre el carril de 40 × 24 px. Así se evita el aro circular sobredimensionado del control nativo sin perder accesibilidad ni área de pulsación.
 - Los interruptores adaptados anulan el `translate` compuesto que aporta el runtime y usan un único desplazamiento de 16 px para el pulsador. Esto mantiene dentro del carril los estados encendidos de Lectura en voz alta, Reproducción automática, Descripción de imágenes y Preferencias.
+- Las cuatro páginas `qz` conservan el inicio vertical y el desplazamiento interno de las actividades, pero centran horizontalmente su sección `activity_quiz` en el área útil. La excepción evita heredar el alineado izquierdo general aplicado a otras actividades.
 
 ### 7. Arquitectura funcional de Herramientas (incremento actual)
 

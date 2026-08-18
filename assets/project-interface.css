@@ -82,6 +82,10 @@ body:has(#simple-main) #content {
   overscroll-behavior: contain;
 }
 
+body:has(#simple-main[data-section-type="activity_quiz"]) #content {
+  justify-content: center !important;
+}
+
 .somos-primary-toolbar {
   position: fixed;
   z-index: 75;

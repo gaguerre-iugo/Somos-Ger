@@ -3,8 +3,9 @@ const path = require("path");
 
 const root = path.resolve(__dirname, "..");
 const pages = fs.readdirSync(root).filter((name) => name.endsWith(".html")).sort();
+const quizPages = pages.filter((name) => /^qz\d+\.html$/.test(name));
 const scriptMarker = './assets/project-adaptations.js?v=somos-ger-54';
-const styleMarker = './assets/project-interface.css?v=somos-ger-22';
+const styleMarker = './assets/project-interface.css?v=somos-ger-23';
 const expectedIds = [
   "somos-index",
   "somos-previous",
@@ -22,6 +23,10 @@ const pageFailures = pages.flatMap((name) => {
   const html = fs.readFileSync(path.join(root, name), "utf8");
   const missing = [scriptMarker, styleMarker].filter((marker) => !html.includes(marker));
   return missing.length ? [{ page: name, missing }] : [];
+});
+const quizStructureFailures = quizPages.filter((name) => {
+  const html = fs.readFileSync(path.join(root, name), "utf8");
+  return !html.includes('data-section-type="activity_quiz"');
 });
 
 const adapter = fs.readFileSync(path.join(root, "assets", "project-adaptations.js"), "utf8");
@@ -44,12 +49,15 @@ const expectedThemeTokens = [
   ".somos-setting-read-aloud #somos-read-aloud-description",
   '[role="switch"]:focus-visible::before',
   "translate: 0 !important",
+  'body:has(#simple-main[data-section-type="activity_quiz"]) #content',
 ];
 const missingThemeTokens = expectedThemeTokens.filter((token) => !interfaceCss.includes(token));
 
 const result = {
   pages: pages.length,
   pageFailures,
+  quizPages: quizPages.length,
+  quizStructureFailures,
   toolbarOrder: ["Índice", "Anterior", "actual / total", "Siguiente", "Herramientas"],
   audioOrder: ["Audio anterior", "Reproducir/Pausar", "Audio siguiente", "Voz y velocidad", "Detener"],
   missingIds,
@@ -61,6 +69,6 @@ const result = {
 
 console.log(JSON.stringify(result, null, 2));
 
-if (pages.length !== 34 || pageFailures.length || missingIds.length || forbiddenToolsControls.length || stableRevealMissing.length || missingThemeTokens.length || globalObserver) {
+if (pages.length !== 34 || pageFailures.length || quizPages.length !== 4 || quizStructureFailures.length || missingIds.length || forbiddenToolsControls.length || stableRevealMissing.length || missingThemeTokens.length || globalObserver) {
   process.exitCode = 1;
 }

@@ -5,7 +5,7 @@ const root = path.resolve(__dirname, "..");
 const pages = fs.readdirSync(root).filter((name) => name.endsWith(".html")).sort();
 const quizPages = pages.filter((name) => /^qz\d+\.html$/.test(name));
 const scriptMarker = './assets/project-adaptations.js?v=somos-ger-54';
-const styleMarker = './assets/project-interface.css?v=somos-ger-23';
+const styleMarker = './assets/project-interface.css?v=somos-ger-24';
 const expectedIds = [
   "somos-index",
   "somos-previous",
@@ -50,6 +50,7 @@ const expectedThemeTokens = [
   '[role="switch"]:focus-visible::before',
   "translate: 0 !important",
   'body:has(#simple-main[data-section-type="activity_quiz"]) #content',
+  "grid-template-columns: 44px minmax(0, 1fr) 44px",
 ];
 const missingThemeTokens = expectedThemeTokens.filter((token) => !interfaceCss.includes(token));
 

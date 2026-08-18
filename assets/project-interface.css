@@ -591,7 +591,7 @@ html[data-somos-tts-active="true"] .somos-tools-panel {
 }
 
 .somos-panel-control-header-glossary {
-  grid-template-columns: minmax(0, auto) minmax(0, 1fr) 44px;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
 }
 
 .somos-panel-control-header-glossary .somos-panel-control-title {
@@ -627,9 +627,21 @@ html[data-somos-tts-active="true"] .somos-tools-panel {
 .somos-panel-close { width: 44px; height: 44px; }
 
 .somos-panel-back {
+  width: 44px;
+  height: 44px;
   justify-self: start;
   font-size: 16px;
   font-weight: 700;
+}
+
+.somos-panel-back > span:last-child {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .somos-panel-close:hover,
@@ -1021,20 +1033,6 @@ html[data-somos-tts-active="true"] .somos-tools-panel {
   #interface-container .somos-native-menu-panel {
     height: calc(100dvh - var(--somos-toolbar-height) - 16px) !important;
   }
-  .somos-panel-control-header-glossary {
-    grid-template-columns: 44px minmax(0, 1fr) 44px;
-  }
-
-  .somos-panel-back > span:last-child {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-  }
-
   .somos-primary-toolbar {
     right: 0;
     left: 0;

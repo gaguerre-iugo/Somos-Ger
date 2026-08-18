@@ -14,6 +14,14 @@ if (start < 0 || end < 0) throw new Error("No se encontró el mapa INLINE del pr
 const before = source.slice(0, start + prefix.length);
 const after = source.slice(end);
 const inline = JSON.parse(source.slice(start + prefix.length, end));
+const requiredInlineResources = [
+  "./content/i18n/es-UY/audio_voices.json",
+  "./content/i18n/es-UY/timecode/timecode_voices.json",
+];
+
+for (const key of requiredInlineResources) {
+  if (!(key in inline)) inline[key] = {};
+}
 
 for (const key of Object.keys(inline)) {
   const relative = key.replace(/^\.\//, "");

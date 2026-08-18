@@ -72,6 +72,7 @@
       <file href="assets/symbols/prairie.png"/>
       <file href="assets/symbols/smog.png"/>
       <file href="assets/tailwind_css.css"/>
+      <file href="content/i18n/es-UY/audio_voices.json"/>
       <file href="content/i18n/es-UY/audio/gl001_def.mp3"/>
       <file href="content/i18n/es-UY/audio/gl001.mp3"/>
       <file href="content/i18n/es-UY/audio/gl002_def.mp3"/>
@@ -500,6 +501,7 @@
       <file href="content/i18n/es-UY/speech_texts.json"/>
       <file href="content/i18n/es-UY/texts.json"/>
       <file href="content/i18n/es-UY/timecode/timecode_output.json"/>
+      <file href="content/i18n/es-UY/timecode/timecode_voices.json"/>
       <file href="content/i18n/es-UY/videos.json"/>
       <file href="content/navigation/nav.html"/>
       <file href="content/pages.json"/>

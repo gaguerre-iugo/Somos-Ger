@@ -3,8 +3,8 @@ const path = require("path");
 
 const root = path.resolve(__dirname, "..");
 const pages = fs.readdirSync(root).filter((name) => name.endsWith(".html")).sort();
-const scriptMarker = './assets/project-adaptations.js?v=somos-ger-34';
-const styleMarker = './assets/project-interface.css?v=somos-ger-16';
+const scriptMarker = './assets/project-adaptations.js?v=somos-ger-52';
+const styleMarker = './assets/project-interface.css?v=somos-ger-17';
 const expectedIds = [
   "somos-index",
   "somos-previous",

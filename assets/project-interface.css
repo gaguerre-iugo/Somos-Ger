@@ -164,6 +164,15 @@ body:has(#simple-main) #content {
   opacity: 1;
 }
 
+#somos-previous:disabled,
+#somos-next:disabled {
+  border-color: var(--somos-gray-400);
+  border-style: dashed;
+  color: var(--somos-gray-300);
+  background: var(--somos-gray-800);
+  box-shadow: none;
+}
+
 .somos-toolbar-button:focus-visible,
 .somos-audio-button:focus-visible,
 .somos-icon-button:focus-visible,
@@ -521,7 +530,7 @@ html[data-somos-tts-active="true"] .somos-tools-panel {
   max-height: calc(100dvh - var(--somos-toolbar-height) - 16px) !important;
   color: var(--somos-gray-50) !important;
   background: var(--somos-panel-bg) !important;
-  border: 1px solid var(--somos-gray-700) !important;
+  border: 1px solid rgb(255 255 255 / 10%) !important;
   box-shadow: var(--somos-shadow-card), 0 8px 24px rgb(0 0 0 / 24%) !important;
   transform: none !important;
   transition: none !important;
@@ -724,7 +733,7 @@ html[data-somos-tts-active="true"] .somos-tools-panel {
 }
 
 #interface-container .somos-native-settings-panel .somos-proxy-switch {
-  padding: 1px !important;
+  padding: 0 !important;
   cursor: pointer;
 }
 
@@ -767,6 +776,15 @@ html[data-somos-tts-active="true"] .somos-tools-panel {
   border-color: var(--somos-institutional-300);
   color: #ffffff;
   background: var(--somos-institutional-500);
+}
+
+#interface-container .somos-native-settings-panel .somos-setting-highlight {
+  flex-wrap: wrap !important;
+}
+
+#interface-container .somos-native-settings-panel .somos-highlight-requirement {
+  flex: 0 0 100%;
+  width: 100%;
 }
 
 #interface-container .somos-native-settings-panel .somos-settings-section-shortcuts kbd[data-slot="kbd"] {
@@ -872,18 +890,51 @@ html[data-somos-tts-active="true"] .somos-tools-panel {
 }
 
 #interface-container .somos-native-menu-panel [role="switch"] {
-  width: 40px !important;
-  min-width: 40px !important;
-  height: 24px !important;
-  min-height: 24px !important;
+  position: relative !important;
+  width: 44px !important;
+  min-width: 44px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  padding: 0 !important;
   border: 1px solid transparent !important;
   border-radius: 999px !important;
-  background: var(--somos-gray-700) !important;
+  background: transparent !important;
+}
+
+#interface-container .somos-native-menu-panel [role="switch"]::before {
+  position: absolute;
+  top: 10px;
+  left: 2px;
+  width: 40px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--somos-gray-700);
+  content: "";
+}
+
+#interface-container .somos-native-menu-panel [role="switch"][aria-checked="true"]::before {
+  background: var(--somos-institutional-500);
+}
+
+#interface-container .somos-native-menu-panel [role="switch"] > span {
+  position: absolute !important;
+  z-index: 1;
+  top: 12px !important;
+  left: 4px !important;
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 50% !important;
+  background: #ffffff !important;
+  transform: translateX(0) !important;
+}
+
+#interface-container .somos-native-menu-panel [role="switch"][aria-checked="true"] > span {
+  transform: translateX(16px) !important;
 }
 
 #interface-container .somos-native-menu-panel [role="switch"][aria-checked="true"] {
   color: #ffffff !important;
-  background: var(--somos-institutional-500) !important;
+  background: transparent !important;
 }
 
 #interface-container .somos-native-settings-panel [role="group"][aria-labelledby] > div:has([role="radio"]) {
@@ -924,6 +975,9 @@ html[data-somos-tts-active="true"] .somos-tools-panel {
 }
 
 @media (max-width: 767px) {
+  #interface-container .somos-native-menu-panel {
+    height: calc(100dvh - var(--somos-toolbar-height) - 16px) !important;
+  }
   .somos-panel-control-header-glossary {
     grid-template-columns: 44px minmax(0, 1fr) 44px;
   }

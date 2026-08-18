@@ -1,6 +1,6 @@
 # Informe de mantenimiento — Somos ciudadanos digitales
 
-Fecha de auditoría: 2026-08-17
+Fecha de auditoría: 2026-08-18
 
 Repositorio: `gaguerre-iugo/Somos-Ger` (privado)
 Playbook de referencia: `BOOK-MAINTENANCE-PLAYBOOK.md` del proyecto 1930, leído completo (2329 líneas).
@@ -12,7 +12,7 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - Export web ADT de diseño fijo (`fixedLayout: true`) y lienzo editorial de 595 × 595 px.
 - SCORM 1.2 con `index.html` como SCO.
 - 34 entradas de navegación: 30 secciones editoriales y 4 actividades.
-- 138 imágenes, 428 audios MP3 y un tamaño aproximado de 57,62 MB.
+- 138 imágenes, 422 audios MP3 y un tamaño aproximado de 57,62 MB.
 - Un único idioma declarado: `es-UY`.
 - Mezcla inicial de Merriweather, Atkinson Hyperlegible y fuentes decorativas.
 - Preloader offline de aproximadamente 0,4 MB cargado también por HTTP.
@@ -66,7 +66,7 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - Se reservan 96 px estables para el reproductor. En las actividades, el desplazamiento se limita al contenido para que ni la barra ni el reproductor tapen preguntas o devoluciones. En móvil los rótulos visuales se ocultan, pero los cinco botones conservan nombre accesible completo y un objetivo mínimo de 44 px.
 - Herramientas y reproductor quedan adyacentes en escritorio; en móvil el panel reduce su altura para evitar solapamientos. El reproductor usa iconos con nombre accesible en móvil e icono y texto en escritorio. Todos los objetivos interactivos verificados alcanzan al menos 44 × 44 px.
 - La observación de cambios se limita a `#nav-container` y al contenedor de interfaz para el único atajo de idioma; no se instaló un observador global del documento.
-- Los recursos se versionaron finalmente como `project-adaptations.js?v=somos-ger-34` y `project-interface.css?v=somos-ger-16` para invalidar cachés previas.
+- Los recursos se versionaron finalmente como `project-adaptations.js?v=somos-ger-52` y `project-interface.css?v=somos-ger-17` para invalidar cachés previas.
 - El aplicador se corrigió para eliminar separaciones residuales y se comprobó idempotente: dos ejecuciones consecutivas producen el mismo SHA-256 de `index.html`.
 
 ### 6. Unificación visual de todos los menús (incremento actual)
@@ -82,7 +82,7 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - Se eliminó el segundo panel incompleto que mostraba `Consulta`, Glosario al comienzo y un acceso indirecto a `Configuración de lectura`. Herramientas es ahora el panel real del runtime reorganizado según el playbook.
 - El orden visible es: `Apoyos para la lectura`, `Audio y voz`, `Preferencias`, `Atajos de teclado` y `Herramientas`. Glosario queda al final, no dentro de Consulta.
 - Se conservaron únicamente funciones verificadas en `assets/config.json` y en el runtime de este libro: lectura en voz alta, reproducción automática, descripción de imágenes, resaltado, voz disponible, velocidad, volumen, ocultamiento automático de menús y Glosario.
-- Reproducción automática, descripción de imágenes y resaltado permanecen visibles aunque la voz esté desactivada. Los controles sustitutos conservan la selección pendiente y la transfieren a los controles nativos cuando se activa la lectura; no reemplazan el estado real cuando el runtime ya lo expone.
+- Reproducción automática y descripción de imágenes permanecen disponibles aunque la voz esté desactivada. Resaltado permanece visible, pero deshabilitado y con una explicación hasta activar Lectura en voz alta, tal como exige el playbook. Los controles sustitutos conservan la selección pendiente y la transfieren a los controles nativos cuando se activa la lectura; no reemplazan el estado real cuando el runtime ya lo expone.
 - Los atajos visibles y operativos son `X` para Índice, `A` para Herramientas, `G` para Glosario y `Esc` para cerrar. `G` se ignora en campos, formularios, contenido editable e interacciones marcadas como actividad, y no cierra el Glosario si se pulsa nuevamente.
 - Glosario sustituye temporalmente a Herramientas. Su cabecera ofrece `Volver a Herramientas` y `Cerrar`; el regreso se verificó tanto en el popover de escritorio como en el sheet móvil del runtime.
 - Se adaptaron explícitamente las dos estructuras que genera el runtime: `data-slot="popover-content"` en escritorio y `data-slot="sheet-content"` en móvil. La cabecera nativa duplicada queda oculta visual y semánticamente en ambas.
@@ -97,6 +97,25 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 
 ## Validaciones realizadas
 
+### Revisión funcional final del 18 de agosto de 2026
+
+- Se volvió a leer el playbook completo y se contrastó cada contrato aplicable con la implementación y con el libro 1930 en servidores locales separados (`5501` y `5503`). No se copiaron rutas, contenido, voces ni excepciones editoriales del libro de referencia.
+- Se corrigió el foco inicial: Índice abre en `Cerrar Índice`, Herramientas en `Cerrar Herramientas` y Glosario en `Volver a Herramientas`. Escape devuelve el foco al disparador; volver desde Glosario lo devuelve a su botón dentro de Herramientas.
+- Índice, Herramientas y Glosario son mutuamente excluyentes. Cinco ciclos completos de abrir, sustituir, volver y cerrar terminaron con cero diálogos residuales, una sola barra y cero errores de consola.
+- La barra personalizada y el reproductor se montan como hijos directos de `body`. Esto impide que el runtime les herede accidentalmente `aria-hidden` al ocultar sus puentes nativos y garantiza que el primer clic tenga el mismo significado visual y accesible.
+- Activar Lectura en voz alta cierra Herramientas, prepara la sesión sin reproducción automática y enfoca `Reproducir`. Reproducir cambia a `Pausar`; anterior y siguiente preservan la pausa; `Voz y velocidad` retorna el foco correctamente; `Detener` oculta el reproductor y enfoca el contenido.
+- Una recarga con la sesión activa reconstruye los cinco controles en pausa y no genera `NotAllowedError`. La prueba de audio terminó sin errores de consola.
+- El reproductor expone exactamente, y en ese orden: `Audio anterior`, `Reproducir/Pausar`, `Audio siguiente`, `Voz y velocidad` y `Detener`. En móvil los cinco objetivos midieron al menos 44 px de alto.
+- El resaltado está visible pero deshabilitado con `aria-disabled="true"` mientras la voz está apagada, muestra el motivo y se habilita al activar la lectura.
+- El atajo `G` abre Glosario una sola vez, una segunda pulsación no lo cierra, Escape regresa a Herramientas y escribir `g` en la búsqueda del Índice no dispara el atajo.
+- A 320, 375, 480 y 566 px no hubo desborde horizontal. A 320 px se conservan iconos y nombres accesibles; a 375 px aparecen `Índice` y `Herramientas`; desde 480 px se muestran los rótulos completos. En 320 × 800, el panel móvil midió 288 × 720 px y todos los interruptores 44 × 44 px.
+- La comparación de estilos calculados contra 1930 confirmó paneles de 288 × 640 px en escritorio, radio de 12 px, cierre de 44 × 44 px, superficie `#242424`, borde blanco al 10 % y selección `#008078` con borde `#66c6c0`. Las secciones adicionales de 1930 corresponden a funciones deshabilitadas en Somos y no se reprodujeron artificialmente.
+- Rendimiento de cinco aperturas en caliente: Herramientas tuvo mediana de 315 ms e Índice de 319 ms en Somos, frente a 1040 ms y 1033 ms respectivamente en 1930, en el mismo navegador y equipo.
+- El recorrido final de las 34 rutas encontró contenido visible en todas, una sola barra, tipografía Atkinson efectiva, cero controles personalizados bajo `aria-hidden` y cero desbordes horizontales.
+- Una prueba de estabilidad de 30 segundos terminó sin diálogos, reproductor o capas residuales y sin errores de consola.
+- La actividad `qz001` aceptó `Todas las personas` y anunció la devolución correcta en su región viva.
+- La auditoría estática encontró 422 archivos MP3, 422 asociaciones de audio, cero archivos faltantes entre esas asociaciones, cero MP3 sin asociar y cero MP3 de tamaño cero. Hay 423 entradas de texto/narración: la pregunta `qz003_que` no tiene audio asociado ni archivo MP3 en este proyecto o en la fuente de Desktop.
+
 ### Navegador y servidor local
 
 - Recorrido automatizado de las 34 entradas: contenido visible en todas.
@@ -110,8 +129,8 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - Índice, Glosario y Configuración verificados tanto en escritorio como en la variante móvil compacta del runtime.
 - Herramientas verificado con las cinco secciones documentadas, Glosario al final y los atajos visibles `X`, `A`, `G`, `Esc`.
 - Atajo `G` y botón Glosario verificados; `Volver a Herramientas` elimina el Glosario antes de reconstruir Herramientas. El atajo `X` desde Herramientas deja un único Índice abierto.
-- Preferencias condicionadas verificadas con lectura en voz alta activa e inactiva; permanecen visibles y transfieren su selección al control nativo al reactivar la voz.
-- Recorrido HTTP automatizado de los 34 HTML con `data-project-adaptations="somos-ger-34"`, barra disponible y cero desborde horizontal. Tres páginas de carga más lenta se revalidaron a 1,8 s y pasaron.
+- Preferencias condicionadas verificadas con lectura en voz alta activa e inactiva; resaltado permanece visible pero deshabilitado hasta activar la voz, y los controles transferibles conservan su selección.
+- Recorrido HTTP automatizado de los 34 HTML con `data-project-adaptations="somos-ger-52"`, barra disponible y cero desborde horizontal.
 - Texto a voz verificado desde estado limpio: aparece preparado en `Reproducir`, enfoca ese control y Herramientas cambia a `Desactivar lectura en voz alta`.
 - Reproductor verificado con cinco controles en el orden documentado: reproducir/pausar, anterior/siguiente conservando la pausa, apertura de Voz y velocidad con retorno del foco, y Detener eliminando la sesión.
 - Recarga y navegación con una sesión activa verificadas: el reproductor se restaura pausado y no reproduce automáticamente en el nuevo documento.
@@ -147,7 +166,8 @@ El flujo SCORM se validó con un simulador local de la API SCORM 1.2. La políti
 
 - El diseño fijo contiene texto editorial menor de 16 px. Se conserva para no romper la composición; sigue siendo un riesgo de legibilidad inherente al original.
 - La métrica automática marca 15 cajas editoriales en 10 páginas cuyo glifo excede la caja declarada. Todas usan `overflow: visible`, por lo que no hay recorte; las muestras de mayor riesgo se revisaron visualmente. Conviene repetir esta revisión si cambia la fuente o el tamaño base.
-- El paquete contiene 428 MP3 y sigue siendo pesado. No se recomprimieron audios para evitar pérdida de calidad o desincronización de texto a voz.
+- El paquete contiene 422 MP3 y sigue siendo pesado. No se recomprimieron audios para evitar pérdida de calidad o desincronización de texto a voz.
+- La entrada de narración `qz003_que` carece de asociación y archivo de audio. No se fabricó una pista: para una cobertura de audio íntegra debe grabarse, aprobarse editorialmente y añadirse al mapa de audio.
 - El simulador cubre el contrato SCORM, pero no sustituye una importación final en el LMS de destino. Antes de producción se recomienda importar el ZIP en ese LMS y verificar persistencia, reanudación y reporte de puntuación.
 - Los archivos `base.bundle.local.js` y `base.bundle.min.js` se conservaron sin cambios. Una actualización futura del runtime debe volver a ejecutar las herramientas y la batería del navegador.
 - Los sustitutos de preferencias dependientes de voz mantienen cambios pendientes durante el documento actual. El runtime sigue siendo la fuente definitiva al activar la voz; una actualización de su montaje condicional debe revalidar esta transferencia.

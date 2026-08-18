@@ -12,12 +12,15 @@
     audioPrevious: "Audio anterior",
     audioNext: "Audio siguiente",
     play: "Reproducir",
-    pause: "Pausa",
+    pause: "Pausar",
+    pauseNative: "Pausa",
     stop: "Detener",
   };
   var updateScheduled = false;
   var toolsReturnFocus = null;
+  var glossaryReturnFocus = null;
   var pendingToolsFocusSelector = "";
+  var pendingPanelFocusKind = "";
   var userStartedAudio = false;
   var automaticPausePending = false;
   var conditionalSettings = {
@@ -88,6 +91,25 @@
     });
   }
 
+  function exposeCustomControls() {
+    var toolbar = document.getElementById("somos-primary-toolbar");
+    if (toolbar) {
+      toolbar.removeAttribute("aria-hidden");
+      toolbar.removeAttribute("inert");
+      toolbar.querySelectorAll("button").forEach(function (button) {
+        button.removeAttribute("aria-hidden");
+      });
+    }
+    var player = audioPlayer();
+    if (player && !player.hidden) {
+      player.removeAttribute("aria-hidden");
+      player.removeAttribute("inert");
+      player.querySelectorAll("button").forEach(function (button) {
+        button.removeAttribute("aria-hidden");
+      });
+    }
+  }
+
   function closePressedPanels(except) {
     document.querySelectorAll('button[aria-pressed="true"]').forEach(function (button) {
       var label = button.getAttribute("aria-label");
@@ -112,7 +134,7 @@
       if (onOpened) onOpened(button);
       return;
     }
-    if (attempt < 30) {
+    if (attempt < 180) {
       window.requestAnimationFrame(function () {
         resolveCompactTool(text, accessibility, onOpened, attempt + 1);
       });
@@ -195,21 +217,46 @@
     });
   }
 
-  function focusToolsTarget(attempt) {
-    var panel = toolsPanel();
-    if (!panel && attempt < 30) {
-      window.requestAnimationFrame(function () { focusToolsTarget(attempt + 1); });
+  function focusNativeMenuEntry(panel, kind, attempt) {
+    if ((!panel || !panel.isConnected) && attempt < 45) {
+      window.requestAnimationFrame(function () { focusNativeMenuEntry(panel, kind, attempt + 1); });
       return;
     }
-    if (!panel) return;
-    var target = pendingToolsFocusSelector && panel.querySelector(pendingToolsFocusSelector);
-    if (!target && pendingToolsFocusSelector && attempt < 30) {
-      window.requestAnimationFrame(function () { focusToolsTarget(attempt + 1); });
+    if (!panel || pendingPanelFocusKind !== kind) return;
+    if (kind === "settings" && !panel.querySelector("#somos-reference-tools")) return;
+    var target = kind === "settings" && pendingToolsFocusSelector
+      ? panel.querySelector(pendingToolsFocusSelector)
+      : panel.querySelector(kind === "glossary" ? ".somos-panel-back" : ".somos-panel-close");
+    if (!target && attempt < 45) {
+      window.requestAnimationFrame(function () { focusNativeMenuEntry(panel, kind, attempt + 1); });
       return;
     }
+    if (!target) return;
+    pendingPanelFocusKind = "";
     pendingToolsFocusSelector = "";
-    target = target || panel.querySelector(".somos-panel-close") || panel.querySelector("button, [role='switch']");
-    if (target) target.focus({ preventScroll: true });
+    if (panel.dataset.somosEntryInteractionGuard !== "true") {
+      panel.dataset.somosEntryInteractionGuard = "true";
+      var markPanelInteraction = function () { panel.dataset.somosUserInteracted = "true"; };
+      panel.addEventListener("pointerdown", markPanelInteraction, { once: true, capture: true });
+      panel.addEventListener("keydown", markPanelInteraction, { once: true, capture: true });
+    }
+    [0, 80, 240, 500, 900].forEach(function (delay) {
+      window.setTimeout(function () {
+        if (!panel.isConnected || !panel.getClientRects().length || !target.isConnected || panel.dataset.somosUserInteracted === "true") return;
+        target.focus({ preventScroll: true });
+      }, delay);
+    });
+  }
+
+  function focusToolsTarget(attempt) {
+    var panel = Array.prototype.find.call(document.querySelectorAll("#interface-container .somos-native-settings-panel"), function (candidate) {
+      return candidate.querySelector("#somos-reference-tools");
+    });
+    if (!panel && attempt < 45) {
+      window.requestAnimationFrame(function () { focusToolsTarget(attempt + 1); });
+      return;
+    }
+    focusNativeMenuEntry(panel, "settings", attempt);
   }
 
   function openIndexWhenPanelsClose(attempt) {
@@ -219,7 +266,10 @@
     }
     var button = exactBridge(labels.index);
     closePressedPanels(button);
-    if (button && button.getAttribute("aria-pressed") !== "true") button.click();
+    if (button && button.getAttribute("aria-pressed") !== "true") {
+      pendingPanelFocusKind = "index";
+      button.click();
+    }
     scheduleUpdate();
   }
 
@@ -233,6 +283,11 @@
   }
 
   function closeNativeMenu(panel, kind) {
+    var returnFocus = kind === "settings"
+      ? (toolsReturnFocus || toolsButton())
+      : kind === "glossary"
+        ? (glossaryReturnFocus || toolsButton())
+        : document.getElementById("somos-index");
     var bridgeLabel = kind === "index" ? labels.index : kind === "glossary" ? labels.glossary : labels.settings;
     var bridge = exactBridge(bridgeLabel);
     if (bridge) bridge.click();
@@ -243,9 +298,13 @@
       if (pressed) pressed.click();
       else document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
     }
+    if (kind === "settings") toolsReturnFocus = null;
+    if (kind === "glossary") glossaryReturnFocus = null;
     scheduleUpdate();
     window.requestAnimationFrame(function () {
-      var target = document.getElementById(kind === "index" ? "somos-index" : "somos-tools");
+      var target = returnFocus && returnFocus.isConnected
+        ? returnFocus
+        : document.getElementById(kind === "index" ? "somos-index" : "somos-tools");
       if (target) target.focus({ preventScroll: true });
     });
   }
@@ -258,7 +317,8 @@
       if (compactGlossary && compactGlossary.getAttribute("aria-pressed") === "true") compactGlossary.click();
       else document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
     }
-    window.setTimeout(function () { openTools(toolsButton()); }, 180);
+    glossaryReturnFocus = null;
+    window.setTimeout(function () { openTools(toolsButton(), "#somos-open-glossary"); }, 180);
   }
 
   function createAudioSettings(readingCard) {
@@ -406,6 +466,48 @@
     }
   }
 
+  function syncHighlightAvailability(readingCard) {
+    var highlightRow = nativeConditionalRow(readingCard, "somos-setting-highlight") ||
+      readingCard.querySelector(".somos-setting-highlight");
+    if (!highlightRow) return;
+    var group = highlightRow.matches('[role="group"], [role="radiogroup"]')
+      ? highlightRow
+      : highlightRow.querySelector('[role="group"], [role="radiogroup"]');
+    if (!group) return;
+    var description = highlightRow.querySelector("#somos-highlight-requirement");
+    if (!description) {
+      description = document.createElement("span");
+      description.id = "somos-highlight-requirement";
+      description.className = "somos-setting-description somos-highlight-requirement";
+      description.textContent = "Active Lectura en voz alta para utilizar el resaltado.";
+      highlightRow.appendChild(description);
+    }
+    var control = ttsSwitch();
+    var enabled = Boolean(ttsPlayer() || (control && control.getAttribute("aria-checked") === "true"));
+    setAttributeIfChanged(group, "aria-disabled", enabled ? "false" : "true");
+    if (enabled) {
+      group.removeAttribute("tabindex");
+      group.removeAttribute("aria-describedby");
+      description.hidden = true;
+    } else {
+      group.tabIndex = 0;
+      group.setAttribute("aria-describedby", description.id);
+      description.hidden = false;
+    }
+    group.querySelectorAll('[role="radio"]').forEach(function (radio) {
+      if (!enabled) {
+        radio.dataset.somosTtsRequiredDisabled = "true";
+        radio.disabled = true;
+        setAttributeIfChanged(radio, "aria-disabled", "true");
+      } else if (radio.dataset.somosTtsRequiredDisabled === "true") {
+        delete radio.dataset.somosTtsRequiredDisabled;
+        radio.disabled = false;
+        radio.removeAttribute("aria-disabled");
+      }
+    });
+    highlightRow.classList.toggle("somos-setting-disabled", !enabled);
+  }
+
   function organizeNativeSettings(panel) {
     var readingSection = settingsSection(panel, /^(Lectura|Apoyos para la lectura)$/i);
     if (readingSection) {
@@ -445,14 +547,19 @@
           if (readAloudSwitch) {
             readAloudSwitch.setAttribute("aria-labelledby", "somos-read-aloud-label");
             readAloudSwitch.setAttribute("aria-describedby", "somos-read-aloud-description");
-            if (readAloudSwitch.dataset.somosReopenTools !== "true") {
-              readAloudSwitch.dataset.somosReopenTools = "true";
+            if (readAloudSwitch.dataset.somosActivationFlow !== "true") {
+              readAloudSwitch.dataset.somosActivationFlow = "true";
               readAloudSwitch.addEventListener("click", function () {
+                var activating = readAloudSwitch.getAttribute("aria-checked") !== "true";
                 window.setTimeout(function () {
-                  var bridge = exactBridge(labels.settings);
-                  if (!bridge || bridge.getAttribute("aria-pressed") !== "true") {
-                    openTools(toolsButton(), ".somos-setting-read-aloud [role='switch']");
+                  var liveControl = ttsSwitch();
+                  var active = Boolean(ttsPlayer() || (liveControl && liveControl.getAttribute("aria-checked") === "true"));
+                  if (activating && active) {
+                    closeTools(false);
+                    closePressedPanels(null);
+                    pausePreparedTtsSession(0);
                   }
+                  scheduleUpdate();
                 }, 180);
               });
             }
@@ -464,6 +571,7 @@
         applyPendingConditionalSettings(readingCard);
         syncConditionalSettings(readingCard);
         ensureConditionalSettings(readingCard);
+        syncHighlightAvailability(readingCard);
         createAudioSettings(readingCard);
       }
     }
@@ -553,6 +661,7 @@
       }
       if (existingHeader) {
         if (kind === "settings") organizeNativeSettings(panel);
+        focusNativeMenuEntry(panel, kind, 0);
         return;
       }
       var header = document.createElement("div");
@@ -565,6 +674,7 @@
       var back = header.querySelector(".somos-panel-back");
       if (back) back.addEventListener("click", returnFromGlossaryToTools);
       if (kind === "settings") organizeNativeSettings(panel);
+      focusNativeMenuEntry(panel, kind, 0);
     });
   }
 
@@ -588,6 +698,7 @@
     if (!trigger) return;
     toolsReturnFocus = origin || trigger;
     pendingToolsFocusSelector = focusSelector || "";
+    pendingPanelFocusKind = "settings";
     setAttributeIfChanged(trigger, "aria-expanded", "true");
     if (bridge) {
       closePressedPanels(bridge);
@@ -611,9 +722,15 @@
     else openTools(toolsButton());
   }
 
-  function openGlossary() {
+  function openGlossary(eventOrOrigin) {
     var bridge = exactBridge(labels.glossary);
     if (bridge && bridge.getAttribute("aria-pressed") === "true") return;
+    glossaryReturnFocus = eventOrOrigin && eventOrOrigin.currentTarget
+      ? eventOrOrigin.currentTarget
+      : eventOrOrigin && eventOrOrigin.nodeType === 1
+        ? eventOrOrigin
+        : document.activeElement;
+    pendingPanelFocusKind = "glossary";
     openRuntimeFeature(labels.glossary, "Glosario");
   }
 
@@ -665,8 +782,8 @@
   }
 
   function preservePausedTransport(attempt) {
-    var toggle = nativeAudioButton(function (label) { return label === labels.play || label === labels.pause; });
-    if (toggle && toggle.getAttribute("aria-label") === labels.pause) toggle.click();
+    var toggle = nativeAudioButton(function (label) { return label === labels.play || label === labels.pauseNative; });
+    if (toggle && toggle.getAttribute("aria-label") === labels.pauseNative) toggle.click();
     scheduleUpdate();
     if (attempt < 12) {
       window.requestAnimationFrame(function () { preservePausedTransport(attempt + 1); });
@@ -674,8 +791,8 @@
   }
 
   function stepNativeAudio(predicate) {
-    var toggle = nativeAudioButton(function (label) { return label === labels.play || label === labels.pause; });
-    var wasPlaying = Boolean(toggle && toggle.getAttribute("aria-label") === labels.pause);
+    var toggle = nativeAudioButton(function (label) { return label === labels.play || label === labels.pauseNative; });
+    var wasPlaying = Boolean(toggle && toggle.getAttribute("aria-label") === labels.pauseNative);
     useNativeAudioButton(predicate);
     if (!wasPlaying) preservePausedTransport(0);
   }
@@ -768,7 +885,7 @@
   function pausePreparedTtsSession(attempt, settingsApplied) {
     var player = ttsPlayer();
     var pause = player && Array.prototype.find.call(player.querySelectorAll("button"), function (button) {
-      return button.getAttribute("aria-label") === labels.pause;
+      return button.getAttribute("aria-label") === labels.pauseNative;
     });
     var applied = Boolean(settingsApplied);
     if (player && !applied) {
@@ -811,6 +928,8 @@
   function buildInterface() {
     var root = navContainer();
     if (!root || document.getElementById("somos-primary-toolbar")) return;
+    var dock = baseDock();
+    if (!dock || !exactBridge(labels.index) || !(exactBridge(labels.settings) || exactBridge(labels.accessibility))) return;
 
     var toolbar = document.createElement("nav");
     toolbar.id = "somos-primary-toolbar";
@@ -835,18 +954,20 @@
       audioPlayerButton("somos-audio-stop", labels.stop, icons.stop) +
       '<p id="somos-audio-status" class="somos-visually-hidden" aria-live="polite"></p>';
 
-    root.appendChild(player);
-    root.appendChild(toolbar);
+    document.body.appendChild(player);
+    document.body.appendChild(toolbar);
 
     var indexControl = document.getElementById("somos-index");
     indexControl.setAttribute("aria-haspopup", "dialog");
     indexControl.setAttribute("aria-expanded", "false");
     indexControl.setAttribute("aria-keyshortcuts", "X");
 
-    document.getElementById("somos-index").addEventListener("click", function () {
+    function openIndexFromPrimary() {
       closeTools(false);
       openIndexWhenPanelsClose(0);
-    });
+    }
+
+    document.getElementById("somos-index").addEventListener("click", openIndexFromPrimary);
     document.getElementById("somos-previous").addEventListener("click", function () {
       var button = exactBridge(labels.previous);
       if (button) button.click();
@@ -863,9 +984,9 @@
       if (button.id === "somos-audio-previous") {
         stepNativeAudio(function (label) { return label === labels.audioPrevious || label === "previous-audio"; });
       } else if (button.id === "somos-audio-toggle") {
-        var nativeToggle = nativeAudioButton(function (label) { return label === labels.play || label === labels.pause; });
+        var nativeToggle = nativeAudioButton(function (label) { return label === labels.play || label === labels.pauseNative; });
         if (nativeToggle && nativeToggle.getAttribute("aria-label") === labels.play) userStartedAudio = true;
-        useNativeAudioButton(function (label) { return label === labels.play || label === labels.pause; });
+        useNativeAudioButton(function (label) { return label === labels.play || label === labels.pauseNative; });
       } else if (button.id === "somos-audio-next") {
         stepNativeAudio(function (label) { return label === labels.audioNext || label === "next-audio"; });
       } else if (button.id === "somos-audio-settings") {
@@ -899,6 +1020,7 @@
     updateScheduled = false;
     buildInterface();
     concealBaseDock();
+    exposeCustomControls();
     enhanceNativeMenus();
 
     var previous = exactBridge(labels.previous);
@@ -936,7 +1058,7 @@
     }
     if (customPlayer) customPlayer.hidden = !ttsActive || stoppingAudio;
     var nativePrevious = nativeAudioButton(function (label) { return label === labels.audioPrevious || label === "previous-audio"; });
-    var nativeToggle = nativeAudioButton(function (label) { return label === labels.play || label === labels.pause; });
+    var nativeToggle = nativeAudioButton(function (label) { return label === labels.play || label === labels.pauseNative; });
     var nativeNext = nativeAudioButton(function (label) { return label === labels.audioNext || label === "next-audio"; });
     var nativeStop = nativeAudioButton(function (label) { return label === labels.stop; });
     var customPrevious = document.getElementById("somos-audio-previous");
@@ -947,7 +1069,7 @@
     if (customNext) customNext.disabled = !nativeNext || nativeNext.disabled;
     if (customStop) customStop.disabled = !nativeStop || nativeStop.disabled;
     if (customToggle) {
-      var nativePlaying = Boolean(nativeToggle && nativeToggle.getAttribute("aria-label") === labels.pause);
+      var nativePlaying = Boolean(nativeToggle && nativeToggle.getAttribute("aria-label") === labels.pauseNative);
       if (nativePlaying && !userStartedAudio && !automaticPausePending) {
         automaticPausePending = true;
         nativeToggle.click();
@@ -973,11 +1095,11 @@
     var customAudioSettings = document.getElementById("somos-audio-settings");
     if (customAudioSettings) {
       var settingsBridge = exactBridge(labels.settings);
-      setAttributeIfChanged(customAudioSettings, "aria-expanded", settingsBridge && settingsBridge.getAttribute("aria-pressed") === "true" ? "true" : "false");
+      setAttributeIfChanged(customAudioSettings, "aria-expanded", (settingsBridge && settingsBridge.getAttribute("aria-pressed") === "true") || toolsPanel() ? "true" : "false");
     }
     var customTools = toolsButton();
     var settingsControl = exactBridge(labels.settings);
-    if (customTools) setAttributeIfChanged(customTools, "aria-expanded", settingsControl && settingsControl.getAttribute("aria-pressed") === "true" ? "true" : "false");
+    if (customTools) setAttributeIfChanged(customTools, "aria-expanded", (settingsControl && settingsControl.getAttribute("aria-pressed") === "true") || toolsPanel() ? "true" : "false");
 
     var nativeSpeed = nativeAudioButton(function (label) { return label.indexOf("Velocidad de reproducción:") === 0; });
     var currentSpeed = document.documentElement.getAttribute("data-somos-audio-speed") || "normal";
@@ -1020,7 +1142,7 @@
     });
   }
 
-  document.documentElement.setAttribute("data-project-adaptations", "somos-ger-34");
+  document.documentElement.setAttribute("data-project-adaptations", "somos-ger-52");
   var root = navContainer();
   if (root) {
     new MutationObserver(scheduleUpdate).observe(root, {
@@ -1044,6 +1166,20 @@
   }
 
   document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && event.target && event.target.closest) {
+      var activePanel = event.target.closest(".somos-native-menu-panel");
+      if (activePanel) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        var activeKind = activePanel.classList.contains("somos-native-index-panel")
+          ? "index"
+          : activePanel.classList.contains("somos-native-glossary-panel")
+            ? "glossary"
+            : "settings";
+        closeNativeMenu(activePanel, activeKind);
+        return;
+      }
+    }
     if (event.altKey && event.shiftKey && event.key.toLowerCase() === "l") {
       event.preventDefault();
       event.stopImmediatePropagation();

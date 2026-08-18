@@ -8,13 +8,21 @@ const pages = fs
   .sort();
 
 const marker =
-  '    <script src="./assets/project-adaptations.js?v=somos-ger-54"></script>';
+  '    <script src="./assets/project-adaptations.js?v=somos-ger-56"></script>';
 const existingMarker =
   /^[\t ]*<script src="\.\/assets\/project-adaptations\.js(?:\?[^\"]*)?"><\/script>[\t ]*(?:\r?\n)?/m;
 const styleMarker =
   '    <link href="./assets/project-interface.css?v=somos-ger-24" rel="stylesheet">';
 const existingStyleMarker =
   /^[\t ]*<link href="\.\/assets\/project-interface\.css(?:\?[^\"]*)?" rel="stylesheet">[\t ]*(?:\r?\n)?/m;
+const runtimeMarker =
+  '    <script src="./assets/base.bundle.local.js?v=somos-ger-runtime-1"></script>';
+const existingRuntimeMarker =
+  /^[\t ]*<script src="\.\/assets\/base\.bundle\.local\.js(?:\?[^\"]*)?"><\/script>[\t ]*(?:\r?\n)?/m;
+const runtimePreloadMarker =
+  '    <link rel="preload" href="./assets/base.bundle.local.js?v=somos-ger-runtime-1" as="script">';
+const existingRuntimePreloadMarker =
+  /^[\t ]*<link rel="preload" href="\.\/assets\/base\.bundle\.local\.js(?:\?[^\"]*)?" as="script">[\t ]*(?:\r?\n)?/m;
 
 for (const name of pages) {
   const file = path.join(root, name);
@@ -25,6 +33,9 @@ for (const name of pages) {
   if (existingStyleMarker.test(html)) {
     html = html.replace(existingStyleMarker, "");
   }
+  if (existingRuntimePreloadMarker.test(html)) {
+    html = html.replace(existingRuntimePreloadMarker, "");
+  }
   const headAnchor = '    <link href="./assets/fonts.css?v=somos-ger-2" rel="stylesheet">';
   if (!html.includes(headAnchor)) {
     throw new Error(`No se encontró la hoja tipográfica en ${name}`);
@@ -32,11 +43,12 @@ for (const name of pages) {
   const headIndex = html.indexOf(headAnchor);
   const headEnd = headIndex + headAnchor.length;
   const afterHead = html.slice(headEnd).replace(/^(?:[\t ]*\r?\n)+/, "");
-  html = `${html.slice(0, headEnd)}\r\n${styleMarker}\r\n${afterHead}`;
-  const anchor = '    <script src="./assets/base.bundle.local.js"></script>';
-  if (!html.includes(anchor)) {
+  html = `${html.slice(0, headEnd)}\r\n${runtimePreloadMarker}\r\n${styleMarker}\r\n${afterHead}`;
+  if (!existingRuntimeMarker.test(html)) {
     throw new Error(`No se encontró el runtime en ${name}`);
   }
+  html = html.replace(existingRuntimeMarker, `${runtimeMarker}\r\n`);
+  const anchor = runtimeMarker;
   const runtimeIndex = html.indexOf(anchor);
   const beforeRuntime = html.slice(0, runtimeIndex).replace(/[\t ]*(?:\r?\n[\t ]*)+$/, "");
   html = `${beforeRuntime}\r\n${marker}\r\n${html.slice(runtimeIndex)}`;

@@ -57,7 +57,6 @@
     { id: "fast", nativeLabel: "Rápido", label: "Rápida", multiplier: "1,5 veces" },
     { id: "very-fast", nativeLabel: "Muy rápido", label: "Muy rápida", multiplier: "2 veces" },
   ];
-
   function navContainer() {
     return document.getElementById("nav-container");
   }
@@ -1096,7 +1095,7 @@
     });
   }
 
-  document.documentElement.setAttribute("data-project-adaptations", "somos-ger-54");
+  document.documentElement.setAttribute("data-project-adaptations", "somos-ger-56");
   var root = navContainer();
   if (root) {
     new MutationObserver(scheduleUpdate).observe(root, {

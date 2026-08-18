@@ -4,8 +4,10 @@ const path = require("path");
 const root = path.resolve(__dirname, "..");
 const pages = fs.readdirSync(root).filter((name) => name.endsWith(".html")).sort();
 const quizPages = pages.filter((name) => /^qz\d+\.html$/.test(name));
-const scriptMarker = './assets/project-adaptations.js?v=somos-ger-54';
+const scriptMarker = './assets/project-adaptations.js?v=somos-ger-56';
 const styleMarker = './assets/project-interface.css?v=somos-ger-24';
+const runtimeMarker = './assets/base.bundle.local.js?v=somos-ger-runtime-1';
+const runtimePreloadMarker = '<link rel="preload" href="./assets/base.bundle.local.js?v=somos-ger-runtime-1" as="script">';
 const expectedIds = [
   "somos-index",
   "somos-previous",
@@ -21,7 +23,7 @@ const expectedIds = [
 
 const pageFailures = pages.flatMap((name) => {
   const html = fs.readFileSync(path.join(root, name), "utf8");
-  const missing = [scriptMarker, styleMarker].filter((marker) => !html.includes(marker));
+  const missing = [scriptMarker, styleMarker, runtimeMarker, runtimePreloadMarker].filter((marker) => !html.includes(marker));
   return missing.length ? [{ page: name, missing }] : [];
 });
 const quizStructureFailures = quizPages.filter((name) => {

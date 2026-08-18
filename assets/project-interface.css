@@ -177,8 +177,7 @@ body:has(#simple-main) #content {
 .somos-audio-button:focus-visible,
 .somos-icon-button:focus-visible,
 .somos-tool-option:focus-visible,
-.somos-speed-options button:focus-visible,
-.somos-volume-range:focus-visible {
+.somos-speed-options button:focus-visible {
   outline: 3px solid var(--somos-toolbar-focus);
   outline-offset: 2px;
   box-shadow: var(--somos-shadow-focus);
@@ -358,8 +357,7 @@ html[data-somos-tts-active="true"] .somos-tools-panel {
   border: 0;
 }
 
-.somos-speed-fieldset legend,
-.somos-volume-control {
+.somos-speed-fieldset legend {
   width: 100%;
   margin: 0 0 7px;
   display: flex;
@@ -416,16 +414,6 @@ html[data-somos-tts-active="true"] .somos-tools-panel {
   clip: rect(0 0 0 0);
   white-space: nowrap;
   border: 0;
-}
-
-.somos-volume-control { margin-top: 14px; }
-
-.somos-volume-range {
-  width: 100%;
-  min-height: 44px;
-  margin: -7px 0 0;
-  accent-color: var(--somos-institutional-500);
-  cursor: pointer;
 }
 
 .somos-tts-player {
@@ -710,7 +698,6 @@ html[data-somos-tts-active="true"] .somos-tools-panel {
 }
 #interface-container .somos-native-settings-panel #somos-audio-voice-setting { order: 60; }
 #interface-container .somos-native-settings-panel #somos-audio-speed-setting { order: 70; }
-#interface-container .somos-native-settings-panel #somos-audio-volume-setting { order: 75; }
 #interface-container .somos-native-settings-panel .somos-setting-autoplay { order: 80; }
 
 #interface-container .somos-native-settings-panel .somos-setting-description {

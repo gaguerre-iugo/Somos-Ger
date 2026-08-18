@@ -357,18 +357,6 @@
         });
       });
     }
-
-    var volumeRow = document.getElementById("somos-audio-volume-setting");
-    if (!volumeRow) {
-      volumeRow = document.createElement("div");
-      volumeRow.id = "somos-audio-volume-setting";
-      volumeRow.className = "somos-native-setting-row";
-      volumeRow.innerHTML = '<label class="somos-volume-control" for="somos-volume"><span>Volumen</span><output id="somos-volume-output" for="somos-volume">100%</output></label><input id="somos-volume" class="somos-volume-range" type="range" min="0" max="100" step="5" value="100" aria-label="Volumen">';
-      readingCard.appendChild(volumeRow);
-      volumeRow.querySelector("#somos-volume").addEventListener("input", function (event) {
-        selectVolume(parseInt(event.target.value, 10));
-      });
-    }
   }
 
   function nativeConditionalRow(readingCard, className) {
@@ -829,53 +817,16 @@
     }
   }
 
-  function setNativeVolume(percent, attempt) {
-    var input = document.querySelector('#interface-container input[type="range"][min="0"][max="1"]');
-    if (input) {
-      var setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-      setter.call(input, String(percent / 100));
-      input.dispatchEvent(new Event("input", { bubbles: true }));
-      input.dispatchEvent(new Event("change", { bubbles: true }));
-      window.requestAnimationFrame(function () {
-        var volumeButton = nativeAudioButton(function (label) { return label.indexOf("Volumen:") === 0; });
-        if (volumeButton && volumeButton.getAttribute("aria-expanded") === "true") volumeButton.click();
-        window.setTimeout(function () {
-          document.documentElement.removeAttribute("data-somos-audio-volume-pending");
-          scheduleUpdate();
-        }, 150);
-        scheduleUpdate();
-      });
-      return;
-    }
-    if (attempt === 0) {
-      var button = nativeAudioButton(function (label) { return label.indexOf("Volumen:") === 0; });
-      if (button) button.click();
-    }
-    if (attempt < 20) {
-      window.requestAnimationFrame(function () { setNativeVolume(percent, attempt + 1); });
-    }
-  }
-
   function selectSpeed(option) {
     setAttributeIfChanged(document.documentElement, "data-somos-audio-speed", option.id);
     if (ttsPlayer()) setNativeSpeed(option, 0);
     scheduleUpdate();
   }
 
-  function selectVolume(percent) {
-    setAttributeIfChanged(document.documentElement, "data-somos-audio-volume", String(percent));
-    setAttributeIfChanged(document.documentElement, "data-somos-audio-volume-pending", String(percent));
-    var output = document.getElementById("somos-volume-output");
-    if (output) output.textContent = percent + "%";
-    if (ttsPlayer()) setNativeVolume(percent, 0);
-  }
-
   function applyPendingAudioSettings() {
     var speedId = document.documentElement.getAttribute("data-somos-audio-speed") || "normal";
     var option = speedOptions.find(function (candidate) { return candidate.id === speedId; }) || speedOptions[1];
-    var volume = parseInt(document.documentElement.getAttribute("data-somos-audio-volume") || "100", 10);
     setNativeSpeed(option, 0);
-    window.setTimeout(function () { setNativeVolume(volume, 0); }, 100);
   }
 
   function openAudioSettings() {
@@ -1013,7 +964,6 @@
       var step = event.key === "ArrowRight" ? 1 : -1;
       controls[(index + step + controls.length) % controls.length].focus();
     });
-
   }
 
   function updateInterface() {
@@ -1112,19 +1062,6 @@
     document.querySelectorAll("[data-somos-speed]").forEach(function (button) {
       setAttributeIfChanged(button, "aria-checked", button.getAttribute("data-somos-speed") === currentSpeed ? "true" : "false");
     });
-
-    var nativeVolume = nativeAudioButton(function (label) { return label.indexOf("Volumen:") === 0; });
-    var pendingVolume = document.documentElement.getAttribute("data-somos-audio-volume-pending");
-    var currentVolume = parseInt(pendingVolume || document.documentElement.getAttribute("data-somos-audio-volume") || "100", 10);
-    if (nativeVolume && pendingVolume === null) {
-      var volumeMatch = nativeVolume.getAttribute("aria-label").match(/(\d+)%/);
-      if (volumeMatch) currentVolume = parseInt(volumeMatch[1], 10);
-    }
-    setAttributeIfChanged(document.documentElement, "data-somos-audio-volume", String(currentVolume));
-    var volumeControl = document.getElementById("somos-volume");
-    var volumeOutput = document.getElementById("somos-volume-output");
-    if (volumeControl && volumeControl.value !== String(currentVolume)) volumeControl.value = String(currentVolume);
-    if (volumeOutput && volumeOutput.textContent !== currentVolume + "%") volumeOutput.textContent = currentVolume + "%";
   }
 
   function scheduleUpdate() {
@@ -1142,7 +1079,7 @@
     });
   }
 
-  document.documentElement.setAttribute("data-project-adaptations", "somos-ger-52");
+  document.documentElement.setAttribute("data-project-adaptations", "somos-ger-53");
   var root = navContainer();
   if (root) {
     new MutationObserver(scheduleUpdate).observe(root, {

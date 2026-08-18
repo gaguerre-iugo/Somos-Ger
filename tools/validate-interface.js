@@ -4,7 +4,7 @@ const path = require("path");
 const root = path.resolve(__dirname, "..");
 const pages = fs.readdirSync(root).filter((name) => name.endsWith(".html")).sort();
 const scriptMarker = './assets/project-adaptations.js?v=somos-ger-54';
-const styleMarker = './assets/project-interface.css?v=somos-ger-19';
+const styleMarker = './assets/project-interface.css?v=somos-ger-20';
 const expectedIds = [
   "somos-index",
   "somos-previous",
@@ -41,6 +41,7 @@ const expectedThemeTokens = [
   "--somos-institutional-500: #008078",
   ".somos-native-menu-panel",
   ".somos-tts-player",
+  ".somos-setting-read-aloud #somos-read-aloud-description",
 ];
 const missingThemeTokens = expectedThemeTokens.filter((token) => !interfaceCss.includes(token));
 

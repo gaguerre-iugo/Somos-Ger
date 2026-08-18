@@ -932,6 +932,35 @@ html[data-somos-tts-active="true"] .somos-tools-panel {
   background: transparent !important;
 }
 
+#interface-container .somos-native-settings-panel .somos-setting-read-aloud {
+  position: relative !important;
+  display: block !important;
+}
+
+#interface-container .somos-native-settings-panel .somos-setting-read-aloud > label {
+  width: 100% !important;
+  display: block !important;
+}
+
+#interface-container .somos-native-settings-panel .somos-setting-read-aloud #somos-read-aloud-label {
+  min-height: 44px;
+  padding-right: 52px;
+  display: flex;
+  align-items: center;
+}
+
+#interface-container .somos-native-settings-panel .somos-setting-read-aloud #somos-read-aloud-description {
+  width: 100%;
+  margin-top: 4px;
+  display: block;
+}
+
+#interface-container .somos-native-settings-panel .somos-setting-read-aloud > [role="switch"] {
+  position: absolute !important;
+  top: 12px;
+  right: 4px;
+}
+
 #interface-container .somos-native-settings-panel [role="group"][aria-labelledby] > div:has([role="radio"]) {
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;

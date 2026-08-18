@@ -920,6 +920,7 @@ html[data-somos-tts-active="true"] .somos-tools-panel {
   height: 20px !important;
   border-radius: 50% !important;
   background: #ffffff !important;
+  translate: 0 !important;
   transform: translateX(0) !important;
 }
 

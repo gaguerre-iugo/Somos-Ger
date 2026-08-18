@@ -12,7 +12,7 @@ const marker =
 const existingMarker =
   /^[\t ]*<script src="\.\/assets\/project-adaptations\.js(?:\?[^\"]*)?"><\/script>[\t ]*(?:\r?\n)?/m;
 const styleMarker =
-  '    <link href="./assets/project-interface.css?v=somos-ger-21" rel="stylesheet">';
+  '    <link href="./assets/project-interface.css?v=somos-ger-22" rel="stylesheet">';
 const existingStyleMarker =
   /^[\t ]*<link href="\.\/assets\/project-interface\.css(?:\?[^\"]*)?" rel="stylesheet">[\t ]*(?:\r?\n)?/m;
 

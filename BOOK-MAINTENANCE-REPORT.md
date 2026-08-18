@@ -66,7 +66,7 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - Se reservan 96 px estables para el reproductor. En las actividades, el desplazamiento se limita al contenido para que ni la barra ni el reproductor tapen preguntas o devoluciones. En móvil los rótulos visuales se ocultan, pero los cinco botones conservan nombre accesible completo y un objetivo mínimo de 44 px.
 - Herramientas y reproductor quedan adyacentes en escritorio; en móvil el panel reduce su altura para evitar solapamientos. El reproductor usa iconos con nombre accesible en móvil e icono y texto en escritorio. Todos los objetivos interactivos verificados alcanzan al menos 44 × 44 px.
 - La observación de cambios se limita a `#nav-container` y al contenedor de interfaz para el único atajo de idioma; no se instaló un observador global del documento.
-- Los recursos se versionaron finalmente como `project-adaptations.js?v=somos-ger-53` y `project-interface.css?v=somos-ger-18` para invalidar cachés previas.
+- Los recursos se versionaron finalmente como `project-adaptations.js?v=somos-ger-54` y `project-interface.css?v=somos-ger-19` para invalidar cachés previas.
 - El aplicador se corrigió para eliminar separaciones residuales y se comprobó idempotente: dos ejecuciones consecutivas producen el mismo SHA-256 de `index.html`.
 
 ### 6. Unificación visual de todos los menús (incremento actual)
@@ -111,6 +111,7 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - A 320, 375, 480 y 566 px no hubo desborde horizontal. A 320 px se conservan iconos y nombres accesibles; a 375 px aparecen `Índice` y `Herramientas`; desde 480 px se muestran los rótulos completos. En 320 × 800, el panel móvil midió 288 × 720 px y todos los interruptores 44 × 44 px.
 - La comparación de estilos calculados contra 1930 confirmó paneles de 288 × 640 px en escritorio, radio de 12 px, cierre de 44 × 44 px, superficie `#242424`, borde blanco al 10 % y selección `#008078` con borde `#66c6c0`. Las secciones adicionales de 1930 corresponden a funciones deshabilitadas en Somos y no se reprodujeron artificialmente.
 - Una comprobación posterior directa del panel de 1930 confirmó que no contiene Volumen y que el playbook tampoco lo documenta. Se retiraron de Somos el deslizador, el porcentaje y toda su lógica/CSS específica; una regla del validador impide que ese control vuelva a introducirse accidentalmente.
+- Se eliminó el salto de escala entre páginas siguiendo el principio de estabilización de 1930, adaptado al diseño fijo de Somos: el contenido permanece oculto durante el cálculo provisional, espera la altura real del dock, fuerza el ajuste definitivo y se revela dos frames después. La medición pasó de mostrar 528 px y luego 564 px a mantener ocultos los 528 px y mostrar únicamente los 564 px finales; cinco transiciones consecutivas confirmaron un único ancho visible. Un fallback de 1,5 segundos evita que un fallo del runtime pueda dejar el contenido oculto.
 - Rendimiento de cinco aperturas en caliente: Herramientas tuvo mediana de 315 ms e Índice de 319 ms en Somos, frente a 1040 ms y 1033 ms respectivamente en 1930, en el mismo navegador y equipo.
 - El recorrido final de las 34 rutas encontró contenido visible en todas, una sola barra, tipografía Atkinson efectiva, cero controles personalizados bajo `aria-hidden` y cero desbordes horizontales.
 - Una prueba de estabilidad de 30 segundos terminó sin diálogos, reproductor o capas residuales y sin errores de consola.
@@ -131,7 +132,7 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - Herramientas verificado con las cinco secciones documentadas, Glosario al final y los atajos visibles `X`, `A`, `G`, `Esc`.
 - Atajo `G` y botón Glosario verificados; `Volver a Herramientas` elimina el Glosario antes de reconstruir Herramientas. El atajo `X` desde Herramientas deja un único Índice abierto.
 - Preferencias condicionadas verificadas con lectura en voz alta activa e inactiva; resaltado permanece visible pero deshabilitado hasta activar la voz, y los controles transferibles conservan su selección.
-- Recorrido HTTP automatizado de los 34 HTML con `data-project-adaptations="somos-ger-53"`, barra disponible y cero desborde horizontal.
+- Recorrido HTTP automatizado de los 34 HTML con `data-project-adaptations="somos-ger-54"`, barra disponible y cero desborde horizontal.
 - Texto a voz verificado desde estado limpio: aparece preparado en `Reproducir`, enfoca ese control y Herramientas cambia a `Desactivar lectura en voz alta`.
 - Reproductor verificado con cinco controles en el orden documentado: reproducir/pausar, anterior/siguiente conservando la pausa, apertura de Voz y velocidad con retorno del foco, y Detener eliminando la sesión.
 - Recarga y navegación con una sesión activa verificadas: el reproductor se restaura pausado y no reproduce automáticamente en el nuevo documento.

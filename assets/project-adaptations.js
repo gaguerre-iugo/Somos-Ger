@@ -21,6 +21,7 @@
   var glossaryReturnFocus = null;
   var pendingToolsFocusSelector = "";
   var pendingPanelFocusKind = "";
+  var layoutRevealScheduled = false;
   var userStartedAudio = false;
   var automaticPausePending = false;
   var conditionalSettings = {
@@ -108,6 +109,21 @@
         button.removeAttribute("aria-hidden");
       });
     }
+  }
+
+  function revealStableContent(forceFallback) {
+    if (document.documentElement.getAttribute("data-somos-layout-ready") === "true" || layoutRevealScheduled) return;
+    var dockHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--dock-height"));
+    var toolbar = document.getElementById("somos-primary-toolbar");
+    if (!forceFallback && (!(dockHeight > 0) || !toolbar)) return;
+    layoutRevealScheduled = true;
+    window.dispatchEvent(new Event("adt:dock-resize"));
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(function () {
+        document.documentElement.setAttribute("data-somos-layout-ready", "true");
+        layoutRevealScheduled = false;
+      });
+    });
   }
 
   function closePressedPanels(except) {
@@ -971,6 +987,7 @@
     buildInterface();
     concealBaseDock();
     exposeCustomControls();
+    revealStableContent(false);
     enhanceNativeMenus();
 
     var previous = exactBridge(labels.previous);
@@ -1079,7 +1096,7 @@
     });
   }
 
-  document.documentElement.setAttribute("data-project-adaptations", "somos-ger-53");
+  document.documentElement.setAttribute("data-project-adaptations", "somos-ger-54");
   var root = navContainer();
   if (root) {
     new MutationObserver(scheduleUpdate).observe(root, {
@@ -1140,4 +1157,5 @@
   scheduleUpdate();
   window.setTimeout(scheduleUpdate, 500);
   window.setTimeout(scheduleUpdate, 1500);
+  window.setTimeout(function () { revealStableContent(true); }, 1500);
 })();

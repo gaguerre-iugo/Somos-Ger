@@ -3,8 +3,8 @@ const path = require("path");
 
 const root = path.resolve(__dirname, "..");
 const pages = fs.readdirSync(root).filter((name) => name.endsWith(".html")).sort();
-const scriptMarker = './assets/project-adaptations.js?v=somos-ger-53';
-const styleMarker = './assets/project-interface.css?v=somos-ger-18';
+const scriptMarker = './assets/project-adaptations.js?v=somos-ger-54';
+const styleMarker = './assets/project-interface.css?v=somos-ger-19';
 const expectedIds = [
   "somos-index",
   "somos-previous",
@@ -29,6 +29,11 @@ const interfaceCss = fs.readFileSync(path.join(root, "assets", "project-interfac
 const missingIds = expectedIds.filter((id) => !adapter.includes(`"${id}"`));
 const forbiddenToolsControls = ["somos-audio-volume-setting", "somos-volume"]
   .filter((token) => adapter.includes(token) || interfaceCss.includes(token));
+const stableRevealMissing = [
+  'data-somos-layout-ready',
+  'window.dispatchEvent(new Event("adt:dock-resize"))',
+].filter((token) => !adapter.includes(token))
+  .concat(interfaceCss.includes('html:not([data-somos-layout-ready="true"]) #content') ? [] : ["layout-ready CSS"]);
 const globalObserver = /observe\(document\.(?:documentElement|body)/.test(adapter);
 const expectedThemeTokens = [
   "--somos-panel-bg: #242424",
@@ -46,12 +51,13 @@ const result = {
   audioOrder: ["Audio anterior", "Reproducir/Pausar", "Audio siguiente", "Voz y velocidad", "Detener"],
   missingIds,
   forbiddenToolsControls,
+  stableRevealMissing,
   missingThemeTokens,
   globalObserver,
 };
 
 console.log(JSON.stringify(result, null, 2));
 
-if (pages.length !== 34 || pageFailures.length || missingIds.length || forbiddenToolsControls.length || missingThemeTokens.length || globalObserver) {
+if (pages.length !== 34 || pageFailures.length || missingIds.length || forbiddenToolsControls.length || stableRevealMissing.length || missingThemeTokens.length || globalObserver) {
   process.exitCode = 1;
 }

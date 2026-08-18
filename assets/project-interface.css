@@ -29,6 +29,14 @@
   --somos-shadow-focus: 0 2px 4px var(--somos-institutional-500);
 }
 
+html:not([data-somos-layout-ready="true"]) #content {
+  visibility: hidden !important;
+}
+
+html[data-somos-layout-ready="true"] #content {
+  visibility: visible !important;
+}
+
 #nav-container > [role="group"][aria-label="dock-label"],
 #nav-container [data-testid="dock-skeleton"] {
   visibility: hidden !important;

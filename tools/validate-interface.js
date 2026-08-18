@@ -32,7 +32,7 @@ const quizStructureFailures = quizPages.filter((name) => {
 const adapter = fs.readFileSync(path.join(root, "assets", "project-adaptations.js"), "utf8");
 const interfaceCss = fs.readFileSync(path.join(root, "assets", "project-interface.css"), "utf8");
 const config = JSON.parse(fs.readFileSync(path.join(root, "assets", "config.json"), "utf8"));
-const expectedBundleVersion = "somos-ger-3";
+const expectedBundleVersion = "somos-ger-4";
 const audioVoices = JSON.parse(fs.readFileSync(path.join(root, "content", "i18n", "es-UY", "audio_voices.json"), "utf8"));
 const timecodeVoices = JSON.parse(fs.readFileSync(path.join(root, "content", "i18n", "es-UY", "timecode", "timecode_voices.json"), "utf8"));
 const voiceResourceFailures = [

@@ -30,6 +30,14 @@ const quizStructureFailures = quizPages.filter((name) => {
   const html = fs.readFileSync(path.join(root, name), "utf8");
   return !html.includes('data-section-type="activity_quiz"');
 });
+const girlPage = fs.readFileSync(path.join(root, "pg032033_sec001.html"), "utf8");
+const girlImageMarkup = ["pg032033_im001.jpg", "pg032033_im002.jpg"].map((src) =>
+  girlPage.match(new RegExp(`<img[^>]+src="images/${src}"[^>]*>`))?.[0] || "",
+);
+const girlOrientationFailures = [
+  girlPage.includes('data-id="pg032033_page"') && girlPage.includes('transform:translateX(595px) rotate(90deg)') ? null : "fondo",
+  ...girlImageMarkup.map((markup, index) => markup && !markup.includes("rotate(") ? null : `recorte ${index + 1}`),
+].filter(Boolean);
 
 const adapter = fs.readFileSync(path.join(root, "assets", "project-adaptations.js"), "utf8");
 const interfaceCss = fs.readFileSync(path.join(root, "assets", "project-interface.css"), "utf8");
@@ -69,6 +77,7 @@ const result = {
   pageFailures,
   quizPages: quizPages.length,
   quizStructureFailures,
+  girlOrientationFailures,
   bundleVersion: config.bundleVersion,
   voiceResourceFailures,
   toolbarOrder: ["Índice", "Anterior", "actual / total", "Siguiente", "Herramientas"],
@@ -82,6 +91,6 @@ const result = {
 
 console.log(JSON.stringify(result, null, 2));
 
-if (pages.length !== 34 || pageFailures.length || quizPages.length !== 4 || quizStructureFailures.length || config.bundleVersion !== expectedBundleVersion || voiceResourceFailures.length || missingIds.length || forbiddenToolsControls.length || stableRevealMissing.length || missingThemeTokens.length || globalObserver) {
+if (pages.length !== 34 || pageFailures.length || quizPages.length !== 4 || quizStructureFailures.length || girlOrientationFailures.length || config.bundleVersion !== expectedBundleVersion || voiceResourceFailures.length || missingIds.length || forbiddenToolsControls.length || stableRevealMissing.length || missingThemeTokens.length || globalObserver) {
   process.exitCode = 1;
 }

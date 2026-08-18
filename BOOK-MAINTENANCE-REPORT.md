@@ -80,6 +80,7 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - Los interruptores adaptados anulan el `translate` compuesto que aporta el runtime y usan un único desplazamiento de 16 px para el pulsador. Esto mantiene dentro del carril los estados encendidos de Lectura en voz alta, Reproducción automática, Descripción de imágenes y Preferencias.
 - Las cuatro páginas `qz` conservan el inicio vertical y el desplazamiento interno de las actividades, pero centran horizontalmente su sección `activity_quiz` en el área útil. La excepción evita heredar el alineado izquierdo general aplicado a otras actividades.
 - El encabezado del Glosario reserva tres columnas estables de 44 px, espacio flexible y 44 px. El regreso a Herramientas conserva su nombre accesible, pero muestra solo la flecha para impedir que el texto compita con el título y el cierre dentro del panel de 288 px.
+- `assets/config.json` usa `bundleVersion: somos-ger-3` para invalidar solicitudes antiguas de los mapas localizados. Se verificó que `content/i18n/es-UY/audios.json` existe, está declarado en SCORM y responde por servidor antes y después del cambio; la auditoría de consola de las 34 páginas quedó sin errores.
 
 ### 7. Arquitectura funcional de Herramientas (incremento actual)
 

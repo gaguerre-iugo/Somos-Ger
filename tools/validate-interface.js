@@ -31,6 +31,8 @@ const quizStructureFailures = quizPages.filter((name) => {
 
 const adapter = fs.readFileSync(path.join(root, "assets", "project-adaptations.js"), "utf8");
 const interfaceCss = fs.readFileSync(path.join(root, "assets", "project-interface.css"), "utf8");
+const config = JSON.parse(fs.readFileSync(path.join(root, "assets", "config.json"), "utf8"));
+const expectedBundleVersion = "somos-ger-3";
 const missingIds = expectedIds.filter((id) => !adapter.includes(`"${id}"`));
 const forbiddenToolsControls = ["somos-audio-volume-setting", "somos-volume"]
   .filter((token) => adapter.includes(token) || interfaceCss.includes(token));
@@ -59,6 +61,7 @@ const result = {
   pageFailures,
   quizPages: quizPages.length,
   quizStructureFailures,
+  bundleVersion: config.bundleVersion,
   toolbarOrder: ["Índice", "Anterior", "actual / total", "Siguiente", "Herramientas"],
   audioOrder: ["Audio anterior", "Reproducir/Pausar", "Audio siguiente", "Voz y velocidad", "Detener"],
   missingIds,
@@ -70,6 +73,6 @@ const result = {
 
 console.log(JSON.stringify(result, null, 2));
 
-if (pages.length !== 34 || pageFailures.length || quizPages.length !== 4 || quizStructureFailures.length || missingIds.length || forbiddenToolsControls.length || stableRevealMissing.length || missingThemeTokens.length || globalObserver) {
+if (pages.length !== 34 || pageFailures.length || quizPages.length !== 4 || quizStructureFailures.length || config.bundleVersion !== expectedBundleVersion || missingIds.length || forbiddenToolsControls.length || stableRevealMissing.length || missingThemeTokens.length || globalObserver) {
   process.exitCode = 1;
 }

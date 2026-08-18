@@ -878,6 +878,10 @@ html[data-somos-tts-active="true"] .somos-tools-panel {
   text-align: left !important;
 }
 
+#interface-container .somos-native-index-panel [role="tabpanel"] li > button > span.text-muted-foreground.whitespace-nowrap {
+  display: none !important;
+}
+
 #interface-container .somos-native-menu-panel [role="tabpanel"] li > button:hover,
 #interface-container .somos-native-menu-panel [role="tabpanel"] li > button:focus-visible {
   border-color: var(--somos-institutional-300) !important;

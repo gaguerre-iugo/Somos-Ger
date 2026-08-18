@@ -4,8 +4,8 @@ const path = require("path");
 const root = path.resolve(__dirname, "..");
 const pages = fs.readdirSync(root).filter((name) => name.endsWith(".html")).sort();
 const quizPages = pages.filter((name) => /^qz\d+\.html$/.test(name));
-const scriptMarker = './assets/project-adaptations.js?v=somos-ger-56';
-const styleMarker = './assets/project-interface.css?v=somos-ger-24';
+const scriptMarker = './assets/project-adaptations.js?v=somos-ger-57';
+const styleMarker = './assets/project-interface.css?v=somos-ger-25';
 const runtimeMarker = './assets/base.bundle.local.js?v=somos-ger-runtime-1';
 const runtimePreloadMarker = '<link rel="preload" href="./assets/base.bundle.local.js?v=somos-ger-runtime-1" as="script">';
 const expectedIds = [
@@ -57,6 +57,11 @@ const stableRevealMissing = [
   'window.dispatchEvent(new Event("adt:dock-resize"))',
 ].filter((token) => !adapter.includes(token))
   .concat(interfaceCss.includes('html:not([data-somos-layout-ready="true"]) #content') ? [] : ["layout-ready CSS"]);
+const printPageCleanupMissing = [
+  "function removePrintPageLabels",
+  "data-somos-print-label-removed",
+].filter((token) => !adapter.includes(token))
+  .concat(interfaceCss.includes(".somos-native-index-panel [role=\"tabpanel\"] li > button > span.text-muted-foreground.whitespace-nowrap") ? [] : ["print-label CSS"]);
 const globalObserver = /observe\(document\.(?:documentElement|body)/.test(adapter);
 const expectedThemeTokens = [
   "--somos-panel-bg: #242424",
@@ -85,12 +90,13 @@ const result = {
   missingIds,
   forbiddenToolsControls,
   stableRevealMissing,
+  printPageCleanupMissing,
   missingThemeTokens,
   globalObserver,
 };
 
 console.log(JSON.stringify(result, null, 2));
 
-if (pages.length !== 34 || pageFailures.length || quizPages.length !== 4 || quizStructureFailures.length || girlOrientationFailures.length || config.bundleVersion !== expectedBundleVersion || voiceResourceFailures.length || missingIds.length || forbiddenToolsControls.length || stableRevealMissing.length || missingThemeTokens.length || globalObserver) {
+if (pages.length !== 34 || pageFailures.length || quizPages.length !== 4 || quizStructureFailures.length || girlOrientationFailures.length || config.bundleVersion !== expectedBundleVersion || voiceResourceFailures.length || missingIds.length || forbiddenToolsControls.length || stableRevealMissing.length || printPageCleanupMissing.length || missingThemeTokens.length || globalObserver) {
   process.exitCode = 1;
 }

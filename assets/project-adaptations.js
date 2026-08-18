@@ -297,6 +297,22 @@
     return null;
   }
 
+  function removePrintPageLabels(panel) {
+    panel.querySelectorAll('[role="tabpanel"] li > button').forEach(function (button) {
+      var printPageLabel = Array.prototype.find.call(button.children, function (child) {
+        return child.matches("span.text-muted-foreground.whitespace-nowrap") &&
+          /^Imprimir página\s+/i.test(normalizedText(child.textContent));
+      });
+      if (!printPageLabel) return;
+      printPageLabel.remove();
+      var displayLabel = normalizedText(button.textContent);
+      var accessibleLabel = "Página " + displayLabel;
+      setAttributeIfChanged(button, "aria-label", accessibleLabel);
+      setAttributeIfChanged(button, "title", accessibleLabel);
+      button.setAttribute("data-somos-print-label-removed", "true");
+    });
+  }
+
   function closeNativeMenu(panel, kind) {
     var returnFocus = kind === "settings"
       ? (toolsReturnFocus || toolsButton())
@@ -638,6 +654,7 @@
       var kind = nativeMenuKind(panel);
       if (!kind) return;
       panel.classList.add("somos-native-menu-panel", "somos-native-" + kind + "-panel");
+      if (kind === "index") removePrintPageLabels(panel);
       if (panel.parentElement) panel.parentElement.classList.add("somos-native-menu-anchor");
       var titles = {
         index: "Índice",
@@ -1095,7 +1112,7 @@
     });
   }
 
-  document.documentElement.setAttribute("data-project-adaptations", "somos-ger-56");
+  document.documentElement.setAttribute("data-project-adaptations", "somos-ger-57");
   var root = navContainer();
   if (root) {
     new MutationObserver(scheduleUpdate).observe(root, {

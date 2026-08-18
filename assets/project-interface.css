@@ -988,6 +988,20 @@ html[data-somos-tts-active="true"] .somos-tools-panel {
   box-shadow: var(--somos-shadow-focus) !important;
 }
 
+#interface-container .somos-native-menu-panel [role="switch"]:focus-visible {
+  outline: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+#interface-container .somos-native-menu-panel [role="switch"]:focus-visible::before {
+  outline: 3px solid var(--somos-toolbar-focus) !important;
+  outline-offset: 2px !important;
+  box-shadow: var(--somos-shadow-focus) !important;
+}
+
 #interface-container .somos-native-menu-panel :is(button, [role="tab"], [role="radio"], [role="switch"]):is(:disabled, [aria-disabled="true"]) {
   border-color: var(--somos-gray-400) !important;
   border-style: dashed !important;

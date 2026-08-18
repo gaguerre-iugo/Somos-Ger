@@ -66,7 +66,7 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - Se reservan 96 px estables para el reproductor. En las actividades, el desplazamiento se limita al contenido para que ni la barra ni el reproductor tapen preguntas o devoluciones. En móvil los rótulos visuales se ocultan, pero los cinco botones conservan nombre accesible completo y un objetivo mínimo de 44 px.
 - Herramientas y reproductor quedan adyacentes en escritorio; en móvil el panel reduce su altura para evitar solapamientos. El reproductor usa iconos con nombre accesible en móvil e icono y texto en escritorio. Todos los objetivos interactivos verificados alcanzan al menos 44 × 44 px.
 - La observación de cambios se limita a `#nav-container` y al contenedor de interfaz para el único atajo de idioma; no se instaló un observador global del documento.
-- Los recursos se versionaron finalmente como `project-adaptations.js?v=somos-ger-54` y `project-interface.css?v=somos-ger-20` para invalidar cachés previas.
+- Los recursos se versionaron finalmente como `project-adaptations.js?v=somos-ger-54` y `project-interface.css?v=somos-ger-21` para invalidar cachés previas.
 - El aplicador se corrigió para eliminar separaciones residuales y se comprobó idempotente: dos ejecuciones consecutivas producen el mismo SHA-256 de `index.html`.
 
 ### 6. Unificación visual de todos los menús (incremento actual)
@@ -76,6 +76,7 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - Los paneles del runtime se clasifican al aparecer y reciben un encabezado consistente con título y cierre de 44 px. Se conserva el runtime como fuente de estado; no se reemplazaron sus controles internos ni se copiaron selectores específicos de contenido de 1930.
 - En móvil se mantiene la presentación documentada: Índice y Herramientas conservan rótulo cuando hay espacio, el reproductor usa cinco controles de 44 px y Herramientas reduce su altura para no cubrir el reproductor.
 - Se mantuvo la excepción comprobada de Somos: una única voz informativa. No se añadió el selector de dos voces de 1930 ni se conservaron controles ajenos a su contrato de Herramientas.
+- El interruptor conserva un objetivo táctil de 44 × 44 px, pero su foco visible se dibuja sobre el carril de 40 × 24 px. Así se evita el aro circular sobredimensionado del control nativo sin perder accesibilidad ni área de pulsación.
 
 ### 7. Arquitectura funcional de Herramientas (incremento actual)
 

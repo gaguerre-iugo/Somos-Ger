@@ -38,18 +38,20 @@ const girlOrientationFailures = [
   girlPage.includes('data-id="pg032033_page"') && girlPage.includes('transform:translateX(595px) rotate(90deg)') ? null : "fondo",
   ...girlImageMarkup.map((markup, index) => markup && !markup.includes("rotate(") ? null : `recorte ${index + 1}`),
 ].filter(Boolean);
-const legibleSpread = fs.readFileSync(path.join(root, "pg026027_sec001.html"), "utf8");
-const legibleSpreadItemCount = (legibleSpread.match(/<li data-id="pg026027_n\d+">/g) || []).length;
-const legibleSpreadFailures = [
-  legibleSpread.includes('class="pg026027-layout"') && legibleSpread.includes('width:1191px;height:595px') ? null : "composición horizontal",
-  legibleSpread.includes("font-size: 18px; line-height: 22px") ? null : "tipografía legible",
-  legibleSpreadItemCount === 20 ? null : `enunciados: ${legibleSpreadItemCount}/20`,
+const infographicPage = fs.readFileSync(path.join(root, "pg026027_sec001.html"), "utf8");
+const infographicTextCount = (infographicPage.match(/<p data-id="pg026027_n\d+"/g) || []).length;
+const infographicLayoutFailures = [
+  infographicPage.includes('data-id="pg026027_page" src="images/pg026027_page.png"') ? null : "imagen original",
+  infographicPage.includes('transform:translateX(595px) rotate(90deg)') ? null : "orientación original",
+  infographicPage.includes('p[data-id^="pg026027_"]') && infographicPage.includes("font-size: 16px !important") && infographicPage.includes("line-height: 19px !important") ? null : "aumento tipográfico",
+  infographicTextCount === 20 ? null : `textos: ${infographicTextCount}/20`,
+  infographicPage.includes("pg026027-layout") ? "rediseño horizontal residual" : null,
 ].filter(Boolean);
 
 const adapter = fs.readFileSync(path.join(root, "assets", "project-adaptations.js"), "utf8");
 const interfaceCss = fs.readFileSync(path.join(root, "assets", "project-interface.css"), "utf8");
 const config = JSON.parse(fs.readFileSync(path.join(root, "assets", "config.json"), "utf8"));
-const expectedBundleVersion = "somos-ger-5";
+const expectedBundleVersion = "somos-ger-4";
 const audioVoices = JSON.parse(fs.readFileSync(path.join(root, "content", "i18n", "es-UY", "audio_voices.json"), "utf8"));
 const timecodeVoices = JSON.parse(fs.readFileSync(path.join(root, "content", "i18n", "es-UY", "timecode", "timecode_voices.json"), "utf8"));
 const voiceResourceFailures = [
@@ -90,7 +92,7 @@ const result = {
   quizPages: quizPages.length,
   quizStructureFailures,
   girlOrientationFailures,
-  legibleSpreadFailures,
+  infographicLayoutFailures,
   bundleVersion: config.bundleVersion,
   voiceResourceFailures,
   toolbarOrder: ["Índice", "Anterior", "actual / total", "Siguiente", "Herramientas"],
@@ -105,6 +107,6 @@ const result = {
 
 console.log(JSON.stringify(result, null, 2));
 
-if (pages.length !== 34 || pageFailures.length || quizPages.length !== 4 || quizStructureFailures.length || girlOrientationFailures.length || legibleSpreadFailures.length || config.bundleVersion !== expectedBundleVersion || voiceResourceFailures.length || missingIds.length || forbiddenToolsControls.length || stableRevealMissing.length || printPageCleanupMissing.length || missingThemeTokens.length || globalObserver) {
+if (pages.length !== 34 || pageFailures.length || quizPages.length !== 4 || quizStructureFailures.length || girlOrientationFailures.length || infographicLayoutFailures.length || config.bundleVersion !== expectedBundleVersion || voiceResourceFailures.length || missingIds.length || forbiddenToolsControls.length || stableRevealMissing.length || printPageCleanupMissing.length || missingThemeTokens.length || globalObserver) {
   process.exitCode = 1;
 }

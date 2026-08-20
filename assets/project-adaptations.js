@@ -9,21 +9,53 @@
     settings: "Configuración",
     accessibility: "Menú de accesibilidad",
     languageShortcut: "Abrir idioma",
-    audioPrevious: "Audio anterior",
-    audioNext: "Audio siguiente",
+    audioPrevious: "Anterior",
+    audioNext: "Siguiente",
     play: "Reproducir",
     pause: "Pausar",
     pauseNative: "Pausa",
     stop: "Detener",
+    audioPreviousNative: "Audio anterior",
+    audioNextNative: "Audio siguiente",
   };
+  var AUDIO_STARTED_KEY = "somosTtsExplicitlyStarted";
+  var AUDIO_PAUSED_KEY = "somosTtsManuallyPaused";
+
+  function storedBoolean(storage, key) {
+    try {
+      return storage && storage.getItem(key) === "true";
+    } catch (_error) {
+      return false;
+    }
+  }
+
+  function storedWindowBoolean(storageName, key) {
+    try {
+      return storedBoolean(window[storageName], key);
+    } catch (_error) {
+      return false;
+    }
+  }
+
+  function rememberAudioIntent(started, paused) {
+    userStartedAudio = Boolean(started);
+    userPausedAudio = Boolean(paused);
+    try {
+      window.sessionStorage.setItem(AUDIO_STARTED_KEY, userStartedAudio ? "true" : "false");
+      window.sessionStorage.setItem(AUDIO_PAUSED_KEY, userPausedAudio ? "true" : "false");
+    } catch (_error) {}
+  }
   var updateScheduled = false;
   var toolsReturnFocus = null;
   var glossaryReturnFocus = null;
   var pendingToolsFocusSelector = "";
   var pendingPanelFocusKind = "";
   var layoutRevealScheduled = false;
-  var userStartedAudio = false;
+  var userStartedAudio = storedWindowBoolean("localStorage", "isPlaying") || storedWindowBoolean("sessionStorage", AUDIO_STARTED_KEY);
+  var userPausedAudio = storedWindowBoolean("sessionStorage", AUDIO_PAUSED_KEY);
   var automaticPausePending = false;
+  var lastReflowAudioPage = 0;
+  var reflowAudioAlignmentToken = 0;
   var conditionalSettings = {
     autoplay: null,
     describeImages: null,
@@ -220,6 +252,77 @@
   function toolsPanel() { return document.querySelector("#interface-container .somos-native-settings-panel"); }
   function toolsButton() { return document.getElementById("somos-tools"); }
   function audioPlayer() { return document.getElementById("somos-tts-player"); }
+
+  function reflowPageForRect(rect, scrollLeft, width) {
+    var left = rect.left + scrollLeft;
+    var right = Math.max(left, rect.right + scrollLeft - 1);
+    return {
+      first: Math.floor(left / width) + 1,
+      last: Math.floor(right / width) + 1,
+    };
+  }
+
+  function audioIndexForReflowPage(items, page) {
+    var content = document.getElementById("content");
+    if (!content || !items || !items.length || !(page > 0)) return -1;
+    var width = Math.max(1, window.innerWidth);
+    var scrollLeft = content.scrollLeft;
+    for (var index = 0; index < items.length; index += 1) {
+      var element = items[index] && items[index].el;
+      if (!element || !element.isConnected) continue;
+      var rects = element.getClientRects();
+      for (var rectIndex = 0; rectIndex < rects.length; rectIndex += 1) {
+        var occupied = reflowPageForRect(rects[rectIndex], scrollLeft, width);
+        if (page >= occupied.first && page <= occupied.last) return index;
+      }
+    }
+    return -1;
+  }
+
+  function alignAudioToReflowPage(page, token, attempt) {
+    if (token !== reflowAudioAlignmentToken) return;
+    var bridge = window.__somosTtsBridge;
+    if (!bridge || !bridge.items || !bridge.items.length || !bridge.playAtIndex) {
+      if (attempt < 30) {
+        window.setTimeout(function () { alignAudioToReflowPage(page, token, attempt + 1); }, 50);
+      }
+      return;
+    }
+    var index = audioIndexForReflowPage(bridge.items, page);
+    var nativeToggle = nativeAudioButton(function (label) { return label === labels.play || label === labels.pauseNative; });
+    var running = Boolean(bridge.isPlaying || (nativeToggle && nativeToggle.getAttribute("aria-label") === labels.pauseNative));
+    if (index < 0) {
+      document.documentElement.removeAttribute("data-somos-tts-aligned-page");
+      document.documentElement.removeAttribute("data-somos-tts-current-id");
+      if (running && bridge.pause) bridge.pause();
+      return;
+    }
+
+    var item = bridge.items[index];
+    setAttributeIfChanged(document.documentElement, "data-somos-tts-aligned-page", String(page));
+    setAttributeIfChanged(document.documentElement, "data-somos-tts-current-id", item && item.el ? item.el.getAttribute("data-id") || "" : "");
+    if (running) {
+      rememberAudioIntent(true, false);
+      if (Number(bridge.currentIndex) !== index) bridge.playAtIndex(index);
+      return;
+    }
+    if (userStartedAudio && !userPausedAudio && bridge.autoplayMode) {
+      bridge.playAtIndex(index);
+      return;
+    }
+    if (bridge.selectIndex && Number(bridge.currentIndex) !== index) bridge.selectIndex(index);
+  }
+
+  function handleReflowPageChange(event) {
+    scheduleUpdate();
+    var detail = event && event.detail;
+    var page = Number(detail && detail.current) || Number(document.documentElement.dataset.somosReflowCurrent) || 0;
+    if (!(page > 0)) return;
+    if (page === lastReflowAudioPage && document.documentElement.getAttribute("data-somos-tts-aligned-page") === String(page)) return;
+    lastReflowAudioPage = page;
+    reflowAudioAlignmentToken += 1;
+    alignAudioToReflowPage(page, reflowAudioAlignmentToken, 0);
+  }
 
   function normalizedText(value) {
     return String(value || "").replace(/\s+/g, " ").trim();
@@ -819,7 +922,7 @@
 
   function stopTtsSession() {
     var player = audioPlayer();
-    userStartedAudio = false;
+    rememberAudioIntent(false, false);
     document.documentElement.setAttribute("data-somos-audio-stopping", "true");
     if (player) player.hidden = true;
     useNativeAudioButton(function (label) { return label === labels.stop; }, function () {
@@ -891,7 +994,7 @@
     closePressedPanels(null);
     var control = ttsSwitch();
     var activating = !ttsPlayer() && (!control || control.getAttribute("aria-checked") !== "true");
-    userStartedAudio = false;
+    rememberAudioIntent(false, activating);
     var direct = ttsBridge();
     if (direct) {
       direct.click();
@@ -952,10 +1055,18 @@
 
     document.getElementById("somos-index").addEventListener("click", openIndexFromPrimary);
     document.getElementById("somos-previous").addEventListener("click", function () {
+      if (document.documentElement.getAttribute("data-somos-reflow") === "true") {
+        document.dispatchEvent(new CustomEvent("somos:reflow-previous"));
+        return;
+      }
       var button = exactBridge(labels.previous);
       if (button) button.click();
     });
     document.getElementById("somos-next").addEventListener("click", function () {
+      if (document.documentElement.getAttribute("data-somos-reflow") === "true") {
+        document.dispatchEvent(new CustomEvent("somos:reflow-next"));
+        return;
+      }
       var button = exactBridge(labels.next);
       if (button) button.click();
     });
@@ -965,13 +1076,17 @@
       var button = event.target.closest("button");
       if (!button) return;
       if (button.id === "somos-audio-previous") {
-        stepNativeAudio(function (label) { return label === labels.audioPrevious || label === "previous-audio"; });
+        stepNativeAudio(function (label) { return label === labels.audioPreviousNative || label === "previous-audio"; });
       } else if (button.id === "somos-audio-toggle") {
         var nativeToggle = nativeAudioButton(function (label) { return label === labels.play || label === labels.pauseNative; });
-        if (nativeToggle && nativeToggle.getAttribute("aria-label") === labels.play) userStartedAudio = true;
+        if (nativeToggle && nativeToggle.getAttribute("aria-label") === labels.play) {
+          rememberAudioIntent(true, false);
+        } else if (nativeToggle && nativeToggle.getAttribute("aria-label") === labels.pauseNative) {
+          rememberAudioIntent(true, true);
+        }
         useNativeAudioButton(function (label) { return label === labels.play || label === labels.pauseNative; });
       } else if (button.id === "somos-audio-next") {
-        stepNativeAudio(function (label) { return label === labels.audioNext || label === "next-audio"; });
+        stepNativeAudio(function (label) { return label === labels.audioNextNative || label === "next-audio"; });
       } else if (button.id === "somos-audio-settings") {
         openAudioSettings();
       }
@@ -1010,16 +1125,29 @@
     var next = exactBridge(labels.next);
     var previousControl = document.getElementById("somos-previous");
     var nextControl = document.getElementById("somos-next");
-    if (previousControl) previousControl.disabled = !previous || previous.disabled;
-    if (nextControl) nextControl.disabled = !next || next.disabled;
+    var reflow = document.documentElement.getAttribute("data-somos-reflow") === "true"
+      ? {
+          current: Number(document.documentElement.getAttribute("data-somos-reflow-current") || 1),
+          total: Number(document.documentElement.getAttribute("data-somos-reflow-total") || 1),
+        }
+      : null;
+    if (previousControl) previousControl.disabled = reflow
+      ? reflow.current <= 1
+      : !previous || previous.disabled;
+    if (nextControl) nextControl.disabled = reflow
+      ? reflow.current >= reflow.total
+      : !next || next.disabled;
 
     var counter = document.getElementById("somos-page-status");
-    if (counter && next && next.parentElement) {
+    if (counter && reflow) {
+      var value = reflow.current + " / " + reflow.total;
+      if (counter.textContent !== value) counter.textContent = value;
+    } else if (counter && next && next.parentElement) {
       var source = next.parentElement.querySelector(".order-3");
-      var value = source
+      var nativeValue = source
         ? source.textContent.replace(/\s+/g, " ").trim().replace(/\s*\/\s*/, " / ")
         : "– / –";
-      if (counter.textContent !== value) counter.textContent = value;
+      if (counter.textContent !== nativeValue) counter.textContent = nativeValue;
     }
 
     var indexControl = document.getElementById("somos-index");
@@ -1040,9 +1168,9 @@
       stoppingAudio = false;
     }
     if (customPlayer) customPlayer.hidden = !ttsActive || stoppingAudio;
-    var nativePrevious = nativeAudioButton(function (label) { return label === labels.audioPrevious || label === "previous-audio"; });
+    var nativePrevious = nativeAudioButton(function (label) { return label === labels.audioPreviousNative || label === "previous-audio"; });
     var nativeToggle = nativeAudioButton(function (label) { return label === labels.play || label === labels.pauseNative; });
-    var nativeNext = nativeAudioButton(function (label) { return label === labels.audioNext || label === "next-audio"; });
+    var nativeNext = nativeAudioButton(function (label) { return label === labels.audioNextNative || label === "next-audio"; });
     var nativeStop = nativeAudioButton(function (label) { return label === labels.stop; });
     var customPrevious = document.getElementById("somos-audio-previous");
     var customToggle = document.getElementById("somos-audio-toggle");
@@ -1053,7 +1181,7 @@
     if (customStop) customStop.disabled = !nativeStop || nativeStop.disabled;
     if (customToggle) {
       var nativePlaying = Boolean(nativeToggle && nativeToggle.getAttribute("aria-label") === labels.pauseNative);
-      if (nativePlaying && !userStartedAudio && !automaticPausePending) {
+      if (nativePlaying && (!userStartedAudio || userPausedAudio) && !automaticPausePending) {
         automaticPausePending = true;
         nativeToggle.click();
         window.setTimeout(function () {
@@ -1112,7 +1240,7 @@
     });
   }
 
-  document.documentElement.setAttribute("data-project-adaptations", "somos-ger-57");
+  document.documentElement.setAttribute("data-project-adaptations", "somos-ger-62");
   var root = navContainer();
   if (root) {
     new MutationObserver(scheduleUpdate).observe(root, {
@@ -1134,6 +1262,7 @@
       attributeFilter: ["aria-label", "aria-pressed", "aria-expanded", "disabled"],
     });
   }
+  window.addEventListener("somos:reflow-pagechange", handleReflowPageChange);
 
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape" && event.target && event.target.closest) {

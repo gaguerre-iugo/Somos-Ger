@@ -97,12 +97,24 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 
 ## Decisiones que no se copiaron del libro 1930
 
-- No se aplicó reflow ni maquetación multicolumna: este proyecto es un libro de composición fija y hacerlo rompería posiciones, ilustraciones y actividades.
+- No se copiaron las composiciones editoriales, rutas, IDs ni excepciones de 1930. A partir de la revisión responsive del 20 de agosto se añadió un lector reflow propio de SOMOS que se activa por debajo de 768 px y conserva la maqueta fija original en escritorio.
 - No se copió la barra específica de 1930. Se implementó el mismo contrato editorial de cinco posiciones sobre los selectores, estados, paneles y comportamiento responsive comprobados en este export.
 - No se copiaron anchos, alturas, excepciones editoriales ni rutas del otro libro. El único ajuste de caja se obtuvo midiendo la página 9 de este proyecto.
 - No se elevó de forma global todo el texto editorial a 16 px: una regla indiscriminada produciría solapamientos en el lienzo 595 × 595. Los mínimos de interfaz sí se verificaron por separado.
 
 ## Validaciones realizadas
+
+### Lector adaptable y repaginación del 20 de agosto de 2026
+
+- Se confirmó la causa de la miniaturización: los HTML de SOMOS declaraban un viewport fijo de 595 × 595 y escalaban todo `#content`, mientras 1930 activa un lector único, importa el libro y pagina el flujo semántico por columnas del ancho del viewport.
+- `assets/responsive-reader.js` reproduce ese contrato general sin importar excepciones de 1930: al reducir una página normal por debajo de 768 px redirige a `index.html#sección`, importa las 34 entradas de `content/pages.json`, conserva un único nodo por `data-id` y habilita navegación por páginas visuales. Al volver a escritorio restaura el HTML fijo de la sección visible.
+- `assets/responsive-reader.css` fija una medida legible de 18,88 px y 27,94 px de interlineado a 500 px, usa columnas del ancho del viewport y reserva de forma estable la barra y los 96 px del reproductor. Encender o detener la voz ya no cambia la altura útil ni la numeración.
+- Las excepciones editoriales se derivaron del DOM de este proyecto: `pg023` separa la lista “NO PUEDO” de su galería; `pg026027` reordena los veinte textos en listas de diez derechos y diez deberes; `pg032033` compone los dos recortes verticales como una única niña; las cuatro actividades conservan pregunta, opciones, selección y feedback.
+- La barra existente sigue siendo la única barra. Anterior/Siguiente recorren columnas en reflow; Índice, Herramientas, Glosario y el reproductor mantienen sus puentes nativos. Índice y Herramientas conservaron la página visual al abrir/cerrar; Glosario mostró el catálogo completo y resaltó términos del flujo.
+- Prueba a 500 × 640: 34 secciones importadas, cero `data-id` duplicados y contador visual estable. La página 23 mostró texto a ancho completo y las ilustraciones en la página visual siguiente; la niña quedó completa y centrada en su propia página visual.
+- Los quizzes se verificaron tanto aislados como dentro del libro repaginado. `qz001` quedó entre 16 y 484 px en un viewport de 500 px y anunció correctamente la devolución de “Todas las personas”.
+- Lectura en voz alta: activar preparó el reproductor en pausa, Reproducir cambió a Pausar y Detener cerró la sesión. No hubo errores ni advertencias de consola durante las pruebas de reflow, menús, glosario, quiz o audio.
+- Riesgo documentado: las ilustraciones raster con texto incorporado no se reinterpretan. El lector muestra el texto semántico disponible y conserva imágenes seleccionadas; una revisión editorial futura puede definir composiciones más ricas para páginas puramente visuales.
 
 ### Revisión funcional final del 18 de agosto de 2026
 
@@ -129,6 +141,45 @@ Se creó y publicó el commit base `afc051b` antes de modificar el libro. La aud
 - Una prueba de estabilidad de 30 segundos terminó sin diálogos, reproductor o capas residuales y sin errores de consola.
 - La actividad `qz001` aceptó `Todas las personas` y anunció la devolución correcta en su región viva.
 - La auditoría estática encontró 422 archivos MP3, 422 asociaciones de audio, cero archivos faltantes entre esas asociaciones, cero MP3 sin asociar y cero MP3 de tamaño cero. Hay 423 entradas de texto/narración: la pregunta `qz003_que` no tiene audio asociado ni archivo MP3 en este proyecto o en la fuente de Desktop.
+
+### Corrección editorial del reflow de la página 6 — 20 de agosto de 2026
+
+- Se detectó que el compositor genérico reunía primero los textos y convertía después las capas gráficas de `pg006_sec001` en una galería. Ese orden separaba contenido relacionado y mostraba como ilustraciones autónomas tres fondos decorativos de papel sin sus textos superpuestos.
+- Siguiendo el criterio de excepciones semánticas usado por 1930, pero sin copiar selectores ni valores de aquel libro, se creó una composición propia para Somos: introducción, Antigua Grecia, siglo XVIII, Edad Media y “Todos nacemos libres e iguales” son ahora unidades editoriales coherentes.
+- Los fondos decorativos dejaron de exponerse como figuras. Se conservan únicamente los dos personajes que aportan información visual y cada uno permanece dentro de la tarjeta correspondiente.
+- Los fragmentos de texto se recombinaron visualmente sin perder sus 21 atributos `data-id`; no hay identificadores ausentes ni duplicados, por lo que se conservan las anclas de glosario, narración y resaltado.
+- Validación visual local: a 500 × 640 px la secuencia ocupa tres páginas legibles; a 360 × 640 px ocupa cuatro, sin recortes ni desborde horizontal. La navegación anterior/siguiente quedó alineada con las columnas después de estabilizar la repaginación.
+- Se incrementó la versión de caché del lector adaptable a `somos-ger-reflow-5`, se resincronizaron las 34 páginas y los 48 recursos offline, y se actualizó el manifiesto SCORM a 657 archivos declarados.
+- Resultado final de validadores: 34 páginas sin fallos de interfaz; SCORM 1.2 con cero archivos faltantes o no declarados; precarga HTTP 0, `file://` 1; estado final `passed` con puntuación 100.
+
+### Navegación por teclado del modo adaptable — 20 de agosto de 2026
+
+- Se reprodujo en Chrome que `ArrowRight` desde la página visual 3 mantenía el contador, la posición y el hash en `pg003_sec001`. El runtime fijo intentaba navegar entre archivos mientras el lector adaptable debía navegar entre columnas.
+- El lector adaptable captura ahora `ArrowRight`, `ArrowLeft`, `PageDown`, `PageUp`, `Home` y `End` cuando el foco está en el contenido, cancela el manejador fijo y conserva el documento único `index.html`.
+- Formularios, opciones de quiz, controles, menús, diálogos, barra principal y reproductor quedan excluidos. Las flechas dentro de la barra siguen moviendo el foco entre controles sin cambiar de página.
+- El cambio por teclado es atómico: desactiva `scroll-behavior` durante una trama para que pulsaciones consecutivas no dejen el libro entre dos columnas. Los botones visibles conservan su transición suave.
+- Prueba Chrome a 526 × 575 px: página 3 → 4 con flecha derecha y 4 → 3 con flecha izquierda; `scrollLeft` cambió exactamente 1052 → 1578 → 1052 px. A 526 × 640 px, dos avances consecutivos terminaron en páginas completas y una flecha izquierda regresó una página.
+- La versión de caché del lector se incrementó a `somos-ger-reflow-8` y se resincronizaron las 34 páginas y el paquete offline.
+
+### Corrección editorial del reflow de la página 5 — 20 de agosto de 2026
+
+- El compositor genérico separaba los textos `pg005_p010` y `pg005_p012` de la niña y mostraba `pg005_im004.png`, que solo contiene el contorno vacío del globo, como una figura autónoma.
+- Se creó una composición específica para `pg005_sec001`: título e introducción con abejas, idea de reunión con la escena grupal, niña y globo con “Mi abuelo se llama Gregorio”, y cierre sobre propiedad, países y gobiernos.
+- El contorno raster vacío dejó de aparecer en el reflow. El globo se recrea como un contenedor semántico y conserva dentro los dos `data-id` originales para audio, resaltado y glosario.
+- Los siete textos de la página aparecen exactamente una vez. Las tres imágenes informativas permanecen asociadas con su texto correspondiente.
+- A 526 × 533 px la página pasó de cuatro fragmentos inconexos a tres pantallas completas; a 360 × 640 px conserva las mismas tres unidades, sin recorte ni desborde horizontal.
+- La versión de caché del lector adaptable se incrementó a `somos-ger-reflow-10`; se resincronizaron las 34 páginas y los 48 recursos offline.
+
+### Continuidad de lectura en voz alta en el modo adaptable — 20 de agosto de 2026
+
+- La navegación visual por columnas no notificaba al reproductor qué elemento de audio correspondía a la nueva página. Se añadió un puente mínimo del runtime que expone la lista efectiva de pistas y operaciones de reproducción, pausa y selección, sin duplicar el motor de voz.
+- Al cambiar de página, el lector calcula qué elementos con audio ocupan esa columna y selecciona la primera pista disponible. Si la narración estaba reproduciéndose, continúa desde esa pista; si estaba temporalmente detenida y “Reproducción automática” está activa, reanuda desde la página visible.
+- Una pausa explícita hecha por la persona siempre prevalece sobre la reproducción automática. Las páginas visuales sin pista detienen temporalmente la narración para no seguir leyendo contenido de una página anterior.
+- Los botones Anterior y Siguiente del modo adaptable usan ahora desplazamientos atómicos, igual que la navegación por teclado, para evitar alinear el audio durante una posición intermedia del desplazamiento suave.
+- Prueba Chrome a 526 × 640 px: página 3, pista `pg003_p000`, en reproducción → página 4, pista `pg004_p002`, todavía en reproducción. Una página 5 sin pista quedó pausada y la página 6 reanudó en `pg005_p013` con autoplay activo. Una pausa manual en la página 6 permaneció pausada al avanzar a la página 7, alineada con `pg005_p000`.
+- En escritorio se reprodujo una segunda causa: al navegar de `pg003_sec001.html` a `pg004_sec001.html`, el runtime conservaba `isPlaying`, pero la adaptación reiniciaba su intención de reproducción y pausaba el nuevo documento. La intención explícita y la pausa manual se conservan ahora durante la sesión; Chrome mantuvo “Pausar” y la reproducción en los recorridos `pg003` → `pg004` → `pg005`, tanto con el botón como con `ArrowRight`. Una pausa manual se mantuvo al entrar en `pg006`.
+- Los controles de pista muestran ahora “Anterior” y “Siguiente”. Se redujo únicamente su relleno horizontal para que ambos textos queden completos, sin elipsis, conservando los nombres nativos internos usados por el runtime.
+- Se incrementaron las versiones a `somos-ger-reflow-14`, `somos-ger-62`, `somos-ger-runtime-2` y `project-interface` 26; se sincronizaron las 34 páginas, los 48 recursos offline y los 657 recursos del manifiesto SCORM.
 
 ### Navegador y servidor local
 
@@ -165,7 +216,7 @@ Salida final de `node tools/validate-scorm.js`:
 
 ```text
 SCORM: 1.2
-Archivos declarados: 653
+Archivos declarados: 657
 Archivos declarados inexistentes: 0
 Recursos de ejecución no declarados: 0
 Preloader bajo HTTP: 0 cargas
@@ -183,7 +234,7 @@ El flujo SCORM se validó con un simulador local de la API SCORM 1.2. La políti
 - El paquete contiene 422 MP3 y sigue siendo pesado. No se recomprimieron audios para evitar pérdida de calidad o desincronización de texto a voz.
 - La entrada de narración `qz003_que` carece de asociación y archivo de audio. No se fabricó una pista: para una cobertura de audio íntegra debe grabarse, aprobarse editorialmente y añadirse al mapa de audio.
 - El simulador cubre el contrato SCORM, pero no sustituye una importación final en el LMS de destino. Antes de producción se recomienda importar el ZIP en ese LMS y verificar persistencia, reanudación y reporte de puntuación.
-- Los archivos `base.bundle.local.js` y `base.bundle.min.js` se conservaron sin cambios. Una actualización futura del runtime debe volver a ejecutar las herramientas y la batería del navegador.
+- `base.bundle.local.js` contiene un puente pequeño y específico para coordinar el reproductor con el modo adaptable; `base.bundle.min.js` permanece sin cambios y no se carga en este proyecto. Una actualización futura del runtime debe portar de nuevo ese puente y repetir la batería de navegador, offline y SCORM.
 - Los sustitutos de preferencias dependientes de voz mantienen cambios pendientes durante el documento actual. El runtime sigue siendo la fuente definitiva al activar la voz; una actualización de su montaje condicional debe revalidar esta transferencia.
 
 ## Comandos de mantenimiento

@@ -1,0 +1,525 @@
+:root {
+  --somos-reflow-gutter: 20px;
+  --somos-reflow-toolbar-reserve: 64px;
+  --somos-reflow-audio-reserve: var(--somos-audio-reserve, 96px);
+}
+
+html[data-somos-reflow="true"],
+html[data-somos-reflow="true"] body {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  overflow: hidden !important;
+}
+
+html[data-somos-reflow="true"] body {
+  margin: 0 !important;
+  color: #111827;
+  background: #fff;
+  font-family: "Atkinson Hyperlegible", Arial, sans-serif;
+}
+
+html[data-somos-reflow="true"] body > main {
+  position: fixed !important;
+  inset: 0 0 calc(var(--somos-reflow-toolbar-reserve) + var(--somos-reflow-audio-reserve)) 0 !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+html[data-somos-reflow="true"] #content {
+  position: static !important;
+  inset: auto !important;
+  box-sizing: border-box !important;
+  width: 100vw !important;
+  min-width: 100vw !important;
+  max-width: none !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: var(--somos-reflow-gutter) !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: none !important;
+  transform-origin: initial !important;
+  columns: calc(100vw - (2 * var(--somos-reflow-gutter))) auto;
+  column-gap: calc(2 * var(--somos-reflow-gutter));
+  column-fill: auto;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+html[data-somos-reflow="true"] #content::-webkit-scrollbar {
+  display: none;
+}
+
+html[data-somos-reflow="true"] #content > .somos-reflow-section {
+  position: static !important;
+  box-sizing: border-box !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  break-before: column;
+  break-inside: auto;
+}
+
+html[data-somos-reflow="true"] #content > .somos-reflow-section:first-child {
+  break-before: auto;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-section :is(h1, h2, h3, p, li, figure, img, div, span, label, button) {
+  position: static !important;
+  inset: auto !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: 100% !important;
+  min-height: 0 !important;
+  transform: none !important;
+  white-space: normal !important;
+  overflow: visible !important;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-heading {
+  margin: 0 0 0.8rem;
+  color: #111827;
+  font-size: clamp(1.6rem, 7vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.08;
+  text-wrap: balance;
+  break-after: avoid-column;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-subheading {
+  margin: 1rem 0 0.55rem;
+  color: #006f69;
+  font-size: 1.18rem;
+  font-weight: 700;
+  line-height: 1.25;
+  break-after: avoid-column;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-copy {
+  margin: 0 0 0.72rem;
+  padding: 0;
+  color: #111827 !important;
+  background: transparent !important;
+  font-size: 1.18rem !important;
+  font-weight: 400;
+  line-height: 1.48 !important;
+  letter-spacing: normal !important;
+  text-align: left !important;
+  text-indent: 0 !important;
+  text-wrap: pretty;
+  orphans: 2;
+  widows: 2;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-copy[data-source-emphasis="true"] {
+  font-weight: 700;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-combined-copy > span[data-source-emphasis="true"] {
+  font-weight: 700;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-gregarious-origin,
+html[data-somos-reflow="true"] .somos-reflow-gregarious-gathering,
+html[data-somos-reflow="true"] .somos-reflow-gregarious-callout {
+  box-sizing: border-box;
+  break-inside: avoid-column;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-gregarious-origin {
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem !important;
+  display: grid !important;
+  grid-template-columns: minmax(6rem, 0.38fr) minmax(0, 1fr);
+  gap: 0.9rem;
+  align-items: center;
+  border-radius: 16px;
+  background: #fbf1e8;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-gregarious-origin .somos-reflow-copy,
+html[data-somos-reflow="true"] .somos-reflow-gregarious-speech .somos-reflow-copy {
+  margin: 0;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-gregarious-bees,
+html[data-somos-reflow="true"] .somos-reflow-gregarious-group-image,
+html[data-somos-reflow="true"] .somos-reflow-gregarious-person {
+  margin: 0;
+  padding: 0;
+  display: grid !important;
+  place-items: center;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-gregarious-bees img {
+  display: block !important;
+  width: 100% !important;
+  max-height: 7rem !important;
+  object-fit: contain;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-gregarious-gathering {
+  margin-bottom: 1rem;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-gregarious-lead {
+  margin-bottom: 0.7rem;
+  font-weight: 700;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-gregarious-group-image img {
+  display: block !important;
+  width: 100% !important;
+  max-height: min(36vh, 14rem) !important;
+  object-fit: contain;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-gregarious-callout {
+  margin-bottom: 0.7rem;
+  padding: 0.8rem 1rem !important;
+  display: grid !important;
+  grid-template-columns: minmax(4.5rem, 6rem) minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: center;
+  border: 1px solid #e7caca;
+  border-radius: 16px;
+  background: #fff;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-gregarious-person img {
+  display: block !important;
+  width: auto !important;
+  max-height: 8.5rem !important;
+  object-fit: contain;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-gregarious-speech {
+  padding: 0.9rem 1rem !important;
+  border: 2px solid #e5bcbc;
+  border-radius: 46% 46% 42% 42% / 42% 42% 46% 46%;
+  background: #fff;
+  font-weight: 700;
+  text-align: center;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-gregarious-speech .somos-reflow-copy {
+  font-weight: 700;
+  text-align: center !important;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-gregarious-conclusion {
+  break-inside: auto;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-timeline-intro {
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-timeline {
+  display: grid !important;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-timeline-card {
+  box-sizing: border-box;
+  padding: 0.9rem 1rem !important;
+  border: 1px solid #e7caca;
+  border-radius: 16px;
+  background: #fbf1e8;
+  break-inside: avoid-column;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-timeline-card .somos-reflow-subheading {
+  margin: 0 0 0.5rem;
+  color: #8f3f45;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-timeline-card .somos-reflow-copy {
+  margin: 0;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-timeline-card-illustrated {
+  display: grid !important;
+  grid-template-columns: minmax(4.5rem, 0.36fr) minmax(0, 1fr);
+  column-gap: 0.9rem;
+  align-items: center;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-timeline-card-illustrated > .somos-reflow-subheading {
+  grid-column: 1 / -1;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-timeline-illustration {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  display: grid !important;
+  place-items: center;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-timeline-illustration img {
+  display: block !important;
+  width: auto !important;
+  max-width: 100% !important;
+  max-height: 9.5rem !important;
+  object-fit: contain;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-timeline-callout {
+  background: #fff4f2;
+  border-color: #d2787a;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-timeline-callout .somos-reflow-subheading,
+html[data-somos-reflow="true"] .somos-reflow-timeline-quote {
+  color: #c43f3b !important;
+  font-weight: 700;
+  text-align: center !important;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-timeline-person img {
+  max-height: 12rem !important;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-list {
+  margin: 0 0 1rem;
+  padding: 0 0 0 1.35rem;
+  font-size: 1.18rem;
+  line-height: 1.45;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-list li {
+  margin: 0 0 0.55rem;
+  padding-left: 0.15rem;
+  break-inside: avoid-column;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-gallery {
+  margin: 0.9rem 0 1.1rem;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  break-inside: auto;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-figure {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0.55rem;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  background: #fff;
+  break-inside: avoid-column;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-figure img {
+  display: block !important;
+  width: 100% !important;
+  max-height: min(42vh, 19rem) !important;
+  object-fit: contain;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-figure figcaption,
+html[data-somos-reflow="true"] .somos-reflow-image-description {
+  margin: 0;
+  color: #374151;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-cover .somos-reflow-gallery {
+  display: block !important;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-cover .somos-reflow-figure {
+  border: 0;
+  padding: 0;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-cover .somos-reflow-figure img {
+  max-height: calc(100vh - 8rem) !important;
+}
+
+html[data-somos-reflow="true"] #content .somos-reflow-composite-person {
+  width: 100% !important;
+  max-width: 12rem !important;
+  margin: 0.55rem auto 0 !important;
+  display: flex !important;
+  flex-direction: column;
+  gap: 0;
+  break-inside: avoid-column;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-composite-person .somos-reflow-figure {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-composite-person .somos-reflow-figure img {
+  width: 100% !important;
+  max-height: none !important;
+  border-radius: 0;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-rights-grid {
+  display: grid !important;
+  grid-template-columns: 1fr;
+  gap: 0.6rem;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-rights-card {
+  break-inside: auto;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-rights-card .somos-reflow-list {
+  list-style: "✓  ";
+}
+
+html[data-somos-reflow="true"] .somos-reflow-quiz {
+  --quiz-accent: #d2787a;
+  --quiz-accent-soft: rgb(210 120 122 / 16%);
+  break-inside: avoid-column;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-quiz > div {
+  display: block !important;
+  padding: 0 !important;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-quiz .quiz-card {
+  box-sizing: border-box;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  border-radius: 18px;
+  background: #f9ecec;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 10%);
+  overflow: hidden !important;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-quiz .quiz-header {
+  padding: 1.1rem !important;
+  background: var(--quiz-accent);
+}
+
+html[data-somos-reflow="true"] .somos-reflow-quiz .quiz-question {
+  margin: 0;
+  color: #fff !important;
+  font-size: 1.2rem !important;
+  line-height: 1.35 !important;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-quiz .quiz-body {
+  padding: 1rem !important;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-quiz [role="group"] {
+  margin: 0 !important;
+  display: flex !important;
+  flex-direction: column;
+  gap: 0.75rem !important;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-quiz .activity-option {
+  box-sizing: border-box;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0.9rem 1rem !important;
+  border: 2px solid var(--quiz-accent);
+  border-radius: 14px;
+  background: #fcf6f6;
+  color: #111827;
+  font-size: 1.08rem !important;
+  line-height: 1.35;
+  box-shadow: 0 4px 0 rgb(0 0 0 / 10%);
+  break-inside: avoid-column;
+}
+
+html[data-somos-reflow="true"] #somos-reflow-loading {
+  position: fixed;
+  inset: 0 0 var(--somos-reflow-toolbar-reserve) 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  color: #374151;
+  background: #fff;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+@media (min-width: 40rem) and (max-width: 47.999rem) {
+  :root { --somos-reflow-gutter: 28px; }
+  html[data-somos-reflow="true"] .somos-reflow-gallery {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 47.999rem) {
+  body:has(#simple-main[data-section-type="activity_quiz"]) main,
+  body:has(#simple-main[data-section-type="activity_quiz"]) #content,
+  body:has(#simple-main[data-section-type="activity_quiz"]) #simple-main,
+  body:has(#simple-main[data-section-type="activity_quiz"]) #simple-main > div,
+  body:has(#simple-main[data-section-type="activity_quiz"]) .quiz-card {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  body:has(#simple-main[data-section-type="activity_quiz"]) #content {
+    padding: 16px !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+  }
+
+  body:has(#simple-main[data-section-type="activity_quiz"]) #simple-main > div {
+    padding: 0 !important;
+    gap: 1rem !important;
+  }
+
+  body:has(#simple-main[data-section-type="activity_quiz"]) .quiz-header,
+  body:has(#simple-main[data-section-type="activity_quiz"]) .quiz-body {
+    padding: 1rem !important;
+  }
+
+  body:has(#simple-main[data-section-type="activity_quiz"]) .activity-option {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    padding: 1rem !important;
+  }
+}
+
+@media (max-width: 24rem) {
+  html[data-somos-reflow="true"] .somos-reflow-timeline-card-illustrated {
+    grid-template-columns: minmax(4rem, 0.3fr) minmax(0, 1fr);
+    column-gap: 0.65rem;
+  }
+
+  html[data-somos-reflow="true"] .somos-reflow-timeline-card {
+    padding: 0.75rem 0.8rem !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-somos-reflow="true"] #content { scroll-behavior: auto; }
+}

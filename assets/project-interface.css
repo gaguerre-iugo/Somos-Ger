@@ -29,6 +29,34 @@
   --somos-shadow-focus: 0 2px 4px var(--somos-institutional-500);
 }
 
+/*
+ * Cross-document page transitions.
+ * In fixed layout each page change is a full document reload, so the dock/menu
+ * and content are torn down and rebuilt, producing a white blank frame and a
+ * flicker of the menu. Opting into cross-document view transitions makes the
+ * browser hold the previous frame and cross-fade to the next one, keeping the
+ * menu visually stable. It is a no-op on browsers without support and on the
+ * same-document (reflow) navigation used on small screens.
+ */
+@view-transition {
+  navigation: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 220ms;
+    animation-timing-function: ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}
+
 html:not([data-somos-layout-ready="true"]) #content {
   visibility: hidden !important;
 }

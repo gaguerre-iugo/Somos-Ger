@@ -5,7 +5,7 @@ const root = path.resolve(__dirname, "..");
 const pages = fs.readdirSync(root).filter((name) => name.endsWith(".html")).sort();
 const quizPages = pages.filter((name) => /^qz\d+\.html$/.test(name));
 const scriptMarker = './assets/responsive-reader.js?v=somos-ger-reflow-30';
-const styleMarker = './assets/project-interface.css?v=somos-ger-26';
+const styleMarker = './assets/project-interface.css?v=somos-ger-27';
 const reflowStyleMarker = './assets/responsive-reader.css?v=somos-ger-reflow-30';
 const runtimePreloadMarker = '<link rel="preload" href="./assets/base.bundle.local.js?v=somos-ger-runtime-2" as="script">';
 const expectedIds = [

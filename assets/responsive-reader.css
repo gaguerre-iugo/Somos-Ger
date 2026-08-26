@@ -402,7 +402,7 @@ html[data-somos-reflow="true"] .somos-reflow-cover .somos-reflow-figure {
 }
 
 html[data-somos-reflow="true"] .somos-reflow-cover .somos-reflow-figure img {
-  max-height: calc(100vh - 8rem) !important;
+  max-height: calc(100vh - var(--somos-reflow-toolbar-reserve) - var(--somos-reflow-audio-reserve) - (2 * var(--somos-reflow-gutter)) - 2rem) !important;
 }
 
 html[data-somos-reflow="true"] #content .somos-reflow-composite-person {

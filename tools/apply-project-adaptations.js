@@ -8,11 +8,11 @@ const pages = fs
   .sort();
 
 const marker =
-  '    <script src="./assets/responsive-reader.js?v=somos-ger-reflow-28"></script>';
+  '    <script src="./assets/responsive-reader.js?v=somos-ger-reflow-29"></script>';
 const existingMarker =
   /^[\t ]*<script src="\.\/assets\/(?:project-adaptations|responsive-reader)\.js(?:\?[^\"]*)?"><\/script>[\t ]*(?:\r?\n)?/gm;
 const styleMarker =
-  '    <link href="./assets/project-interface.css?v=somos-ger-26" rel="stylesheet">\r\n    <link href="./assets/responsive-reader.css?v=somos-ger-reflow-28" rel="stylesheet">';
+  '    <link href="./assets/project-interface.css?v=somos-ger-26" rel="stylesheet">\r\n    <link href="./assets/responsive-reader.css?v=somos-ger-reflow-29" rel="stylesheet">';
 const existingStyleMarker =
   /^[\t ]*<link href="\.\/assets\/(?:project-interface|responsive-reader)\.css(?:\?[^\"]*)?" rel="stylesheet">[\t ]*(?:\r?\n)?/gm;
 const runtimeMarker =

@@ -44148,6 +44148,52 @@ function useAtomValueWithDelay<Value>(
         audioRef.current = null;
       };
     }, [stopAndClear]);
+    (0, import_react21.useEffect)(() => {
+      const bridge = {
+        items,
+        get isPlaying() {
+          return isPlaying;
+        },
+        get currentIndex() {
+          return currentIndex;
+        },
+        get autoplayMode() {
+          return autoplayMode;
+        },
+        get readAloudMode() {
+          return readAloudMode;
+        },
+        play,
+        pause,
+        stop,
+        playAtIndex,
+        selectIndex(index2) {
+          if (items.length === 0) return;
+          const safeIndex = Math.max(0, Math.min(items.length - 1, Number(index2) || 0));
+          ++playSessionRef.current;
+          stopAndClear();
+          setIsPlaying(false);
+          setCurrentIndex(safeIndex);
+        }
+      };
+      window.__somosTtsBridge = bridge;
+      return () => {
+        if (window.__somosTtsBridge === bridge) delete window.__somosTtsBridge;
+      };
+    }, [
+      items,
+      isPlaying,
+      currentIndex,
+      autoplayMode,
+      readAloudMode,
+      play,
+      pause,
+      stop,
+      playAtIndex,
+      stopAndClear,
+      setIsPlaying,
+      setCurrentIndex
+    ]);
     return {
       isPlaying,
       hasItems: items.length > 0,

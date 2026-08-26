@@ -4,10 +4,10 @@ const path = require("path");
 const root = path.resolve(__dirname, "..");
 const pages = fs.readdirSync(root).filter((name) => name.endsWith(".html")).sort();
 const quizPages = pages.filter((name) => /^qz\d+\.html$/.test(name));
-const scriptMarker = './assets/project-adaptations.js?v=somos-ger-57';
-const styleMarker = './assets/project-interface.css?v=somos-ger-25';
-const runtimeMarker = './assets/base.bundle.local.js?v=somos-ger-runtime-1';
-const runtimePreloadMarker = '<link rel="preload" href="./assets/base.bundle.local.js?v=somos-ger-runtime-1" as="script">';
+const scriptMarker = './assets/responsive-reader.js?v=somos-ger-reflow-14';
+const styleMarker = './assets/project-interface.css?v=somos-ger-26';
+const reflowStyleMarker = './assets/responsive-reader.css?v=somos-ger-reflow-14';
+const runtimePreloadMarker = '<link rel="preload" href="./assets/base.bundle.local.js?v=somos-ger-runtime-2" as="script">';
 const expectedIds = [
   "somos-index",
   "somos-previous",
@@ -23,7 +23,7 @@ const expectedIds = [
 
 const pageFailures = pages.flatMap((name) => {
   const html = fs.readFileSync(path.join(root, name), "utf8");
-  const missing = [scriptMarker, styleMarker, runtimeMarker, runtimePreloadMarker].filter((marker) => !html.includes(marker));
+  const missing = [scriptMarker, styleMarker, reflowStyleMarker, runtimePreloadMarker].filter((marker) => !html.includes(marker));
   return missing.length ? [{ page: name, missing }] : [];
 });
 const quizStructureFailures = quizPages.filter((name) => {
@@ -49,9 +49,12 @@ const infographicLayoutFailures = [
 ].filter(Boolean);
 
 const adapter = fs.readFileSync(path.join(root, "assets", "project-adaptations.js"), "utf8");
+const runtime = fs.readFileSync(path.join(root, "assets", "base.bundle.local.js"), "utf8");
 const interfaceCss = fs.readFileSync(path.join(root, "assets", "project-interface.css"), "utf8");
+const responsiveReader = fs.readFileSync(path.join(root, "assets", "responsive-reader.js"), "utf8");
+const responsiveCss = fs.readFileSync(path.join(root, "assets", "responsive-reader.css"), "utf8");
 const config = JSON.parse(fs.readFileSync(path.join(root, "assets", "config.json"), "utf8"));
-const expectedBundleVersion = "somos-ger-4";
+const expectedBundleVersion = "somos-ger-5";
 const audioVoices = JSON.parse(fs.readFileSync(path.join(root, "content", "i18n", "es-UY", "audio_voices.json"), "utf8"));
 const timecodeVoices = JSON.parse(fs.readFileSync(path.join(root, "content", "i18n", "es-UY", "timecode", "timecode_voices.json"), "utf8"));
 const voiceResourceFailures = [
@@ -85,6 +88,45 @@ const expectedThemeTokens = [
   "grid-template-columns: 44px minmax(0, 1fr) 44px",
 ];
 const missingThemeTokens = expectedThemeTokens.filter((token) => !interfaceCss.includes(token));
+const expectedResponsiveTokens = [
+  'window.matchMedia("(max-width: " + (BREAKPOINT - 1) + "px)")',
+  'fetch("./content/pages.json',
+  'new DOMParser()',
+  'document.documentElement.dataset.somosReflowCurrent',
+  'document.addEventListener("somos:reflow-previous"',
+  'document.addEventListener("somos:reflow-next"',
+  'function installKeyboardNavigation()',
+  'function composeGregariousSection(section, root)',
+  '["pg005_p010", "pg005_p012"]',
+  'event.stopImmediatePropagation()',
+  'content.style.scrollBehavior = "auto"',
+  'project-adaptations.js?v=somos-ger-62',
+  'base.bundle.local.js?v=somos-ger-runtime-2',
+  'goToPage(state.current + 1, true)',
+];
+const expectedResponsiveCssTokens = [
+  'columns: calc(100vw - (2 * var(--somos-reflow-gutter))) auto',
+  'column-fill: auto',
+  '.somos-reflow-rights-grid',
+  '.somos-reflow-composite-person',
+  '.somos-reflow-gregarious-callout',
+  'body:has(#simple-main[data-section-type="activity_quiz"])',
+  '--somos-reflow-audio-reserve: var(--somos-audio-reserve, 96px)',
+];
+const responsiveContractFailures = expectedResponsiveTokens
+  .filter((token) => !responsiveReader.includes(token))
+  .concat(expectedResponsiveCssTokens.filter((token) => !responsiveCss.includes(token)));
+const audioReflowBridgeFailures = [
+  "window.__somosTtsBridge",
+  "selectIndex(index2)",
+].filter((token) => !runtime.includes(token)).concat([
+  "function alignAudioToReflowPage",
+  "audioIndexForReflowPage",
+  "bridge.autoplayMode",
+  "somosTtsExplicitlyStarted",
+  "(!userStartedAudio || userPausedAudio)",
+  'window.addEventListener("somos:reflow-pagechange", handleReflowPageChange)',
+].filter((token) => !adapter.includes(token)));
 
 const result = {
   pages: pages.length,
@@ -96,17 +138,19 @@ const result = {
   bundleVersion: config.bundleVersion,
   voiceResourceFailures,
   toolbarOrder: ["Índice", "Anterior", "actual / total", "Siguiente", "Herramientas"],
-  audioOrder: ["Audio anterior", "Reproducir/Pausar", "Audio siguiente", "Voz y velocidad", "Detener"],
+  audioOrder: ["Anterior", "Reproducir/Pausar", "Siguiente", "Voz y velocidad", "Detener"],
   missingIds,
   forbiddenToolsControls,
   stableRevealMissing,
   printPageCleanupMissing,
   missingThemeTokens,
+  responsiveContractFailures,
+  audioReflowBridgeFailures,
   globalObserver,
 };
 
 console.log(JSON.stringify(result, null, 2));
 
-if (pages.length !== 34 || pageFailures.length || quizPages.length !== 4 || quizStructureFailures.length || girlOrientationFailures.length || infographicLayoutFailures.length || config.bundleVersion !== expectedBundleVersion || voiceResourceFailures.length || missingIds.length || forbiddenToolsControls.length || stableRevealMissing.length || printPageCleanupMissing.length || missingThemeTokens.length || globalObserver) {
+if (pages.length !== 34 || pageFailures.length || quizPages.length !== 4 || quizStructureFailures.length || girlOrientationFailures.length || infographicLayoutFailures.length || config.bundleVersion !== expectedBundleVersion || voiceResourceFailures.length || missingIds.length || forbiddenToolsControls.length || stableRevealMissing.length || printPageCleanupMissing.length || missingThemeTokens.length || responsiveContractFailures.length || audioReflowBridgeFailures.length || globalObserver) {
   process.exitCode = 1;
 }

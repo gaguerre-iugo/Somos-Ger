@@ -475,6 +475,11 @@ html[data-somos-tts-active="true"] .somos-tools-panel {
   text-overflow: ellipsis;
 }
 
+#somos-audio-previous,
+#somos-audio-next {
+  padding-inline: 12px;
+}
+
 .somos-audio-button:hover,
 .somos-audio-button[aria-expanded="true"] {
   color: #ffffff;

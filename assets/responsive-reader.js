@@ -2,7 +2,7 @@
   "use strict";
 
   var BREAKPOINT = 768;
-  var SCRIPT_VERSION = "somos-ger-reflow-29";
+  var SCRIPT_VERSION = "somos-ger-reflow-30";
   var projectScript = "./assets/project-adaptations.js?v=somos-ger-62";
   var runtimeScript = "./assets/base.bundle.local.js?v=somos-ger-runtime-2";
   var reflowMedia = window.matchMedia("(max-width: " + (BREAKPOINT - 1) + "px)");

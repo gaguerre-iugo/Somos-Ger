@@ -349,7 +349,7 @@ html[data-somos-reflow="true"] .somos-reflow-gallery.somos-reflow-gallery-solo {
 }
 
 html[data-somos-reflow="true"] .somos-reflow-gallery-solo-tall .somos-reflow-figure:not(.somos-reflow-banner-figure) img {
-  max-height: min(68vh, 32rem) !important;
+  max-height: min(68vh, 32rem, calc(100vh - var(--somos-reflow-toolbar-reserve) - var(--somos-reflow-audio-reserve) - (2 * var(--somos-reflow-gutter)) - 2rem)) !important;
 }
 
 html[data-somos-reflow="true"] .somos-reflow-gallery-solo-inline .somos-reflow-figure:not(.somos-reflow-banner-figure) img {

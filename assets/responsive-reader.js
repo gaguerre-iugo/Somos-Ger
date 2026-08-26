@@ -2,7 +2,7 @@
   "use strict";
 
   var BREAKPOINT = 768;
-  var SCRIPT_VERSION = "somos-ger-reflow-27";
+  var SCRIPT_VERSION = "somos-ger-reflow-28";
   var projectScript = "./assets/project-adaptations.js?v=somos-ger-62";
   var runtimeScript = "./assets/base.bundle.local.js?v=somos-ger-runtime-2";
   var reflowMedia = window.matchMedia("(max-width: " + (BREAKPOINT - 1) + "px)");
@@ -441,7 +441,9 @@
       composeCitizenshipTimeline(section, root);
       return section;
     }
-    if (titleNode) {
+    if (entry.section_id === "pg001_sec001") {
+      if (titleNode) usedIds.add(titleNode.dataset.id);
+    } else if (titleNode) {
       section.appendChild(makeSemanticText(titleNode, "h2", "somos-reflow-heading"));
       usedIds.add(titleNode.dataset.id);
     } else if (title) {

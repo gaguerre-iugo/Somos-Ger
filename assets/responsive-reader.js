@@ -2,7 +2,7 @@
   "use strict";
 
   var BREAKPOINT = 768;
-  var SCRIPT_VERSION = "somos-ger-reflow-14";
+  var SCRIPT_VERSION = "somos-ger-reflow-27";
   var projectScript = "./assets/project-adaptations.js?v=somos-ger-62";
   var runtimeScript = "./assets/base.bundle.local.js?v=somos-ger-runtime-2";
   var reflowMedia = window.matchMedia("(max-width: " + (BREAKPOINT - 1) + "px)");
@@ -269,7 +269,35 @@
     section.appendChild(timeline);
   }
 
-  function appendGallery(section, images, texts, usedIds) {
+  function boxCenterInside(inner, outer) {
+    var cx = inner.left + inner.width / 2;
+    var cy = inner.top + inner.height / 2;
+    return cx >= outer.left && cx <= outer.left + outer.width &&
+      cy >= outer.top && cy <= outer.top + outer.height;
+  }
+
+  function collectBannerLabels(images, nodes, texts) {
+    var byImageId = {};
+    var labelIds = new Set();
+    images.forEach(function (image) {
+      var id = image.dataset.id || "";
+      if (!id || normalizedText(texts[id])) return;
+      var box = visualPosition(image);
+      if (!(box.width > 0 && box.height > 0) || box.width * box.height > 30000) return;
+      var labels = nodes.filter(function (node) {
+        var pos = visualPosition(node);
+        if (!(pos.width > 0 && pos.height > 0)) return false;
+        if (pos.width * pos.height >= box.width * box.height) return false;
+        return boxCenterInside(pos, box);
+      });
+      if (!labels.length) return;
+      byImageId[id] = labels;
+      labels.forEach(function (node) { labelIds.add(node.dataset.id); });
+    });
+    return { byImageId: byImageId, labelIds: labelIds };
+  }
+
+  function appendGallery(section, images, texts, usedIds, bannerLabels) {
     if (!images.length) return;
     var gallery = document.createElement("div");
     gallery.className = "somos-reflow-gallery";
@@ -282,11 +310,28 @@
       var image = document.createElement("img");
       image.src = sourceImage.getAttribute("src");
       var imageId = sourceImage.dataset.id || "";
+      var labels = bannerLabels && bannerLabels[imageId];
       var description = normalizedText(texts[imageId]);
       image.alt = description || normalizedText(sourceImage.getAttribute("alt"));
       if (!image.alt) image.setAttribute("aria-hidden", "true");
       figure.appendChild(image);
-      if (description && imageId && !usedIds.has(imageId)) {
+      if (labels && labels.length) {
+        figure.classList.add("somos-reflow-banner-figure");
+        image.alt = "";
+        image.setAttribute("aria-hidden", "true");
+        var overlay = document.createElement("div");
+        overlay.className = "somos-reflow-banner-label";
+        labels.forEach(function (node, index) {
+          if (index) overlay.appendChild(document.createTextNode(" "));
+          var span = document.createElement("span");
+          span.dataset.id = node.dataset.id;
+          span.textContent = extractedText(node);
+          if (sourceEmphasis(node)) span.dataset.sourceEmphasis = "true";
+          overlay.appendChild(span);
+          usedIds.add(node.dataset.id);
+        });
+        figure.appendChild(overlay);
+      } else if (description && imageId && !usedIds.has(imageId)) {
         var caption = document.createElement("figcaption");
         caption.dataset.id = imageId;
         caption.textContent = description;
@@ -295,6 +340,17 @@
       }
       gallery.appendChild(figure);
     });
+    if (images.length === 1
+      && section.dataset.sectionId !== "pg001_sec001"
+      && !gallery.classList.contains("somos-reflow-composite-person")) {
+      var soloText = section.textContent.replace(/\s+/g, " ").trim();
+      gallery.classList.add("somos-reflow-gallery-solo");
+      if (section.childElementCount === 0) {
+        gallery.classList.add("somos-reflow-gallery-solo-tall");
+      } else if (soloText.length <= 120) {
+        gallery.classList.add("somos-reflow-gallery-solo-inline");
+      }
+    }
     section.appendChild(gallery);
   }
 
@@ -374,8 +430,8 @@
     section.dataset.sourceHref = entry.href;
     if (entry.section_id === "pg001_sec001") section.classList.add("somos-reflow-cover");
     var nodes = textNodes(root);
-    var title = tocEntry && tocEntry.title ? tocEntry.title : "Página " + (entry.page_number || "");
-    var titleNode = tocEntry ? headingNode(nodes, title) : null;
+    var title = tocEntry && tocEntry.title ? tocEntry.title : "";
+    var titleNode = title ? headingNode(nodes, title) : null;
     var usedIds = new Set();
     if (entry.section_id === "pg005_sec001") {
       composeGregariousSection(section, root);
@@ -395,17 +451,21 @@
       section.appendChild(generated);
     }
 
+    var galleryImages = imageNodes(root, entry.section_id);
+    var bannerLabels = collectBannerLabels(galleryImages, nodes, texts);
+
     if (entry.section_id === "pg026027_sec001") {
       composeRightsSection(section, nodes, titleNode, usedIds);
     } else {
       nodes.forEach(function (node) {
         if (usedIds.has(node.dataset.id)) return;
+        if (bannerLabels.labelIds.has(node.dataset.id)) return;
         section.appendChild(makeSemanticText(node));
         usedIds.add(node.dataset.id);
       });
     }
 
-    appendGallery(section, imageNodes(root, entry.section_id), texts, usedIds);
+    appendGallery(section, galleryImages, texts, usedIds, bannerLabels.byImageId);
     appendUnusedImageDescriptions(section, root, texts, usedIds);
     return section;
   }
@@ -530,7 +590,7 @@
 
   function installResponsiveEntry() {
     reflowMedia.addEventListener("change", function (event) {
-      if (!event.matches || state.active || /^qz\d+$/i.test(initialSectionId)) return;
+      if (!event.matches || state.active) return;
       setResponsiveViewport();
       if (isIndex) location.reload();
       else location.replace("./index.html#" + encodeURIComponent(initialSectionId));
@@ -576,6 +636,26 @@
     installApi();
     installKeyboardNavigation();
     installResponsiveExit(pages);
+    function reanchorReflow(anchorId) {
+      var anchor = anchorId || state.currentSectionId || decodeURIComponent(location.hash.slice(1));
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          state.total = Math.max(1, Math.ceil((content.scrollWidth - 1) / pageWidth()));
+          document.documentElement.dataset.somosReflowTotal = String(state.total);
+          if (anchor) goToSection(anchor, true);
+          updatePagination();
+        });
+      });
+    }
+    var ttsReserveState = document.documentElement.getAttribute("data-somos-tts-active");
+    new MutationObserver(function () {
+      var next = document.documentElement.getAttribute("data-somos-tts-active");
+      if (next === ttsReserveState) return;
+      ttsReserveState = next;
+      var anchor = state.currentSectionId || decodeURIComponent(location.hash.slice(1));
+      window.clearTimeout(state.ttsReserveTimer);
+      state.ttsReserveTimer = window.setTimeout(function () { reanchorReflow(anchor); }, 60);
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-somos-tts-active"] });
     content.addEventListener("scroll", function () {
       window.clearTimeout(state.scrollTimer);
       state.scrollTimer = window.setTimeout(updatePagination, 80);
@@ -608,7 +688,7 @@
   async function boot() {
     try {
       installResponsiveEntry();
-      if (reflowMedia.matches && !isIndex && !/^qz\d+$/i.test(initialSectionId)) {
+      if (reflowMedia.matches && !isIndex) {
         setResponsiveViewport();
         location.replace("./index.html#" + encodeURIComponent(initialSectionId));
         return;

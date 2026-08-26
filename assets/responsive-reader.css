@@ -1,6 +1,10 @@
 :root {
   --somos-reflow-gutter: 20px;
   --somos-reflow-toolbar-reserve: 64px;
+  --somos-reflow-audio-reserve: 0px;
+}
+
+html[data-somos-reflow="true"][data-somos-tts-active="true"] {
   --somos-reflow-audio-reserve: var(--somos-audio-reserve, 96px);
 }
 
@@ -337,12 +341,55 @@ html[data-somos-reflow="true"] .somos-reflow-figure img {
   object-fit: contain;
 }
 
+html[data-somos-reflow="true"] .somos-reflow-gallery.somos-reflow-gallery-solo {
+  grid-template-columns: minmax(0, 1fr) !important;
+  max-width: 34rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-gallery-solo-tall .somos-reflow-figure:not(.somos-reflow-banner-figure) img {
+  max-height: min(68vh, 32rem) !important;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-gallery-solo-inline .somos-reflow-figure:not(.somos-reflow-banner-figure) img {
+  max-height: min(52vh, calc(100vh - var(--somos-reflow-toolbar-reserve) - var(--somos-reflow-audio-reserve) - 15rem)) !important;
+}
+
 html[data-somos-reflow="true"] .somos-reflow-figure figcaption,
 html[data-somos-reflow="true"] .somos-reflow-image-description {
   margin: 0;
   color: #374151;
   font-size: 1rem;
   line-height: 1.4;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-figure.somos-reflow-banner-figure {
+  position: relative !important;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  border-radius: 0;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-banner-figure img {
+  width: 100% !important;
+  max-height: none !important;
+}
+
+html[data-somos-reflow="true"] .somos-reflow-banner-figure .somos-reflow-banner-label {
+  position: absolute !important;
+  inset: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 12%;
+  font-weight: 700;
+  color: #000;
+  font-size: clamp(0.8rem, 3.2vw, 1.05rem);
+  line-height: 1.15;
+  letter-spacing: 0.02em;
 }
 
 html[data-somos-reflow="true"] .somos-reflow-cover .somos-reflow-gallery {
@@ -409,11 +456,17 @@ html[data-somos-reflow="true"] .somos-reflow-quiz .quiz-card {
   box-sizing: border-box;
   width: 100% !important;
   max-width: 100% !important;
+  max-height: calc(
+    100vh - var(--somos-reflow-toolbar-reserve) - var(--somos-reflow-audio-reserve) -
+      (2 * var(--somos-reflow-gutter)) - 0.75rem
+  ) !important;
   margin: 0 !important;
   border-radius: 18px;
   background: #f9ecec;
   box-shadow: 0 8px 24px rgb(0 0 0 / 10%);
-  overflow: hidden !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
 }
 
 html[data-somos-reflow="true"] .somos-reflow-quiz .quiz-header {

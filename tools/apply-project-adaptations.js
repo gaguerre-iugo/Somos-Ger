@@ -8,7 +8,7 @@ const pages = fs
   .sort();
 
 const marker =
-  '    <script src="./assets/responsive-reader.js?v=somos-ger-reflow-33"></script>';
+  '    <script src="./assets/responsive-reader.js?v=somos-ger-reflow-34"></script>';
 const existingMarker =
   /^[\t ]*<script src="\.\/assets\/(?:project-adaptations|responsive-reader)\.js(?:\?[^\"]*)?"><\/script>[\t ]*(?:\r?\n)?/gm;
 const styleMarker =

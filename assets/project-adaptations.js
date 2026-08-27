@@ -534,6 +534,32 @@
     }
   }
 
+  function orderReadingRows(readingCard) {
+    var sequence = [
+      ".somos-setting-highlight",
+      ".somos-setting-describe-images",
+      "#somos-audio-settings-heading",
+      "#somos-audio-voice-setting",
+      "#somos-audio-speed-setting",
+      ".somos-setting-autoplay",
+    ];
+    var desired = [];
+    sequence.forEach(function (selector) {
+      var row = readingCard.querySelector(selector);
+      if (!row || row.parentElement !== readingCard) return;
+      var isOurRow = row.classList.contains("somos-proxy-setting") || /^somos-audio-/.test(row.id || "");
+      if (isOurRow) desired.push(row);
+    });
+    var current = Array.prototype.filter.call(readingCard.children, function (child) {
+      return desired.indexOf(child) !== -1;
+    });
+    var alreadyOrdered = current.length === desired.length && current.every(function (row, index) {
+      return row === desired[index];
+    });
+    if (alreadyOrdered) return;
+    desired.forEach(function (row) { readingCard.appendChild(row); });
+  }
+
   function nativeConditionalRow(readingCard, className) {
     return Array.prototype.find.call(readingCard.children, function (row) {
       return row.classList.contains(className) && !row.classList.contains("somos-proxy-setting");
@@ -736,6 +762,7 @@
         ensureConditionalSettings(readingCard);
         syncHighlightAvailability(readingCard);
         createAudioSettings(readingCard);
+        orderReadingRows(readingCard);
       }
     }
 
@@ -1289,7 +1316,7 @@
     });
   }
 
-  document.documentElement.setAttribute("data-project-adaptations", "somos-ger-63");
+  document.documentElement.setAttribute("data-project-adaptations", "somos-ger-64");
   var root = navContainer();
   if (root) {
     new MutationObserver(scheduleUpdate).observe(root, {

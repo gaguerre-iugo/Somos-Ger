@@ -2,7 +2,7 @@
   "use strict";
 
   var BREAKPOINT = 768;
-  var SCRIPT_VERSION = "somos-ger-reflow-30";
+  var SCRIPT_VERSION = "somos-ger-reflow-31";
   var projectScript = "./assets/project-adaptations.js?v=somos-ger-62";
   var runtimeScript = "./assets/base.bundle.local.js?v=somos-ger-runtime-2";
   var reflowMedia = window.matchMedia("(max-width: " + (BREAKPOINT - 1) + "px)");
@@ -483,6 +483,25 @@
     if (next) next.disabled = state.current >= state.total - 1;
   }
 
+  function syncActiveQuizFlag() {
+    var activeSection = null;
+    for (var i = 0; i < state.sections.length; i++) {
+      if (state.sections[i].dataset.sectionId === state.currentSectionId) {
+        activeSection = state.sections[i];
+        break;
+      }
+    }
+    var isQuiz = !!(activeSection && (
+      activeSection.classList.contains("somos-reflow-quiz") ||
+      activeSection.matches('[data-section-type="activity_quiz"]')
+    ));
+    if (isQuiz) {
+      document.documentElement.dataset.somosActiveQuiz = "true";
+    } else {
+      delete document.documentElement.dataset.somosActiveQuiz;
+    }
+  }
+
   function updatePagination() {
     if (!state.active || !content) return;
     state.total = Math.max(1, Math.ceil((content.scrollWidth - 1) / pageWidth()));
@@ -507,6 +526,7 @@
         history.replaceState(null, "", "#" + encodeURIComponent(currentSection.dataset.sectionId));
       }
     }
+    syncActiveQuizFlag();
     window.dispatchEvent(new CustomEvent("somos:reflow-pagechange", {
       detail: { current: state.current + 1, total: state.total }
     }));

@@ -72,6 +72,16 @@ html[data-somos-layout-ready="true"] #content {
   pointer-events: none !important;
 }
 
+/* Reflow (SPA) mode: the base runtime keeps the activity "Siguiente" pill mounted
+   because our custom reader drives navigation without notifying it. Hide the pill
+   whenever the active reflow section is not a quiz so it never lingers after
+   navigating away from an answered quiz. */
+html[data-somos-reflow="true"]:not([data-somos-active-quiz="true"]) #nav-container > [aria-label="dock-label"]:not([role="group"]) {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 #interface-container [role="dialog"]:has(> [role="group"][aria-label="Controles de lectura en voz alta"]),
 #interface-container .somos-native-audio-bridge {
   visibility: hidden !important;

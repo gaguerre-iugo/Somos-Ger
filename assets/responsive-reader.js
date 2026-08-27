@@ -2,7 +2,7 @@
   "use strict";
 
   var BREAKPOINT = 768;
-  var SCRIPT_VERSION = "somos-ger-reflow-31";
+  var SCRIPT_VERSION = "somos-ger-reflow-32";
   var projectScript = "./assets/project-adaptations.js?v=somos-ger-62";
   var runtimeScript = "./assets/base.bundle.local.js?v=somos-ger-runtime-2";
   var reflowMedia = window.matchMedia("(max-width: " + (BREAKPOINT - 1) + "px)");
@@ -10,7 +10,7 @@
     ? document.querySelector('meta[name="title-id"]').content
     : "pg001_sec001";
   var isIndex = /(?:^|\/)index\.html$/.test(location.pathname) || /\/$/.test(location.pathname);
-  var state = { active: false, current: 0, total: 1, sections: [], resizeTimer: 0, resizeAnchorId: "", initialTarget: initialSectionId, currentSectionId: initialSectionId };
+  var state = { active: false, current: 0, total: 1, sections: [], resizeTimer: 0, resizeAnchorId: "", initialTarget: initialSectionId, currentSectionId: initialSectionId, reflowReady: false, contentResizeTimer: 0 };
   var content = null;
 
   function loadScript(src) {
@@ -678,6 +678,18 @@
       window.clearTimeout(state.ttsReserveTimer);
       state.ttsReserveTimer = window.setTimeout(function () { reanchorReflow(anchor); }, 60);
     }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-somos-tts-active"] });
+    if (typeof ResizeObserver === "function") {
+      var sectionResizeObserver = new ResizeObserver(function () {
+        if (!state.reflowReady || state.resizeAnchorId) return;
+        window.clearTimeout(state.contentResizeTimer);
+        state.contentResizeTimer = window.setTimeout(function () {
+          reanchorReflow(state.currentSectionId);
+        }, 90);
+      });
+      state.sections.forEach(function (section) {
+        if (section.classList.contains("somos-reflow-quiz")) sectionResizeObserver.observe(section);
+      });
+    }
     content.addEventListener("scroll", function () {
       window.clearTimeout(state.scrollTimer);
       state.scrollTimer = window.setTimeout(updatePagination, 80);
@@ -704,6 +716,9 @@
     state.total = Math.max(1, Math.ceil((content.scrollWidth - 1) / pageWidth()));
     document.documentElement.dataset.somosReflowTotal = String(state.total);
     goToSection(hashId, true);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { state.reflowReady = true; });
+    });
     return pages;
   }
 

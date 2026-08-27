@@ -4,7 +4,7 @@ const path = require("path");
 const root = path.resolve(__dirname, "..");
 const pages = fs.readdirSync(root).filter((name) => name.endsWith(".html")).sort();
 const quizPages = pages.filter((name) => /^qz\d+\.html$/.test(name));
-const scriptMarker = './assets/responsive-reader.js?v=somos-ger-reflow-32';
+const scriptMarker = './assets/responsive-reader.js?v=somos-ger-reflow-33';
 const styleMarker = './assets/project-interface.css?v=somos-ger-28';
 const reflowStyleMarker = './assets/responsive-reader.css?v=somos-ger-reflow-30';
 const runtimePreloadMarker = '<link rel="preload" href="./assets/base.bundle.local.js?v=somos-ger-runtime-2" as="script">';
@@ -100,7 +100,7 @@ const expectedResponsiveTokens = [
   '["pg005_p010", "pg005_p012"]',
   'event.stopImmediatePropagation()',
   'content.style.scrollBehavior = "auto"',
-  'project-adaptations.js?v=somos-ger-62',
+  'project-adaptations.js?v=somos-ger-63',
   'base.bundle.local.js?v=somos-ger-runtime-2',
   'goToPage(state.current + 1, true)',
 ];

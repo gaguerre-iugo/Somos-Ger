@@ -20,6 +20,7 @@
   };
   var AUDIO_STARTED_KEY = "somosTtsExplicitlyStarted";
   var AUDIO_PAUSED_KEY = "somosTtsManuallyPaused";
+  var NAV_FOCUS_KEY = "somosNavFocusRestore";
 
   function storedBoolean(storage, key) {
     try {
@@ -44,6 +45,46 @@
       window.sessionStorage.setItem(AUDIO_STARTED_KEY, userStartedAudio ? "true" : "false");
       window.sessionStorage.setItem(AUDIO_PAUSED_KEY, userPausedAudio ? "true" : "false");
     } catch (_error) {}
+  }
+
+  function rememberNavFocus(id) {
+    try {
+      window.sessionStorage.setItem(NAV_FOCUS_KEY, id);
+    } catch (_error) {}
+  }
+
+  var navFocusRestored = false;
+  function restoreNavFocus() {
+    if (navFocusRestored) return;
+    var wanted;
+    try {
+      wanted = window.sessionStorage.getItem(NAV_FOCUS_KEY);
+    } catch (_error) {
+      navFocusRestored = true;
+      return;
+    }
+    if (!wanted) {
+      navFocusRestored = true;
+      return;
+    }
+    if (wanted !== "somos-next" && wanted !== "somos-previous") {
+      navFocusRestored = true;
+      try { window.sessionStorage.removeItem(NAV_FOCUS_KEY); } catch (_error) {}
+      return;
+    }
+    var control = document.getElementById(wanted);
+    if (!control) return;
+    var target = !control.disabled ? control : null;
+    if (!target) {
+      var sibling = document.getElementById(wanted === "somos-next" ? "somos-previous" : "somos-next");
+      target = sibling && !sibling.disabled ? sibling : null;
+    }
+    if (target) {
+      try { target.focus({ preventScroll: true }); } catch (_error) { try { target.focus(); } catch (_error2) {} }
+      if (document.activeElement !== target) return;
+    }
+    navFocusRestored = true;
+    try { window.sessionStorage.removeItem(NAV_FOCUS_KEY); } catch (_error) {}
   }
   var updateScheduled = false;
   var toolsReturnFocus = null;
@@ -1060,7 +1101,10 @@
         return;
       }
       var button = exactBridge(labels.previous);
-      if (button) button.click();
+      if (button) {
+        rememberNavFocus("somos-previous");
+        button.click();
+      }
     });
     document.getElementById("somos-next").addEventListener("click", function () {
       if (document.documentElement.getAttribute("data-somos-reflow") === "true") {
@@ -1068,7 +1112,10 @@
         return;
       }
       var button = exactBridge(labels.next);
-      if (button) button.click();
+      if (button) {
+        rememberNavFocus("somos-next");
+        button.click();
+      }
     });
     toolsButton().addEventListener("click", toggleTools);
 
@@ -1137,6 +1184,8 @@
     if (nextControl) nextControl.disabled = reflow
       ? reflow.current >= reflow.total
       : !next || next.disabled;
+
+    restoreNavFocus();
 
     var counter = document.getElementById("somos-page-status");
     if (counter && reflow) {
@@ -1240,7 +1289,7 @@
     });
   }
 
-  document.documentElement.setAttribute("data-project-adaptations", "somos-ger-62");
+  document.documentElement.setAttribute("data-project-adaptations", "somos-ger-63");
   var root = navContainer();
   if (root) {
     new MutationObserver(scheduleUpdate).observe(root, {

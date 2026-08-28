@@ -1187,3 +1187,44 @@ html[data-somos-tts-active="true"] .somos-tools-panel {
   #somos-tools span { font-size: 16px; }
   #somos-tools span::after { content: none; }
 }
+
+/* ==========================================================================
+   Pantallas grandes interactivas de aula (65", 16:9).
+   Agranda la tarjeta de actividad/quiz, sus opciones y su tipografía para
+   lectura a distancia y toque cómodo con dedo o lápiz, sin afectar móvil ni
+   pantallas medianas. Las páginas de contenido de layout fijo ya se amplían
+   mediante el escalado del lienzo (fit()).
+   ========================================================================== */
+@media (min-width: 72rem) {
+  #simple-main[data-section-type="activity_quiz"] .quiz-card {
+    max-width: 60rem !important;
+  }
+  #simple-main[data-section-type="activity_quiz"] .activity-option {
+    width: 48rem !important;
+    min-height: 3.5rem;
+  }
+  #simple-main[data-section-type="activity_quiz"] .activity-option,
+  #simple-main[data-section-type="activity_quiz"] .activity-option .option-text {
+    font-size: 24px !important;
+  }
+  #simple-main[data-section-type="activity_quiz"] .quiz-question {
+    font-size: 30px !important;
+  }
+}
+
+@media (min-width: 100rem) {
+  #simple-main[data-section-type="activity_quiz"] .quiz-card {
+    max-width: 80rem !important;
+  }
+  #simple-main[data-section-type="activity_quiz"] .activity-option {
+    width: 64rem !important;
+    min-height: 4rem;
+  }
+  #simple-main[data-section-type="activity_quiz"] .activity-option,
+  #simple-main[data-section-type="activity_quiz"] .activity-option .option-text {
+    font-size: 30px !important;
+  }
+  #simple-main[data-section-type="activity_quiz"] .quiz-question {
+    font-size: 44px !important;
+  }
+}

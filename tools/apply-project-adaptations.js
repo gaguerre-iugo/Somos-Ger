@@ -12,7 +12,7 @@ const marker =
 const existingMarker =
   /^[\t ]*<script src="\.\/assets\/(?:project-adaptations|responsive-reader)\.js(?:\?[^\"]*)?"><\/script>[\t ]*(?:\r?\n)?/gm;
 const styleMarker =
-  '    <link href="./assets/project-interface.css?v=somos-ger-28" rel="stylesheet">\r\n    <link href="./assets/responsive-reader.css?v=somos-ger-reflow-30" rel="stylesheet">';
+  '    <link href="./assets/project-interface.css?v=somos-ger-29" rel="stylesheet">\r\n    <link href="./assets/responsive-reader.css?v=somos-ger-reflow-30" rel="stylesheet">';
 const existingStyleMarker =
   /^[\t ]*<link href="\.\/assets\/(?:project-interface|responsive-reader)\.css(?:\?[^\"]*)?" rel="stylesheet">[\t ]*(?:\r?\n)?/gm;
 const runtimeMarker =
@@ -67,6 +67,15 @@ for (const name of pages) {
       ].join("\r\n"),
     );
   }
+  // Pantallas grandes de aula (65", 16:9): elevar el tope de escala del lienzo
+  // fijo para que la página llene mucho más el panel y el texto sea legible
+  // desde el fondo del aula. El Math.min() sigue tomando el menor de byW/byH,
+  // así que nunca provoca overflow; el tope solo limita el agrandamiento máximo.
+  html = html.replace(
+    /var s = Math\.min\(2, byW, byH > 0 \? byH : byW\);/,
+    "var s = Math.min(4, byW, byH > 0 ? byH : byW);",
+  );
+
   fs.writeFileSync(file, html);
 }
 

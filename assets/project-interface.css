@@ -147,6 +147,23 @@ body:has(#simple-main[data-section-type="activity_quiz"]) #content {
   transform: translateX(-50%);
 }
 
+/*
+ * Static toolbar skeleton (anti-flicker). Injected into every page by
+ * apply-project-adaptations.js, it reuses the .somos-primary-toolbar styling so
+ * an identical menu bar is painted from the very first frame of each page. On a
+ * full-document reload the interactive toolbar (#somos-primary-toolbar) is built
+ * by the runtime a few hundred ms later; until then this skeleton keeps the menu
+ * visually present so it never blinks out. The moment the real toolbar mounts we
+ * hide the skeleton, making the swap seamless.
+ */
+.somos-toolbar-skeleton {
+  pointer-events: none;
+}
+
+body:has(#somos-primary-toolbar) .somos-toolbar-skeleton {
+  display: none !important;
+}
+
 .somos-toolbar-button,
 .somos-audio-button,
 .somos-icon-button,

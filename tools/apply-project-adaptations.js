@@ -8,11 +8,11 @@ const pages = fs
   .sort();
 
 const marker =
-  '    <script src="./assets/responsive-reader.js?v=somos-ger-reflow-34"></script>';
+  '    <script src="./assets/responsive-reader.js?v=somos-ger-reflow-35"></script>';
 const existingMarker =
   /^[\t ]*<script src="\.\/assets\/(?:project-adaptations|responsive-reader)\.js(?:\?[^\"]*)?"><\/script>[\t ]*(?:\r?\n)?/gm;
 const styleMarker =
-  '    <link href="./assets/project-interface.css?v=somos-ger-29" rel="stylesheet">\r\n    <link href="./assets/responsive-reader.css?v=somos-ger-reflow-30" rel="stylesheet">';
+  '    <link href="./assets/project-interface.css?v=somos-ger-30" rel="stylesheet">\r\n    <link href="./assets/responsive-reader.css?v=somos-ger-reflow-30" rel="stylesheet">';
 const existingStyleMarker =
   /^[\t ]*<link href="\.\/assets\/(?:project-interface|responsive-reader)\.css(?:\?[^\"]*)?" rel="stylesheet">[\t ]*(?:\r?\n)?/gm;
 const runtimeMarker =
@@ -75,6 +75,31 @@ for (const name of pages) {
     /var s = Math\.min\(2, byW, byH > 0 \? byH : byW\);/,
     "var s = Math.min(4, byW, byH > 0 ? byH : byW);",
   );
+
+  // Esqueleto estático de la barra de navegación (anti-parpadeo). Cada cambio de
+  // página recarga el documento completo y el runtime tarda ~250 ms en montar la
+  // barra real (#somos-primary-toolbar), dejando un hueco en el que el menú
+  // desaparece y "parpadea". Pintamos desde el primer fotograma una copia
+  // estática idéntica (mismas clases visuales), inerte y oculta a lectores de
+  // pantalla, que el CSS oculta —y project-adaptations.js elimina— en cuanto la
+  // barra real aparece. Así el menú se mantiene visualmente estable.
+  const skeletonMarkup =
+    '    <nav class="somos-primary-toolbar somos-toolbar-skeleton" aria-hidden="true" inert>' +
+    '<button type="button" class="somos-toolbar-button" tabindex="-1"><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M4 5h16M4 12h16M4 19h16"/><circle cx="2" cy="5" r=".7"/><circle cx="2" cy="12" r=".7"/><circle cx="2" cy="19" r=".7"/></svg><span>&#205;ndice</span></button>' +
+    '<button type="button" class="somos-toolbar-button" tabindex="-1"><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="m15 18-6-6 6-6"/></svg><span>Anterior</span></button>' +
+    '<output class="somos-page-status">&#8211; / &#8211;</output>' +
+    '<button type="button" class="somos-toolbar-button" tabindex="-1"><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="m9 18 6-6-6-6"/></svg><span>Siguiente</span></button>' +
+    '<button type="button" class="somos-toolbar-button" tabindex="-1"><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6l-.04.08H10l-.04-.08a1.7 1.7 0 0 0-1-.6 1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1L3.92 14v-4L4 9.96a1.7 1.7 0 0 0 .6-1 1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6l.04-.08h3.92L14 4a1.7 1.7 0 0 0 1 .6 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.1.4.32.75.6 1l.08.04v3.92L20 14a1.7 1.7 0 0 0-.6 1Z"/></svg><span>Herramientas</span></button>' +
+    "</nav>";
+  const existingSkeleton = /^[\t ]*<nav class="somos-primary-toolbar somos-toolbar-skeleton"[\s\S]*?<\/nav>[\t ]*(?:\r?\n)?/m;
+  if (existingSkeleton.test(html)) {
+    html = html.replace(existingSkeleton, "");
+  }
+  const navAnchor = '    <div class="relative z-50" id="nav-container"></div>';
+  if (!html.includes(navAnchor)) {
+    throw new Error(`No se encontró el contenedor de navegación en ${name}`);
+  }
+  html = html.replace(navAnchor, `${navAnchor}\r\n${skeletonMarkup}`);
 
   fs.writeFileSync(file, html);
 }

@@ -4,10 +4,11 @@ const path = require("path");
 const root = path.resolve(__dirname, "..");
 const pages = fs.readdirSync(root).filter((name) => name.endsWith(".html")).sort();
 const quizPages = pages.filter((name) => /^qz\d+\.html$/.test(name));
-const scriptMarker = './assets/responsive-reader.js?v=somos-ger-reflow-34';
-const styleMarker = './assets/project-interface.css?v=somos-ger-29';
+const scriptMarker = './assets/responsive-reader.js?v=somos-ger-reflow-35';
+const styleMarker = './assets/project-interface.css?v=somos-ger-30';
 const reflowStyleMarker = './assets/responsive-reader.css?v=somos-ger-reflow-30';
 const runtimePreloadMarker = '<link rel="preload" href="./assets/base.bundle.local.js?v=somos-ger-runtime-2" as="script">';
+const skeletonMarker = 'class="somos-primary-toolbar somos-toolbar-skeleton"';
 const expectedIds = [
   "somos-index",
   "somos-previous",
@@ -23,7 +24,7 @@ const expectedIds = [
 
 const pageFailures = pages.flatMap((name) => {
   const html = fs.readFileSync(path.join(root, name), "utf8");
-  const missing = [scriptMarker, styleMarker, reflowStyleMarker, runtimePreloadMarker].filter((marker) => !html.includes(marker));
+  const missing = [scriptMarker, styleMarker, reflowStyleMarker, runtimePreloadMarker, skeletonMarker].filter((marker) => !html.includes(marker));
   return missing.length ? [{ page: name, missing }] : [];
 });
 const quizStructureFailures = quizPages.filter((name) => {
@@ -100,7 +101,7 @@ const expectedResponsiveTokens = [
   '["pg005_p010", "pg005_p012"]',
   'event.stopImmediatePropagation()',
   'content.style.scrollBehavior = "auto"',
-  'project-adaptations.js?v=somos-ger-64',
+  'project-adaptations.js?v=somos-ger-65',
   'base.bundle.local.js?v=somos-ger-runtime-2',
   'goToPage(state.current + 1, true)',
 ];

@@ -1111,6 +1111,9 @@
     document.body.appendChild(player);
     document.body.appendChild(toolbar);
 
+    var toolbarSkeleton = document.querySelector(".somos-toolbar-skeleton");
+    if (toolbarSkeleton) toolbarSkeleton.remove();
+
     var indexControl = document.getElementById("somos-index");
     indexControl.setAttribute("aria-haspopup", "dialog");
     indexControl.setAttribute("aria-expanded", "false");

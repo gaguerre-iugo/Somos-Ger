@@ -2,8 +2,8 @@
   "use strict";
 
   var BREAKPOINT = 768;
-  var SCRIPT_VERSION = "somos-ger-reflow-34";
-  var projectScript = "./assets/project-adaptations.js?v=somos-ger-64";
+  var SCRIPT_VERSION = "somos-ger-reflow-35";
+  var projectScript = "./assets/project-adaptations.js?v=somos-ger-65";
   var runtimeScript = "./assets/base.bundle.local.js?v=somos-ger-runtime-2";
   var reflowMedia = window.matchMedia("(max-width: " + (BREAKPOINT - 1) + "px)");
   var initialSectionId = document.querySelector('meta[name="title-id"]')
